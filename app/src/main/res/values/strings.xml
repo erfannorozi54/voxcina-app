@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">Voxcina</string>
+
+    <!-- Onboarding Screen -->
+    <string name="onboarding_skip">رد کردن</string>
+    <string name="onboarding_next_page">صفحه بعدی</string>
+    <string name="onboarding_enter_store">ورود به فروشگاه</string>
+    <string name="onboarding_version_prefix">نسخه </string>
+
+    <!-- Onboarding Page 1 -->
+    <string name="onboarding_page1_overlay_title">کالکشن جدید</string>
+    <string name="onboarding_page1_overlay_subtitle">تخفیف‌های ویژه فصل</string>
+    <string name="onboarding_page1_title_line1">سبک خاص خود را</string>
+    <string name="onboarding_page1_title_line2">کشف کنید</string>
+    <string name="onboarding_page1_description">هزاران محصول اورجینال از بهترین برندهای جهان، همین حالا در دستان شماست.</string>
+
+    <!-- Onboarding Page 2 -->
+    <string name="onboarding_page2_overlay_title">جستجوی هوشمند</string>
+    <string name="onboarding_page2_overlay_subtitle">با هوش مصنوعی</string>
+    <string name="onboarding_page2_title_line1">محصول دلخواه را</string>
+    <string name="onboarding_page2_title_line2">پیدا کنید</string>
+    <string name="onboarding_page2_description">با جستجوی هوشمند و دستیار خرید، بهترین انتخاب را داشته باشید.</string>
+
+    <!-- Onboarding Page 3 -->
+    <string name="onboarding_page3_overlay_title">ارسال سریع</string>
+    <string name="onboarding_page3_overlay_subtitle">به سراسر ایران</string>
+    <string name="onboarding_page3_title_line1">خرید امن و</string>
+    <string name="onboarding_page3_title_line2">تحویل سریع</string>
+    <string name="onboarding_page3_description">پرداخت امن با درگاه زیبال، ارسال سریع به سراسر کشور.</string>
 </resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder for onboarding_1.webp - Replace with actual image -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="135"
+                android:startColor="#1A3C69"
+                android:centerColor="#2A4C79"
+                android:endColor="#0A1B3C"
+                android:type="linear" />
+        </shape>
+    </item>
+    <item
+        android:gravity="center"
+        android:width="120dp"
+        android:height="120dp">
+        <shape android:shape="oval">
+            <solid android:color="#FCFAF8" />
+        </shape>
+    </item>
+</layer-list>
