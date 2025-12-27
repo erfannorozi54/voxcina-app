@@ -1,8 +1,10 @@
 package com.voxcina.shop.presentation.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -23,7 +26,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,22 +40,13 @@ import com.voxcina.shop.R
 import com.voxcina.shop.ui.theme.Destructive
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.PrimaryDark
-import com.voxcina.shop.ui.theme.Secondary
+import com.voxcina.shop.ui.theme.VazirMatnFamily
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 
-/**
- * Home screen header component with user avatar, welcome text, and action buttons.
- * Implements Requirements 1.1, 1.2, 1.3 from the home screen spec.
- *
- * @param modifier Modifier for the header container
- * @param hasNotifications Whether to show notification badge
- * @param cartItemCount Number of items in cart (0 hides badge)
- * @param onNotificationClick Callback when notification button is clicked
- * @param onCartClick Callback when cart button is clicked
- */
 @Composable
 fun HomeHeader(
     modifier: Modifier = Modifier,
+    userName: String? = null,
     hasNotifications: Boolean = false,
     cartItemCount: Int = 0,
     onNotificationClick: () -> Unit = {},
@@ -60,161 +56,102 @@ fun HomeHeader(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // User avatar and welcome text
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // User avatar placeholder
-                UserAvatarPlaceholder()
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Avatar
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    Primary.copy(alpha = 0.15f),
+                                    Primary.copy(alpha = 0.05f)
+                                )
+                            )
+                        )
+                        .border(1.5.dp, Primary.copy(alpha = 0.2f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = userName?.firstOrNull()?.toString() ?: "ک",
+                        color = Primary,
+                        fontSize = 18.sp,
+                        fontFamily = VazirMatnFamily,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 
                 Spacer(modifier = Modifier.width(12.dp))
                 
-                // Welcome text
-                WelcomeText()
-            }
-            
-            // Action buttons
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Notification button with badge
-                NotificationButton(
-                    hasNotifications = hasNotifications,
-                    onClick = onNotificationClick
-                )
-                
-                Spacer(modifier = Modifier.width(4.dp))
-                
-                // Cart button with badge
-                CartButton(
-                    itemCount = cartItemCount,
-                    onClick = onCartClick
-                )
-            }
-        }
-    }
-}
-
-/**
- * User avatar placeholder - circular icon with user initial or default icon.
- */
-@Composable
-private fun UserAvatarPlaceholder(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .size(48.dp)
-            .clip(CircleShape)
-            .background(Primary.copy(alpha = 0.1f)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "ک",
-            color = Primary,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-/**
- * Welcome text with greeting and user name.
- */
-@Composable
-private fun WelcomeText(
-    modifier: Modifier = Modifier
-) {
-    androidx.compose.foundation.layout.Column(
-        modifier = modifier
-    ) {
-        Text(
-            text = stringResource(R.string.home_welcome),
-            color = Color.Gray,
-            fontSize = 12.sp
-        )
-        Text(
-            text = stringResource(R.string.home_user_greeting),
-            color = PrimaryDark,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-/**
- * Notification button with optional badge indicator.
- * Minimum 48dp touch target for accessibility (Requirement 1.2).
- */
-@Composable
-private fun NotificationButton(
-    hasNotifications: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier.size(48.dp)
-    ) {
-        BadgedBox(
-            badge = {
-                if (hasNotifications) {
-                    Badge(
-                        containerColor = Destructive,
-                        modifier = Modifier.size(8.dp)
+                Column {
+                    Text(
+                        text = stringResource(R.string.home_welcome),
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        fontFamily = VazirMatnFamily
+                    )
+                    Text(
+                        text = userName ?: stringResource(R.string.home_user_greeting),
+                        color = PrimaryDark,
+                        fontSize = 16.sp,
+                        fontFamily = VazirMatnFamily,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Notifications,
-                contentDescription = stringResource(R.string.home_notifications),
-                tint = PrimaryDark,
-                modifier = Modifier.size(24.dp)
-            )
+            
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                GlassActionButton(
+                    icon = Icons.Outlined.Notifications,
+                    contentDescription = stringResource(R.string.home_notifications),
+                    onClick = onNotificationClick,
+                    showDot = hasNotifications
+                )
+                GlassActionButton(
+                    icon = Icons.Outlined.ShoppingCart,
+                    contentDescription = stringResource(R.string.home_cart),
+                    onClick = onCartClick,
+                    badgeCount = cartItemCount
+                )
+            }
         }
     }
 }
 
-/**
- * Cart button with item count badge.
- * Minimum 48dp touch target for accessibility (Requirement 1.2).
- */
 @Composable
-private fun CartButton(
-    itemCount: Int,
+private fun GlassActionButton(
+    icon: ImageVector,
+    contentDescription: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    showDot: Boolean = false,
+    badgeCount: Int = 0
 ) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier.size(48.dp)
+    Box(
+        modifier = Modifier
+            .size(42.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White.copy(alpha = 0.8f))
+            .border(1.dp, Color.Gray.copy(alpha = 0.12f), RoundedCornerShape(12.dp)),
+        contentAlignment = Alignment.Center
     ) {
-        BadgedBox(
-            badge = {
-                if (itemCount > 0) {
-                    Badge(
-                        containerColor = Destructive,
-                        contentColor = Color.White
-                    ) {
-                        Text(
-                            text = if (itemCount > 99) "۹۹+" else itemCount.toString(),
-                            fontSize = 10.sp
-                        )
+        IconButton(onClick = onClick, modifier = Modifier.size(42.dp)) {
+            BadgedBox(
+                badge = {
+                    when {
+                        badgeCount > 0 -> Badge(containerColor = Destructive, contentColor = Color.White) {
+                            Text(if (badgeCount > 99) "۹۹+" else badgeCount.toString(), fontSize = 9.sp, fontFamily = VazirMatnFamily)
+                        }
+                        showDot -> Badge(containerColor = Destructive, modifier = Modifier.size(8.dp))
                     }
                 }
+            ) {
+                Icon(icon, contentDescription, tint = PrimaryDark, modifier = Modifier.size(22.dp))
             }
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.ShoppingCart,
-                contentDescription = stringResource(R.string.home_cart),
-                tint = PrimaryDark,
-                modifier = Modifier.size(24.dp)
-            )
         }
     }
 }
@@ -222,32 +159,5 @@ private fun CartButton(
 @Preview(showBackground = true)
 @Composable
 private fun HomeHeaderPreview() {
-    VoxcinaTheme {
-        HomeHeader(
-            hasNotifications = true,
-            cartItemCount = 3
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun HomeHeaderNoNotificationsPreview() {
-    VoxcinaTheme {
-        HomeHeader(
-            hasNotifications = false,
-            cartItemCount = 0
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun HomeHeaderManyItemsPreview() {
-    VoxcinaTheme {
-        HomeHeader(
-            hasNotifications = true,
-            cartItemCount = 150
-        )
-    }
+    VoxcinaTheme { HomeHeader(hasNotifications = true, cartItemCount = 3) }
 }

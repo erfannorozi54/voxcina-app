@@ -86,6 +86,7 @@ fun HomeScreen(
     
     HomeScreenContent(
         uiState = uiState,
+        userName = viewModel.userName,
         onRefresh = { viewModel.onEvent(HomeEvent.Refresh) },
         onRetryAll = { viewModel.onEvent(HomeEvent.RetryAll) },
         onRetrySection = { section -> viewModel.onEvent(HomeEvent.RetrySection(section)) },
@@ -98,7 +99,9 @@ fun HomeScreen(
         onNotificationClick = onNotificationClick,
         onCartClick = onCartClick,
         onBottomNavClick = onBottomNavClick,
-        onAddToCart = { /* TODO: Implement add to cart */ }
+        onAddToCart = { product, size -> 
+            viewModel.onEvent(HomeEvent.AddToCart(product, size))
+        }
     )
 }
 
@@ -110,6 +113,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     uiState: HomeUiState,
+    userName: String? = null,
     onRefresh: () -> Unit,
     onRetryAll: () -> Unit,
     onRetrySection: (HomeSection) -> Unit,
@@ -122,9 +126,8 @@ fun HomeScreenContent(
     onNotificationClick: () -> Unit,
     onCartClick: () -> Unit,
     onBottomNavClick: (BottomNavDestination) -> Unit,
-    onAddToCart: (Product) -> Unit
+    onAddToCart: (product: Product, size: String) -> Unit
 ) {
-    // RTL layout direction (Requirement 8.1)
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Box(
             modifier = Modifier
@@ -133,12 +136,10 @@ fun HomeScreenContent(
         ) {
             when (uiState) {
                 is HomeUiState.Loading -> {
-                    // Show shimmer loading state (Requirement 7.1)
                     ShimmerHomeContent()
                 }
                 
                 is HomeUiState.Error -> {
-                    // Show full-screen error state (Requirement 7.3)
                     FullScreenErrorState(
                         title = stringResource(R.string.error_full_screen_title),
                         message = uiState.message,
@@ -147,9 +148,9 @@ fun HomeScreenContent(
                 }
                 
                 is HomeUiState.Success -> {
-                    // Show success state with pull-to-refresh (Requirement 7.4)
                     HomeSuccessContent(
                         state = uiState,
+                        userName = userName,
                         onRefresh = onRefresh,
                         onRetrySection = onRetrySection,
                         onCategoryClick = onCategoryClick,
@@ -165,7 +166,6 @@ fun HomeScreenContent(
                 }
             }
             
-            // Bottom navigation bar (always visible except in error state)
             if (uiState !is HomeUiState.Error) {
                 BottomNavBar(
                     selectedDestination = BottomNavDestination.HOME,
@@ -188,6 +188,7 @@ fun HomeScreenContent(
 @Composable
 private fun HomeSuccessContent(
     state: HomeUiState.Success,
+    userName: String? = null,
     onRefresh: () -> Unit,
     onRetrySection: (HomeSection) -> Unit,
     onCategoryClick: (String) -> Unit,
@@ -198,7 +199,7 @@ private fun HomeSuccessContent(
     onSearchClick: () -> Unit,
     onNotificationClick: () -> Unit,
     onCartClick: () -> Unit,
-    onAddToCart: (Product) -> Unit
+    onAddToCart: (product: Product, size: String) -> Unit
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
     val scrollState = rememberScrollState()
@@ -213,18 +214,17 @@ private fun HomeSuccessContent(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(bottom = 80.dp), // Space for bottom navigation
+                .padding(bottom = 80.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Header with user info and action buttons
             HomeHeader(
+                userName = userName,
                 hasNotifications = state.notificationCount > 0,
                 cartItemCount = state.cartItemCount,
                 onNotificationClick = onNotificationClick,
                 onCartClick = onCartClick
             )
             
-            // Search bar (read-only, navigates to search screen)
             SearchBar(
                 value = "",
                 onValueChange = {},
@@ -234,13 +234,11 @@ private fun HomeSuccessContent(
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // Hero Carousel Section
             HeroCarouselSection(
                 sectionState = state.heroImages,
                 onRetry = { onRetrySection(HomeSection.HERO_IMAGES) }
             )
             
-            // Category Section
             CategorySectionContent(
                 sectionState = state.categories,
                 onCategoryClick = onCategoryClick,
@@ -248,16 +246,15 @@ private fun HomeSuccessContent(
                 onRetry = { onRetrySection(HomeSection.CATEGORIES) }
             )
             
-            // Flash Sale Section (conditional visibility)
             FlashSaleSectionContent(
                 sectionState = state.flashSaleProducts,
                 endTimeMillis = state.flashSaleEndTime,
                 onProductClick = onProductClick,
+                onAddToCart = onAddToCart,
                 onViewAllClick = onViewAllFlashSale,
                 onRetry = { onRetrySection(HomeSection.FLASH_SALE) }
             )
             
-            // Recommended Products Section
             RecommendedProductsSectionContent(
                 sectionState = state.recommendedProducts,
                 onProductClick = onProductClick,
@@ -265,7 +262,6 @@ private fun HomeSuccessContent(
                 onRetry = { onRetrySection(HomeSection.RECOMMENDED_PRODUCTS) }
             )
             
-            // Recently Viewed Section (conditional visibility)
             if (state.showRecentlyViewed) {
                 RecentlyViewedSection(
                     products = state.recentlyViewedProducts,
@@ -345,25 +341,22 @@ private fun FlashSaleSectionContent(
     sectionState: HomeSectionState<List<Product>>,
     endTimeMillis: Long,
     onProductClick: (productId: String, colorHex: String) -> Unit,
+    onAddToCart: (product: Product, size: String) -> Unit,
     onViewAllClick: () -> Unit,
     onRetry: () -> Unit
 ) {
     when (sectionState) {
         is HomeSectionState.Loading -> {
-            ShimmerFlashSaleSection(
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+            ShimmerFlashSaleSection(modifier = Modifier.padding(horizontal = 16.dp))
         }
-        is HomeSectionState.Error -> {
-            // Don't show error for flash sale - it's optional
-        }
+        is HomeSectionState.Error -> { }
         is HomeSectionState.Success -> {
-            // Only show if products exist (Requirement 4.7)
             if (sectionState.data.isNotEmpty()) {
                 FlashSaleSection(
                     products = sectionState.data,
                     endTimeMillis = endTimeMillis,
                     onProductClick = onProductClick,
+                    onAddToCart = onAddToCart,
                     onViewAllClick = onViewAllClick,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
@@ -372,14 +365,11 @@ private fun FlashSaleSectionContent(
     }
 }
 
-/**
- * Recommended products section with loading/error/success states.
- */
 @Composable
 private fun RecommendedProductsSectionContent(
     sectionState: HomeSectionState<List<Product>>,
     onProductClick: (productId: String, colorHex: String) -> Unit,
-    onAddToCart: (Product) -> Unit,
+    onAddToCart: (product: Product, size: String) -> Unit,
     onRetry: () -> Unit
 ) {
     when (sectionState) {
@@ -397,7 +387,7 @@ private fun RecommendedProductsSectionContent(
             RecommendedProductsSection(
                 products = sectionState.data,
                 onProductClick = onProductClick,
-                onAddToCartClick = onAddToCart
+                onAddToCart = onAddToCart
             )
         }
     }
@@ -423,7 +413,7 @@ private fun HomeScreenLoadingPreview() {
             onNotificationClick = {},
             onCartClick = {},
             onBottomNavClick = {},
-            onAddToCart = {}
+            onAddToCart = { _, _ -> }
         )
     }
 }
@@ -449,7 +439,7 @@ private fun HomeScreenErrorPreview() {
             onNotificationClick = {},
             onCartClick = {},
             onBottomNavClick = {},
-            onAddToCart = {}
+            onAddToCart = { _, _ -> }
         )
     }
 }

@@ -3,8 +3,10 @@ package com.voxcina.shop.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.voxcina.shop.data.local.RecentlyViewedDataSource
+import com.voxcina.shop.data.local.TokenManager
 import com.voxcina.shop.data.repository.HomeRepository
 import com.voxcina.shop.domain.model.*
+import com.voxcina.shop.domain.repository.CartRepository
 import com.voxcina.shop.util.AppError
 import com.voxcina.shop.util.HomeError
 import com.voxcina.shop.util.Result
@@ -17,41 +19,47 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * ViewModel for the Home Screen.
- * Manages UI state and handles data loading for all home screen sections.
- *
- * Requirements: 2.1, 3.1, 4.1, 5.1, 7.4, 10.1
- */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    private val recentlyViewedDataSource: RecentlyViewedDataSource
+    private val recentlyViewedDataSource: RecentlyViewedDataSource,
+    private val tokenManager: TokenManager,
+    private val cartRepository: CartRepository
 ) : ViewModel() {
 
     companion object {
-        // Flash sale end time - 24 hours from now (in production, this would come from API)
         private const val FLASH_SALE_DURATION_MS = 24 * 60 * 60 * 1000L
     }
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    
+    val userName: String? get() = tokenManager.getUserName()
 
     init {
         loadHomeData()
     }
 
-    /**
-     * Handles events from the UI.
-     */
     fun onEvent(event: HomeEvent) {
         when (event) {
             is HomeEvent.Refresh -> refresh()
             is HomeEvent.RetrySection -> retrySection(event.section)
             is HomeEvent.RetryAll -> loadHomeData()
             is HomeEvent.TrackProductView -> addToRecentlyViewed(event.product)
-            // Navigation events are handled by the UI layer
-            else -> { /* Navigation events handled by UI */ }
+            is HomeEvent.AddToCart -> addToCart(event.product, event.size)
+            else -> { }
+        }
+    }
+    
+    private fun addToCart(product: Product, size: String) {
+        viewModelScope.launch {
+            val variant = CartVariant(
+                size = size,
+                color = product.colorVariant.color,
+                colorName = product.colorVariant.colorName,
+                sku = product.colorVariant.sizes.find { it.size == size }?.sku ?: ""
+            )
+            cartRepository.addItem(product.productId, 1, variant)
         }
     }
 

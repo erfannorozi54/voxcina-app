@@ -26,12 +26,12 @@ class LoginWithPasswordUseCase @Inject constructor(
     suspend operator fun invoke(phone: String, password: String): Result<User> {
         return when (val result = authRepository.login(phone, password)) {
             is Result.Success -> {
-                // Store tokens securely (Requirement 3.3)
+                // Store tokens and user name securely
                 tokenManager.saveTokens(
                     accessToken = result.data.token,
                     refreshToken = result.data.refreshToken
                 )
-                // Map to domain model
+                tokenManager.saveUserName(result.data.name)
                 Result.Success(
                     User(
                         id = result.data.id,

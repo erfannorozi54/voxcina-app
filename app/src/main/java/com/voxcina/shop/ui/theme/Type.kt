@@ -9,37 +9,82 @@ import androidx.compose.ui.unit.sp
 import com.voxcina.shop.R
 
 /**
- * VazirMatn font family for Persian number display.
- * Used specifically for phone numbers and numeric inputs.
+ * VazirMatn font family - Modern Persian font with excellent readability.
+ * Supports Persian digits and all Persian characters.
  */
 val VazirMatnFamily = FontFamily(
     Font(R.font.vazirmatn_regular, FontWeight.Normal),
+    Font(R.font.vazirmatn_regular, FontWeight.Medium),
+    Font(R.font.vazirmatn_bold, FontWeight.SemiBold),
     Font(R.font.vazirmatn_bold, FontWeight.Bold)
 )
 
-// Set of Material typography styles to start with
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
+    displayLarge = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 30.sp
+    ),
+    displayMedium = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp
+    ),
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 15.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = VazirMatnFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        fontSize = 14.sp,
+        lineHeight = 22.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.sp,
+        lineHeight = 20.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 13.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = VazirMatnFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp
     ),
     labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = VazirMatnFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 11.sp
     )
-    */
 )

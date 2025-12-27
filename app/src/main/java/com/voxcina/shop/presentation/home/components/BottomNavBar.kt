@@ -20,8 +20,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.ripple
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,12 +36,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.voxcina.shop.ui.components.BadgeIcon
 import com.voxcina.shop.ui.components.GlassBottomNavigation
 import com.voxcina.shop.ui.theme.Destructive
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.Secondary
 import com.voxcina.shop.ui.theme.VoxcinaTheme
-import com.voxcina.shop.util.PersianDigitConverter
 
 /**
  * Navigation destinations for the bottom navigation bar.
@@ -126,11 +124,14 @@ fun BottomNavBar(
 
 /**
  * Individual navigation item with icon, label, and optional badge.
+ * Uses BadgeIcon component for cart to show item count badge.
  * 
  * @param destination The navigation destination this item represents
  * @param isSelected Whether this item is currently selected
  * @param badgeCount Badge count to display (0 = no badge)
  * @param onClick Callback when item is tapped
+ * 
+ * Requirements: 8.2, 8.3, 8.4
  */
 @Composable
 private fun BottomNavItem(
@@ -162,21 +163,31 @@ private fun BottomNavItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // Icon with optional badge
-        BadgedBox(
-            badge = {
-                if (badgeCount > 0) {
-                    CartBadge(count = badgeCount)
-                }
+        // Icon with optional badge - use BadgeIcon for cart
+        when {
+            destination == BottomNavDestination.CART -> {
+                // Use BadgeIcon component for cart with badge support
+                BadgeIcon(
+                    icon = icon,
+                    contentDescription = null,
+                    badgeCount = if (badgeCount > 0) badgeCount else null,
+                    iconSize = 24.dp,
+                    iconTint = animatedColor,
+                    badgeColor = Destructive,
+                    badgeTextColor = Color.White,
+                    badgeOffsetX = (-4).dp,
+                    badgeOffsetY = (-4).dp
+                )
             }
-        ) {
-            // Use custom category icon for Categories destination
-            if (destination == BottomNavDestination.CATEGORIES) {
+            destination == BottomNavDestination.CATEGORIES -> {
+                // Use custom category icon
                 CategoryIcon(
                     isSelected = isSelected,
                     tint = animatedColor
                 )
-            } else {
+            }
+            else -> {
+                // Standard icon for other destinations
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
@@ -205,33 +216,6 @@ private fun BottomNavItem(
     }
 }
 
-
-/**
- * Cart badge displaying item count in Persian digits.
- * Shows "۹۹+" if count exceeds 99.
- * 
- * @param count Number of items to display
- * 
- * Requirements: 6.4
- */
-@Composable
-private fun CartBadge(count: Int) {
-    Badge(
-        containerColor = Destructive,
-        contentColor = Color.White
-    ) {
-        val displayText = if (count > 99) {
-            "۹۹+"
-        } else {
-            PersianDigitConverter.toPersianDigits(count.toString())
-        }
-        Text(
-            text = displayText,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
 
 /**
  * Custom category icon using a grid pattern.

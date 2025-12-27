@@ -34,7 +34,7 @@ fun RecommendedProductsSection(
     products: List<Product>,
     modifier: Modifier = Modifier,
     onProductClick: (productId: String, colorHex: String) -> Unit = { _, _ -> },
-    onAddToCartClick: (Product) -> Unit = {}
+    onAddToCart: (product: Product, size: String) -> Unit = { _, _ -> }
 ) {
     if (products.isEmpty()) return
     
@@ -42,7 +42,6 @@ fun RecommendedProductsSection(
         Column(
             modifier = modifier.fillMaxWidth()
         ) {
-            // Section header with title "پیشنهادهای برای شما"
             SectionHeader(
                 title = stringResource(R.string.recommended_products_title),
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -51,14 +50,13 @@ fun RecommendedProductsSection(
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            // 2-column lazy grid layout
             val rowCount = (products.size + 1) / 2
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.height((rowCount * 280).dp)
+                modifier = Modifier.height((rowCount * 300).dp)
             ) {
                 items(
                     items = products,
@@ -66,10 +64,9 @@ fun RecommendedProductsSection(
                 ) { product ->
                     ProductCard(
                         product = product,
-                        onClick = { 
-                            onProductClick(product.productId, product.colorVariant.color) 
-                        },
-                        onFavoriteClick = { /* TODO: Implement favorite */ }
+                        onClick = { onProductClick(product.productId, product.colorVariant.color) },
+                        onFavoriteClick = { /* TODO: Implement favorite */ },
+                        onAddToCart = { size -> onAddToCart(product, size) }
                     )
                 }
             }

@@ -19,6 +19,7 @@ import androidx.navigation.navArgument
 import com.voxcina.shop.BuildConfig
 import com.voxcina.shop.data.local.TokenManager
 import com.voxcina.shop.presentation.auth.AuthScreen
+import com.voxcina.shop.presentation.cart.CartScreen
 import com.voxcina.shop.presentation.home.HomeScreen
 import com.voxcina.shop.presentation.home.components.BottomNavDestination
 import com.voxcina.shop.presentation.onboarding.OnboardingScreen
@@ -228,8 +229,38 @@ fun NavGraph(
         
         // Cart screen
         composable(route = Screen.Cart.route) {
-            // TODO: Implement CartScreen
-            PlaceholderScreen(title = "سبد خرید")
+            CartScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onCheckout = {
+                    // TODO: Navigate to checkout screen
+                },
+                onStartShopping = {
+                    // Navigate to home screen when user clicks "Start Shopping" in empty cart
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Cart.route) { inclusive = true }
+                    }
+                },
+                onBottomNavClick = { destination ->
+                    when (destination) {
+                        BottomNavDestination.HOME -> {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Cart.route) { inclusive = true }
+                            }
+                        }
+                        BottomNavDestination.CATEGORIES -> {
+                            navController.navigate(Screen.Categories.route)
+                        }
+                        BottomNavDestination.CART -> {
+                            // Already on cart, do nothing
+                        }
+                        BottomNavDestination.PROFILE -> {
+                            navController.navigate(Screen.Profile.route)
+                        }
+                    }
+                }
+            )
         }
         
         // Profile screen

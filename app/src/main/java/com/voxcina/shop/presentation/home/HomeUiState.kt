@@ -195,6 +195,11 @@ sealed class HomeEvent {
      * Requirements: 10.1
      */
     data class TrackProductView(val product: RecentlyViewedProduct) : HomeEvent()
+    
+    /**
+     * User added a product to cart with selected size.
+     */
+    data class AddToCart(val product: Product, val size: String) : HomeEvent()
 }
 
 /**

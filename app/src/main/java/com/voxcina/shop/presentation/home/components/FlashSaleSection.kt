@@ -85,20 +85,19 @@ fun FlashSaleSection(
     endTimeMillis: Long,
     modifier: Modifier = Modifier,
     onProductClick: (productId: String, colorHex: String) -> Unit = { _, _ -> },
+    onAddToCart: (product: Product, size: String) -> Unit = { _, _ -> },
     onViewAllClick: () -> Unit = {}
 ) {
-    // Conditional visibility: hide if no products (Requirement 4.7)
     if (products.isEmpty()) return
     
     var countdownState by remember { 
         mutableStateOf(CountdownState(0, 0, 0, 0, false)) 
     }
     
-    // Countdown timer with real-time updates
     CountdownTimer(
         endTimeMillis = endTimeMillis,
         onTick = { state -> countdownState = state },
-        onFinish = { /* Flash sale ended */ }
+        onFinish = { }
     )
     
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -114,7 +113,6 @@ fun FlashSaleSection(
                 .padding(vertical = 16.dp)
         ) {
             Column {
-                // Flash sale header with fire icon, title, and countdown
                 FlashSaleHeader(
                     countdownState = countdownState,
                     modifier = Modifier.padding(horizontal = 16.dp)
@@ -122,7 +120,6 @@ fun FlashSaleSection(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                // Horizontally scrollable product row
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -133,21 +130,12 @@ fun FlashSaleSection(
                     ) { product ->
                         ProductCard(
                             product = product,
-                            onClick = { 
-                                onProductClick(product.productId, product.colorVariant.color) 
-                            },
-                            onFavoriteClick = { /* TODO */ },
+                            onClick = { onProductClick(product.productId, product.colorVariant.color) },
+                            onFavoriteClick = { },
+                            onAddToCart = { size -> onAddToCart(product, size) },
                             modifier = Modifier.width(160.dp)
                         )
                     }
-                    
-                    // View All glass card at the end
-                    // TODO: Re-implement ViewAllGlassCard
-                    // item {
-                    //     ViewAllGlassCard(
-                    //         onClick = onViewAllClick
-                    //     )
-                    // }
                 }
             }
         }

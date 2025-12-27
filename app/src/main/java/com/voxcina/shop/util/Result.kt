@@ -123,3 +123,41 @@ sealed class HomeError : AppError() {
         override val message: String = "خطا در بارگذاری برندها"
     }
 }
+
+
+/**
+ * Cart-specific errors for shopping cart operations.
+ */
+sealed class CartError : AppError() {
+    data object CartLoadFailed : CartError() {
+        override val message: String = "خطا در بارگذاری سبد خرید"
+    }
+
+    data object ItemUpdateFailed : CartError() {
+        override val message: String = "خطا در بروزرسانی تعداد"
+    }
+
+    data object ItemRemoveFailed : CartError() {
+        override val message: String = "خطا در حذف محصول"
+    }
+
+    data object ClearCartFailed : CartError() {
+        override val message: String = "خطا در خالی کردن سبد خرید"
+    }
+
+    data object InsufficientStock : CartError() {
+        override val message: String = "موجودی کافی نیست"
+    }
+
+    data class DiscountInvalid(val reason: String) : CartError() {
+        override val message: String = "کد تخفیف نامعتبر است"
+    }
+
+    data class DiscountExpired(val code: String) : CartError() {
+        override val message: String = "کد تخفیف منقضی شده است"
+    }
+
+    data class DiscountMinOrderNotMet(val minAmount: Long) : CartError() {
+        override val message: String = "حداقل مبلغ سفارش رعایت نشده است"
+    }
+}

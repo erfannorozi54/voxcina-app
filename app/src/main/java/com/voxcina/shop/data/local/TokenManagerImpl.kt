@@ -21,6 +21,7 @@ class TokenManagerImpl @Inject constructor(
         private const val PREFS_FILE_NAME = "voxcina_secure_prefs"
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
+        private const val KEY_USER_NAME = "user_name"
     }
     
     private val encryptedPrefs: SharedPreferences by lazy {
@@ -60,10 +61,19 @@ class TokenManagerImpl @Inject constructor(
         encryptedPrefs.edit()
             .remove(KEY_ACCESS_TOKEN)
             .remove(KEY_REFRESH_TOKEN)
+            .remove(KEY_USER_NAME)
             .apply()
     }
     
     override fun isLoggedIn(): Boolean {
         return !getAccessToken().isNullOrBlank()
+    }
+    
+    override fun saveUserName(name: String) {
+        encryptedPrefs.edit().putString(KEY_USER_NAME, name).apply()
+    }
+    
+    override fun getUserName(): String? {
+        return encryptedPrefs.getString(KEY_USER_NAME, null)
     }
 }
