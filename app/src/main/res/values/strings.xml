@@ -7,6 +7,38 @@
     <string name="onboarding_enter_store">ورود به فروشگاه</string>
     <string name="onboarding_version_prefix">نسخه </string>
 
+    <!-- Auth Screen -->
+    <string name="auth_phone_placeholder">شماره موبایل</string>
+    <string name="auth_password_placeholder">رمز عبور</string>
+    <string name="auth_password_show">نمایش رمز</string>
+    <string name="auth_password_hide">مخفی کردن رمز</string>
+    <string name="auth_continue">ادامه</string>
+    <string name="auth_login">ورود</string>
+    <string name="auth_login_with_otp">ورود با کد تأیید</string>
+    <string name="auth_forgot_password">فراموشی رمز عبور</string>
+    <string name="auth_first_name">نام</string>
+    <string name="auth_last_name">نام خانوادگی</string>
+    <string name="auth_otp_placeholder">کد تأیید</string>
+    <string name="auth_resend_otp">ارسال مجدد کد</string>
+    <string name="auth_new_password">رمز عبور جدید</string>
+    <string name="auth_confirm_password">تکرار رمز عبور</string>
+    <string name="auth_submit">ثبت</string>
+    <string name="auth_phone_entry_title">ورود یا ثبت‌نام</string>
+    <string name="auth_phone_entry_subtitle">شماره موبایل خود را وارد کنید</string>
+    <string name="auth_login_title">ورود به حساب</string>
+    <string name="auth_login_subtitle">رمز عبور خود را وارد کنید</string>
+    <string name="auth_signup_title">ثبت‌نام</string>
+    <string name="auth_signup_subtitle">اطلاعات خود را وارد کنید</string>
+    <string name="auth_otp_title">تأیید شماره موبایل</string>
+    <string name="auth_otp_subtitle">کد ارسال شده به %1$s را وارد کنید</string>
+    <string name="auth_resend_otp_countdown">ارسال مجدد تا %1$s</string>
+    <string name="auth_password_creation_title">ایجاد رمز عبور</string>
+    <string name="auth_password_creation_subtitle">یک رمز عبور قوی انتخاب کنید</string>
+    <string name="auth_reset_password_title">تغییر رمز عبور</string>
+    <string name="auth_reset_password_subtitle">رمز عبور جدید خود را وارد کنید</string>
+    <string name="auth_password_hint">حداقل ۸ کاراکتر با حروف بزرگ، کوچک و عدد</string>
+    <string name="auth_back">بازگشت</string>
+
     <!-- Onboarding Page 1 -->
     <string name="onboarding_page1_overlay_title">کالکشن جدید</string>
     <string name="onboarding_page1_overlay_subtitle">تخفیف‌های ویژه فصل</string>

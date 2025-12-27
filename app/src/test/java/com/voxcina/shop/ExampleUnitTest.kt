@@ -1,17 +1,14 @@
 package com.voxcina.shop
 
-import org.junit.Test
-
-import org.junit.Assert.*
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 
 /**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * Example local unit test using Kotest.
+ * Verifies the test infrastructure is working correctly.
  */
-class ExampleUnitTest {
-    @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+class ExampleUnitTest : FunSpec({
+    test("addition is correct") {
+        (2 + 2) shouldBe 4
     }
-}
+})

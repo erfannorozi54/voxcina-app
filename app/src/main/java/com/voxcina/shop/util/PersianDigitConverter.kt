@@ -1,7 +1,7 @@
 package com.voxcina.shop.util
 
 /**
- * Utility object for converting Latin digits to Persian digits
+ * Utility object for converting between Latin and Persian digits
  * and formatting version strings in Persian format.
  */
 object PersianDigitConverter {
@@ -21,6 +21,30 @@ object PersianDigitConverter {
             val index = latinDigits.indexOf(char)
             if (index >= 0) {
                 builder.append(persianDigits[index])
+            } else {
+                builder.append(char)
+            }
+        }
+        return builder.toString()
+    }
+
+    /**
+     * Alias for toPersianDigits for consistency with other naming conventions.
+     */
+    fun convertToPersian(input: String): String = toPersianDigits(input)
+
+    /**
+     * Converts all Persian digits (۰-۹) in a string to Latin digits (0-9).
+     *
+     * @param input The string containing Persian digits to convert
+     * @return A new string with all Persian digits replaced by Latin digits
+     */
+    fun convertPersianToLatin(input: String): String {
+        val builder = StringBuilder(input.length)
+        for (char in input) {
+            val index = persianDigits.indexOf(char)
+            if (index >= 0) {
+                builder.append(latinDigits[index])
             } else {
                 builder.append(char)
             }

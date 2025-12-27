@@ -17,6 +17,22 @@ coil = "3.2.0"              # Latest stable (May 2025)
 media3 = "1.2.1"            # ExoPlayer for video playback
 navigationCompose = "2.7.6" # Compose Navigation
 
+# Auth & DI dependencies
+hilt = "2.51.1"
+hiltNavigationCompose = "1.2.0"
+okhttp = "4.12.0"
+securityCrypto = "1.1.0-alpha06"
+ksp = "2.0.21-1.0.27"
+
+# Google Play Services
+playServicesAuth = "21.3.0"
+
+# Testing
+kotest = "5.9.1"
+kotestExtensionsProperty = "5.9.1"
+mockk = "1.13.12"
+coroutinesTest = "1.8.1"
+
 [libraries]
 # Your existing libraries
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,7 +70,31 @@ androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.re
 # Navigation Compose
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
+# Hilt Dependency Injection
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
+# OkHttp
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+# Security - EncryptedSharedPreferences
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
+
+# Google Play Services - SMS Retriever
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+
+# Testing - Kotest
+kotest-runner-junit5 = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "kotest" }
+kotest-assertions-core = { group = "io.kotest", name = "kotest-assertions-core", version.ref = "kotest" }
+kotest-property = { group = "io.kotest", name = "kotest-property", version.ref = "kotestExtensionsProperty" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

@@ -103,6 +103,7 @@ fun OnboardingImageCard(
 /**
  * Glassmorphism style overlay card with frosted glass effect.
  * Contains a shopping bag icon, title, and subtitle.
+ * Follows Android standard glassmorphism design with proper layering.
  */
 @Composable
 private fun GlassOverlayCard(
@@ -120,16 +121,16 @@ private fun GlassOverlayCard(
             modifier = Modifier
                 .matchParentSize()
                 .background(
-                    color = Color.White.copy(alpha = 0.25f),
+                    color = Color.White.copy(alpha = 0.15f),
                     shape = RoundedCornerShape(16.dp)
                 )
                 .border(
                     width = 1.dp,
-                    color = Color.White.copy(alpha = 0.4f),
+                    color = Color.White.copy(alpha = 0.3f),
                     shape = RoundedCornerShape(16.dp)
                 )
                 .blur(
-                    radius = 20.dp,
+                    radius = 16.dp,
                     edgeTreatment = BlurredEdgeTreatment.Unbounded
                 )
         )
@@ -139,12 +140,12 @@ private fun GlassOverlayCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = Color.White.copy(alpha = 0.2f),
+                    color = Color.White.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(16.dp)
                 )
                 .border(
                     width = 1.dp,
-                    color = Color.White.copy(alpha = 0.35f),
+                    color = Color.White.copy(alpha = 0.25f),
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
