@@ -98,3 +98,28 @@ sealed class AuthError : AppError() {
         override val message: String = "شماره تلفن نامعتبر است"
     }
 }
+
+/**
+ * Home screen specific errors.
+ */
+sealed class HomeError : AppError() {
+    data object HeroImagesLoadFailed : HomeError() {
+        override val message: String = "خطا در بارگذاری بنرها"
+    }
+
+    data object CategoriesLoadFailed : HomeError() {
+        override val message: String = "خطا در بارگذاری دسته‌بندی‌ها"
+    }
+
+    data object ProductsLoadFailed : HomeError() {
+        override val message: String = "خطا در بارگذاری محصولات"
+    }
+
+    data object FlashSaleLoadFailed : HomeError() {
+        override val message: String = "خطا در بارگذاری پیشنهادات شگفت‌انگیز"
+    }
+
+    data object BrandsLoadFailed : HomeError() {
+        override val message: String = "خطا در بارگذاری برندها"
+    }
+}

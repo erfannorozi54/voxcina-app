@@ -1,13 +1,20 @@
 package com.voxcina.shop.util
 
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
+
 /**
  * Utility object for converting between Latin and Persian digits
- * and formatting version strings in Persian format.
+ * and formatting version strings and prices in Persian format.
  */
 object PersianDigitConverter {
 
     private val latinDigits = charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
     private val persianDigits = charArrayOf('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹')
+    
+    // Persian thousand separator
+    private const val PERSIAN_THOUSAND_SEPARATOR = '٬'
 
     /**
      * Converts all Latin digits (0-9) in a string to Persian digits (۰-۹).
@@ -61,5 +68,32 @@ object PersianDigitConverter {
     fun formatVersionPersian(version: String): String {
         val persianVersion = toPersianDigits(version)
         return "نسخه $persianVersion"
+    }
+
+    /**
+     * Formats a price with thousand separators using Persian thousand separator (٬).
+     *
+     * @param price The price value as Long
+     * @return Formatted price string with Persian digits and thousand separators
+     */
+    fun formatPrice(price: Long): String {
+        if (price < 0) return toPersianDigits("0")
+        
+        val symbols = DecimalFormatSymbols(Locale.US).apply {
+            groupingSeparator = PERSIAN_THOUSAND_SEPARATOR
+        }
+        val formatter = DecimalFormat("#,###", symbols)
+        val formatted = formatter.format(price)
+        return toPersianDigits(formatted)
+    }
+
+    /**
+     * Formats a price with thousand separators and adds "تومان" suffix.
+     *
+     * @param price The price value as Long
+     * @return Formatted price string with Persian digits, thousand separators, and "تومان" suffix
+     */
+    fun formatPriceWithSuffix(price: Long): String {
+        return "${formatPrice(price)} تومان"
     }
 }

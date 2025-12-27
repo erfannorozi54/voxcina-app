@@ -6,6 +6,7 @@ import com.voxcina.shop.BuildConfig
 import com.voxcina.shop.data.remote.ApiClient
 import com.voxcina.shop.data.remote.AuthApi
 import com.voxcina.shop.data.remote.AuthInterceptor
+import com.voxcina.shop.data.remote.HomeApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,5 +54,11 @@ object NetworkModule {
     @Singleton
     fun provideAuthApi(retrofit: Retrofit): AuthApi {
         return retrofit.create(AuthApi::class.java)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideHomeApi(retrofit: Retrofit): HomeApi {
+        return retrofit.create(HomeApi::class.java)
     }
 }

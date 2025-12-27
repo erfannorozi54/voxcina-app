@@ -12,11 +12,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.voxcina.shop.BuildConfig
 import com.voxcina.shop.data.local.TokenManager
 import com.voxcina.shop.presentation.auth.AuthScreen
+import com.voxcina.shop.presentation.home.HomeScreen
+import com.voxcina.shop.presentation.home.components.BottomNavDestination
 import com.voxcina.shop.presentation.onboarding.OnboardingScreen
 import com.voxcina.shop.presentation.splash.SplashScreen
 import com.voxcina.shop.ui.theme.Primary
@@ -37,8 +41,37 @@ sealed class Screen(val route: String) {
     /** Authentication screen - login/signup flows */
     data object Auth : Screen("auth")
     
-    /** Main screen - displays after authentication */
-    data object Main : Screen("main")
+    /** Home screen - main landing page after authentication */
+    data object Home : Screen("home")
+    
+    /** Product detail screen with productId and colorHex parameters */
+    data object ProductDetail : Screen("product/{productId}?color={colorHex}") {
+        fun createRoute(productId: String, colorHex: String): String {
+            return "product/$productId?color=$colorHex"
+        }
+    }
+    
+    /** Categories list screen */
+    data object Categories : Screen("categories")
+    
+    /** Category products screen with categoryId parameter */
+    data object CategoryProducts : Screen("category/{categoryId}") {
+        fun createRoute(categoryId: String): String {
+            return "category/$categoryId"
+        }
+    }
+    
+    /** Cart screen */
+    data object Cart : Screen("cart")
+    
+    /** Profile screen */
+    data object Profile : Screen("profile")
+    
+    /** Search screen */
+    data object Search : Screen("search")
+    
+    /** Flash sale products screen */
+    data object FlashSale : Screen("flash-sale")
 }
 
 /**
@@ -69,8 +102,8 @@ fun NavGraph(
                 onSplashComplete = {
                     // Determine destination based on onboarding and auth state
                     val destination = when {
-                        // If user is already authenticated, go to main
-                        tokenManager.isLoggedIn() -> Screen.Main.route
+                        // If user is already authenticated, go to home
+                        tokenManager.isLoggedIn() -> Screen.Home.route
                         // If onboarding not completed, show onboarding
                         !onboardingManager.isOnboardingCompleted() -> Screen.Onboarding.route
                         // Otherwise, go to auth screen
@@ -89,7 +122,7 @@ fun NavGraph(
                 onOnboardingComplete = {
                     // Mark onboarding as completed
                     onboardingManager.setOnboardingCompleted()
-                    // Navigate to auth screen (not main) and remove onboarding from back stack
+                    // Navigate to auth screen (not home) and remove onboarding from back stack
                     navController.navigate(Screen.Auth.route) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
@@ -101,8 +134,8 @@ fun NavGraph(
         composable(route = Screen.Auth.route) {
             AuthScreen(
                 onAuthSuccess = {
-                    // Navigate to main screen and remove auth from back stack
-                    navController.navigate(Screen.Main.route) {
+                    // Navigate to home screen and remove auth from back stack
+                    navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Auth.route) { inclusive = true }
                     }
                 },
@@ -110,18 +143,121 @@ fun NavGraph(
             )
         }
         
-        composable(route = Screen.Main.route) {
-            MainScreen()
+        composable(route = Screen.Home.route) {
+            HomeScreen(
+                onCategoryClick = { categoryId ->
+                    // Navigate to category products screen (Requirement 3.4)
+                    navController.navigate(Screen.CategoryProducts.createRoute(categoryId))
+                },
+                onProductClick = { productId, colorHex ->
+                    // Navigate to product detail screen (Requirement 5.7)
+                    navController.navigate(Screen.ProductDetail.createRoute(productId, colorHex))
+                },
+                onRecentlyViewedClick = { productId, colorHex ->
+                    // Navigate to product detail screen (Requirement 10.7)
+                    navController.navigate(Screen.ProductDetail.createRoute(productId, colorHex))
+                },
+                onViewAllFlashSale = {
+                    navController.navigate(Screen.FlashSale.route)
+                },
+                onViewAllCategories = {
+                    navController.navigate(Screen.Categories.route)
+                },
+                onSearchClick = {
+                    navController.navigate(Screen.Search.route)
+                },
+                onNotificationClick = {
+                    // TODO: Navigate to notifications screen
+                },
+                onCartClick = {
+                    navController.navigate(Screen.Cart.route)
+                },
+                onBottomNavClick = { destination ->
+                    when (destination) {
+                        BottomNavDestination.HOME -> {
+                            // Already on home, do nothing
+                        }
+                        BottomNavDestination.CATEGORIES -> {
+                            navController.navigate(Screen.Categories.route)
+                        }
+                        BottomNavDestination.CART -> {
+                            navController.navigate(Screen.Cart.route)
+                        }
+                        BottomNavDestination.PROFILE -> {
+                            navController.navigate(Screen.Profile.route)
+                        }
+                    }
+                }
+            )
+        }
+        
+        // Product detail screen with arguments
+        composable(
+            route = Screen.ProductDetail.route,
+            arguments = listOf(
+                navArgument("productId") { type = NavType.StringType },
+                navArgument("colorHex") { 
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            val colorHex = backStackEntry.arguments?.getString("colorHex") ?: ""
+            // TODO: Implement ProductDetailScreen
+            PlaceholderScreen(title = "جزئیات محصول")
+        }
+        
+        // Categories list screen
+        composable(route = Screen.Categories.route) {
+            // TODO: Implement CategoriesScreen
+            PlaceholderScreen(title = "دسته‌بندی‌ها")
+        }
+        
+        // Category products screen with argument
+        composable(
+            route = Screen.CategoryProducts.route,
+            arguments = listOf(
+                navArgument("categoryId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+            // TODO: Implement CategoryProductsScreen
+            PlaceholderScreen(title = "محصولات دسته‌بندی")
+        }
+        
+        // Cart screen
+        composable(route = Screen.Cart.route) {
+            // TODO: Implement CartScreen
+            PlaceholderScreen(title = "سبد خرید")
+        }
+        
+        // Profile screen
+        composable(route = Screen.Profile.route) {
+            // TODO: Implement ProfileScreen
+            PlaceholderScreen(title = "پروفایل")
+        }
+        
+        // Search screen
+        composable(route = Screen.Search.route) {
+            // TODO: Implement SearchScreen
+            PlaceholderScreen(title = "جستجو")
+        }
+        
+        // Flash sale products screen
+        composable(route = Screen.FlashSale.route) {
+            // TODO: Implement FlashSaleScreen
+            PlaceholderScreen(title = "پیشنهادات شگفت‌انگیز")
         }
     }
 }
 
 /**
- * Main screen composable - placeholder for future home screen.
- * Requirements: 11.2
+ * Placeholder screen for screens not yet implemented.
+ * Will be replaced with actual implementations.
  */
 @Composable
-fun MainScreen() {
+private fun PlaceholderScreen(title: String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -129,7 +265,7 @@ fun MainScreen() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "خوش آمدید به وکسینا",
+            text = title,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Primary

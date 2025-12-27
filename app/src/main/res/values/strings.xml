@@ -59,4 +59,42 @@
     <string name="onboarding_page3_title_line1">خرید امن و</string>
     <string name="onboarding_page3_title_line2">تحویل سریع</string>
     <string name="onboarding_page3_description">پرداخت امن با درگاه زیبال، ارسال سریع به سراسر کشور.</string>
+
+    <!-- Home Screen -->
+    <string name="home_welcome">خوش آمدید</string>
+    <string name="home_user_greeting">کاربر عزیز</string>
+    <string name="home_notifications">اعلان‌ها</string>
+    <string name="home_cart">سبد خرید</string>
+    <string name="home_search_placeholder">جستجو در هزاران محصول…</string>
+    <string name="home_search">جستجو</string>
+    <string name="home_categories_title">دسته‌بندی‌ها</string>
+    <string name="home_view_all">مشاهده همه</string>
+    
+    <!-- Flash Sale Section -->
+    <string name="flash_sale_title">شگفت‌انگیز</string>
+    <string name="flash_sale_view_all">مشاهده همه</string>
+    <string name="flash_sale_discount_badge">٪%1$s</string>
+    <string name="flash_sale_original_price">قیمت اصلی</string>
+    <string name="flash_sale_add_to_cart">افزودن به سبد</string>
+    
+    <!-- Recommended Products Section -->
+    <string name="recommended_products_title">پیشنهادهای برای شما</string>
+    <string name="product_add_to_cart">افزودن به سبد</string>
+    <string name="product_rating">امتیاز</string>
+    <string name="product_out_of_stock">ناموجود</string>
+    
+    <!-- Recently Viewed Section -->
+    <string name="recently_viewed_title">بازدید اخیر شما</string>
+    
+    <!-- Error States -->
+    <string name="error_section_load_failed">خطا در بارگذاری</string>
+    <string name="error_retry">تلاش مجدد</string>
+    <string name="error_full_screen_title">خطا در بارگذاری صفحه</string>
+    <string name="error_full_screen_message">متأسفانه در بارگذاری اطلاعات مشکلی پیش آمده است. لطفاً دوباره تلاش کنید.</string>
+    <string name="error_network_title">اتصال به اینترنت</string>
+    <string name="error_network_message">لطفاً اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.</string>
+    <string name="error_hero_images">خطا در بارگذاری بنرها</string>
+    <string name="error_categories">خطا در بارگذاری دسته‌بندی‌ها</string>
+    <string name="error_products">خطا در بارگذاری محصولات</string>
+    <string name="error_flash_sale">خطا در بارگذاری پیشنهادات شگفت‌انگیز</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.voxcina.shop.di
 
+import com.voxcina.shop.data.local.RecentlyViewedDataSource
+import com.voxcina.shop.data.local.RecentlyViewedDataSourceImpl
 import com.voxcina.shop.data.local.TokenManager
 import com.voxcina.shop.data.local.TokenManagerImpl
 import dagger.Binds
@@ -20,4 +22,10 @@ abstract class LocalModule {
     abstract fun bindTokenManager(
         tokenManagerImpl: TokenManagerImpl
     ): TokenManager
+    
+    @Binds
+    @Singleton
+    abstract fun bindRecentlyViewedDataSource(
+        recentlyViewedDataSourceImpl: RecentlyViewedDataSourceImpl
+    ): RecentlyViewedDataSource
 }

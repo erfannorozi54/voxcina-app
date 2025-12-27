@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
  * Contains user info and tokens.
  */
 data class AuthResponse(
-    @SerializedName("_id") val id: String,
+    @SerializedName("id") val id: String?,
     @SerializedName("name") val name: String,
     @SerializedName("phone") val phone: String,
     @SerializedName("token") val token: String,
