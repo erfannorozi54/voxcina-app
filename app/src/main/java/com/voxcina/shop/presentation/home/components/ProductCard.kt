@@ -1,14 +1,12 @@
 package com.voxcina.shop.presentation.home.components
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,19 +26,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
@@ -62,6 +62,7 @@ import com.voxcina.shop.ui.theme.PrimaryDark
 import com.voxcina.shop.ui.theme.VazirMatnFamily
 import com.voxcina.shop.util.DiscountCalculator
 import com.voxcina.shop.util.PersianDigitConverter
+import kotlinx.coroutines.delay
 
 @Composable
 fun ProductCard(
@@ -99,7 +100,7 @@ fun ProductCard(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = onClick
+                onClick = { if (!showSizeSelector) onClick() }
             )
     ) {
         Box(
@@ -110,6 +111,7 @@ fun ProductCard(
         )
         
         Column {
+            // Product Image
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -180,66 +182,53 @@ fun ProductCard(
                 }
             }
             
-            // Product info
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(Color.White.copy(alpha = 0.95f), Color.White.copy(alpha = 0.85f))
+            // Product info section
+            Box(modifier = Modifier.fillMaxWidth()) {
+                // Default product info
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = !showSizeSelector,
+                    enter = fadeIn(tween(200)),
+                    exit = fadeOut(tween(150))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(Color.White.copy(alpha = 0.95f), Color.White.copy(alpha = 0.85f))
+                                )
+                            )
+                            .padding(14.dp)
+                    ) {
+                        Text(
+                            text = product.name,
+                            color = PrimaryDark,
+                            fontSize = 13.sp,
+                            fontFamily = VazirMatnFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            lineHeight = 20.sp
                         )
-                    )
-                    .padding(14.dp)
-            ) {
-                Text(
-                    text = product.name,
-                    color = PrimaryDark,
-                    fontSize = 13.sp,
-                    fontFamily = VazirMatnFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    lineHeight = 20.sp
-                )
-                
-                Spacer(modifier = Modifier.height(4.dp))
-                
-                Text(
-                    text = "${product.colorVariant.colorName} • ${product.brand}",
-                    color = Color.Gray.copy(alpha = 0.8f),
-                    fontSize = 11.sp,
-                    fontFamily = VazirMatnFamily,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                
-                Spacer(modifier = Modifier.height(10.dp))
-                
-                // Price and Add to Cart
-                AnimatedContent(
-                    targetState = showSizeSelector,
-                    transitionSpec = {
-                        (fadeIn(tween(200)) + scaleIn(tween(200), initialScale = 0.9f))
-                            .togetherWith(fadeOut(tween(150)) + scaleOut(tween(150), targetScale = 0.9f))
-                    },
-                    label = "cartAnimation"
-                ) { showSizes ->
-                    if (showSizes) {
-                        SizeSelector(
-                            sizes = product.colorVariant.sizes,
-                            onSizeSelected = { size ->
-                                showSizeSelector = false
-                                onAddToCart(size)
-                            },
-                            onDismiss = { showSizeSelector = false }
+                        
+                        Spacer(modifier = Modifier.height(4.dp))
+                        
+                        Text(
+                            text = "${product.colorVariant.colorName} • ${product.brand}",
+                            color = Color.Gray.copy(alpha = 0.8f),
+                            fontSize = 11.sp,
+                            fontFamily = VazirMatnFamily,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
-                    } else {
+                        
+                        Spacer(modifier = Modifier.height(10.dp))
+                        
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Price
                             Column {
                                 if (product.originalPrice != null && product.originalPrice > product.price) {
                                     Text(
@@ -278,50 +267,135 @@ fun ProductCard(
                         }
                     }
                 }
+                
+                // Size selector overlay - slides up from bottom
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = showSizeSelector,
+                    enter = slideInVertically(tween(300)) { it },
+                    exit = slideOutVertically(tween(250)) { it }
+                ) {
+                    SizeSelectorOverlay(
+                        sizes = product.colorVariant.sizes,
+                        onSizeSelected = { size ->
+                            showSizeSelector = false
+                            onAddToCart(size)
+                        },
+                        onDismiss = { showSizeSelector = false }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun SizeSelector(
+private fun SizeSelectorOverlay(
     sizes: List<SizeVariant>,
     onSizeSelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically
+    var sizesVisible by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(Unit) {
+        delay(150)
+        sizesVisible = true
+    }
+    
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Primary.copy(alpha = 0.95f), Primary)
+                ),
+                RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
+            )
+            .padding(14.dp)
     ) {
-        sizes.forEach { sizeVariant ->
-            val isAvailable = sizeVariant.quantity > 0
+        // Close button row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "انتخاب سایز",
+                color = Color.White,
+                fontSize = 12.sp,
+                fontFamily = VazirMatnFamily,
+                fontWeight = FontWeight.SemiBold
+            )
             Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .height(32.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        if (isAvailable) Primary.copy(alpha = 0.1f) else Color.Gray.copy(alpha = 0.1f)
-                    )
-                    .border(
-                        1.dp,
-                        if (isAvailable) Primary.copy(alpha = 0.3f) else Color.Gray.copy(alpha = 0.2f),
-                        RoundedCornerShape(8.dp)
-                    )
-                    .then(
-                        if (isAvailable) Modifier.clickable { onSizeSelected(sizeVariant.size) }
-                        else Modifier
-                    ),
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.2f))
+                    .clickable { onDismiss() },
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = sizeVariant.size,
-                    color = if (isAvailable) Primary else Color.Gray.copy(alpha = 0.4f),
-                    fontSize = 12.sp,
-                    fontFamily = VazirMatnFamily,
-                    fontWeight = if (isAvailable) FontWeight.SemiBold else FontWeight.Normal
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = "بستن",
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
                 )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        // Size buttons with staggered fade-in
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            sizes.forEachIndexed { index, sizeVariant ->
+                val isAvailable = sizeVariant.quantity > 0
+                var itemVisible by remember { mutableStateOf(false) }
+                
+                LaunchedEffect(sizesVisible) {
+                    if (sizesVisible) {
+                        delay(index * 50L)
+                        itemVisible = true
+                    }
+                }
+                
+                val alpha by animateFloatAsState(
+                    targetValue = if (itemVisible) 1f else 0f,
+                    animationSpec = tween(200),
+                    label = "sizeAlpha$index"
+                )
+                val itemScale by animateFloatAsState(
+                    targetValue = if (itemVisible) 1f else 0.7f,
+                    animationSpec = tween(200),
+                    label = "sizeScale$index"
+                )
+                
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(36.dp)
+                        .scale(itemScale)
+                        .alpha(alpha)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            if (isAvailable) Color.White else Color.White.copy(alpha = 0.3f)
+                        )
+                        .then(
+                            if (isAvailable) Modifier.clickable { onSizeSelected(sizeVariant.size) }
+                            else Modifier
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = sizeVariant.size,
+                        color = if (isAvailable) Primary else Color.White.copy(alpha = 0.5f),
+                        fontSize = 13.sp,
+                        fontFamily = VazirMatnFamily,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
