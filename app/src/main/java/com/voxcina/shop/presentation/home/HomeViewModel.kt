@@ -7,6 +7,8 @@ import com.voxcina.shop.data.local.TokenManager
 import com.voxcina.shop.data.repository.HomeRepository
 import com.voxcina.shop.domain.model.*
 import com.voxcina.shop.domain.repository.CartRepository
+import com.voxcina.shop.ui.components.NotificationState
+import com.voxcina.shop.ui.components.NotificationType
 import com.voxcina.shop.util.AppError
 import com.voxcina.shop.util.HomeError
 import com.voxcina.shop.util.Result
@@ -34,7 +36,14 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
     
+    private val _notificationState = MutableStateFlow(NotificationState())
+    val notificationState: StateFlow<NotificationState> = _notificationState.asStateFlow()
+    
     val userName: String? get() = tokenManager.getUserName()
+    
+    fun dismissNotification() {
+        _notificationState.value = _notificationState.value.copy(isVisible = false)
+    }
 
     init {
         loadHomeData()
@@ -59,7 +68,45 @@ class HomeViewModel @Inject constructor(
                 colorName = product.colorVariant.colorName,
                 sku = product.colorVariant.sizes.find { it.size == size }?.sku ?: ""
             )
-            cartRepository.addItem(product.productId, 1, variant)
+            
+            // Optimistically update cart count
+            _uiState.update { state ->
+                if (state is HomeUiState.Success) {
+                    state.copy(cartItemCount = state.cartItemCount + 1)
+                } else state
+            }
+            
+            val result = cartRepository.addItem(product.productId, 1, variant)
+            
+            // Update cart count from server response
+            when (result) {
+                is Result.Success -> {
+                    val totalItems = result.data.items.sumOf { it.quantity }
+                    _uiState.update { state ->
+                        if (state is HomeUiState.Success) {
+                            state.copy(cartItemCount = totalItems)
+                        } else state
+                    }
+                    _notificationState.value = NotificationState(
+                        message = "${product.name} به سبد خرید اضافه شد",
+                        type = NotificationType.Success,
+                        isVisible = true
+                    )
+                }
+                is Result.Error -> {
+                    // Revert optimistic update
+                    _uiState.update { state ->
+                        if (state is HomeUiState.Success) {
+                            state.copy(cartItemCount = maxOf(0, state.cartItemCount - 1))
+                        } else state
+                    }
+                    _notificationState.value = NotificationState(
+                        message = "خطا در افزودن به سبد خرید",
+                        type = NotificationType.Error,
+                        isVisible = true
+                    )
+                }
+            }
         }
     }
 
@@ -79,6 +126,7 @@ class HomeViewModel @Inject constructor(
             val flashSaleDeferred = async { homeRepository.getFlashSaleProducts() }
             val productsDeferred = async { homeRepository.getProducts(page = 1, limit = 20) }
             val recentlyViewedDeferred = async { recentlyViewedDataSource.getRecentProducts() }
+            val cartDeferred = async { cartRepository.getCart() }
 
             // Await all results
             val heroImagesResult = heroImagesDeferred.await()
@@ -86,6 +134,9 @@ class HomeViewModel @Inject constructor(
             val flashSaleResult = flashSaleDeferred.await()
             val productsResult = productsDeferred.await()
             val recentlyViewed = recentlyViewedDeferred.await()
+            val cartResult = cartDeferred.await()
+            
+            val cartItemCount = (cartResult as? Result.Success)?.data?.items?.sumOf { it.quantity } ?: 0
 
             // Check if all critical sections failed
             if (heroImagesResult.isError && 
@@ -106,7 +157,8 @@ class HomeViewModel @Inject constructor(
                 flashSaleEndTime = calculateFlashSaleEndTime(),
                 recommendedProducts = productsResult.map { it.products }.toSectionState(),
                 recentlyViewedProducts = recentlyViewed,
-                isRefreshing = false
+                isRefreshing = false,
+                cartItemCount = cartItemCount
             )
         }
     }

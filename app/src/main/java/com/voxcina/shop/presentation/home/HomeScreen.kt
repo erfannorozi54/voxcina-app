@@ -50,6 +50,7 @@ import com.voxcina.shop.presentation.home.components.ShimmerHeroCarousel
 import com.voxcina.shop.presentation.home.components.ShimmerHomeContent
 import com.voxcina.shop.presentation.home.components.ShimmerProductGrid
 import com.voxcina.shop.presentation.home.components.ShimmerRecentlyViewedSection
+import com.voxcina.shop.ui.components.GlassNotification
 import com.voxcina.shop.ui.theme.Secondary
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 
@@ -83,26 +84,38 @@ fun HomeScreen(
     onBottomNavClick: (BottomNavDestination) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val notificationState by viewModel.notificationState.collectAsState()
     
-    HomeScreenContent(
-        uiState = uiState,
-        userName = viewModel.userName,
-        onRefresh = { viewModel.onEvent(HomeEvent.Refresh) },
-        onRetryAll = { viewModel.onEvent(HomeEvent.RetryAll) },
-        onRetrySection = { section -> viewModel.onEvent(HomeEvent.RetrySection(section)) },
-        onCategoryClick = onCategoryClick,
-        onProductClick = onProductClick,
-        onRecentlyViewedClick = onRecentlyViewedClick,
-        onViewAllFlashSale = onViewAllFlashSale,
-        onViewAllCategories = onViewAllCategories,
-        onSearchClick = onSearchClick,
-        onNotificationClick = onNotificationClick,
-        onCartClick = onCartClick,
-        onBottomNavClick = onBottomNavClick,
-        onAddToCart = { product, size -> 
-            viewModel.onEvent(HomeEvent.AddToCart(product, size))
-        }
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        HomeScreenContent(
+            uiState = uiState,
+            userName = viewModel.userName,
+            onRefresh = { viewModel.onEvent(HomeEvent.Refresh) },
+            onRetryAll = { viewModel.onEvent(HomeEvent.RetryAll) },
+            onRetrySection = { section -> viewModel.onEvent(HomeEvent.RetrySection(section)) },
+            onCategoryClick = onCategoryClick,
+            onProductClick = onProductClick,
+            onRecentlyViewedClick = onRecentlyViewedClick,
+            onViewAllFlashSale = onViewAllFlashSale,
+            onViewAllCategories = onViewAllCategories,
+            onSearchClick = onSearchClick,
+            onNotificationClick = onNotificationClick,
+            onCartClick = onCartClick,
+            onBottomNavClick = onBottomNavClick,
+            onAddToCart = { product, size -> 
+                viewModel.onEvent(HomeEvent.AddToCart(product, size))
+            }
+        )
+        
+        GlassNotification(
+            state = notificationState,
+            onDismiss = { viewModel.dismissNotification() },
+            durationMillis = 6000,
+            modifier = Modifier
+                .align(androidx.compose.ui.Alignment.TopCenter)
+                .padding(top = 48.dp)
+        )
+    }
 }
 
 /**

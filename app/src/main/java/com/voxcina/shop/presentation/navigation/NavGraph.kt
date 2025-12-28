@@ -23,6 +23,7 @@ import com.voxcina.shop.presentation.cart.CartScreen
 import com.voxcina.shop.presentation.home.HomeScreen
 import com.voxcina.shop.presentation.home.components.BottomNavDestination
 import com.voxcina.shop.presentation.onboarding.OnboardingScreen
+import com.voxcina.shop.presentation.productdetail.ProductDetailScreen
 import com.voxcina.shop.presentation.splash.SplashScreen
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.SecondaryLight
@@ -193,6 +194,7 @@ fun NavGraph(
         }
         
         // Product detail screen with arguments
+        // Requirements: 2.2, 12.1, 12.2, 12.3
         composable(
             route = Screen.ProductDetail.route,
             arguments = listOf(
@@ -205,8 +207,38 @@ fun NavGraph(
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString("productId") ?: ""
             val colorHex = backStackEntry.arguments?.getString("colorHex") ?: ""
-            // TODO: Implement ProductDetailScreen
-            PlaceholderScreen(title = "جزئیات محصول")
+            
+            ProductDetailScreen(
+                productId = productId,
+                initialColorHex = colorHex.ifEmpty { null },
+                onNavigateBack = {
+                    // Requirement 2.2: Navigate to previous screen
+                    navController.popBackStack()
+                },
+                onNavigateToReviews = { reviewProductId ->
+                    // TODO: Navigate to reviews screen when implemented
+                    // navController.navigate(Screen.Reviews.createRoute(reviewProductId))
+                },
+                onBottomNavClick = { destination ->
+                    // Requirements 12.1, 12.2, 12.3: Bottom navigation handling
+                    when (destination) {
+                        BottomNavDestination.HOME -> {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Home.route) { inclusive = true }
+                            }
+                        }
+                        BottomNavDestination.CATEGORIES -> {
+                            navController.navigate(Screen.Categories.route)
+                        }
+                        BottomNavDestination.CART -> {
+                            navController.navigate(Screen.Cart.route)
+                        }
+                        BottomNavDestination.PROFILE -> {
+                            navController.navigate(Screen.Profile.route)
+                        }
+                    }
+                }
+            )
         }
         
         // Categories list screen

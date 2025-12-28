@@ -9,6 +9,7 @@ import com.voxcina.shop.data.remote.AuthInterceptor
 import com.voxcina.shop.data.remote.CartApi
 import com.voxcina.shop.data.remote.DiscountApi
 import com.voxcina.shop.data.remote.HomeApi
+import com.voxcina.shop.data.remote.ProductApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -74,5 +75,11 @@ object NetworkModule {
     @Singleton
     fun provideDiscountApi(retrofit: Retrofit): DiscountApi {
         return retrofit.create(DiscountApi::class.java)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideProductApi(retrofit: Retrofit): ProductApi {
+        return retrofit.create(ProductApi::class.java)
     }
 }

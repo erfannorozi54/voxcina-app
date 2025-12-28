@@ -161,3 +161,20 @@ sealed class CartError : AppError() {
         override val message: String = "حداقل مبلغ سفارش رعایت نشده است"
     }
 }
+
+/**
+ * Product-specific errors for product detail operations.
+ */
+sealed class ProductError : AppError() {
+    data object ProductNotFound : ProductError() {
+        override val message: String = "محصول یافت نشد"
+    }
+
+    data object ProductLoadFailed : ProductError() {
+        override val message: String = "خطا در بارگذاری محصول"
+    }
+
+    data object InvalidProductId : ProductError() {
+        override val message: String = "شناسه محصول نامعتبر است"
+    }
+}
