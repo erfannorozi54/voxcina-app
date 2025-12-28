@@ -1,6 +1,5 @@
 package com.voxcina.shop.presentation.home.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -17,6 +16,8 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -185,94 +186,93 @@ fun ProductCard(
             }
             
             // Product info section
-            Box(modifier = Modifier.fillMaxWidth()) {
-                // Default product info
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = !showSizeSelector,
-                    enter = fadeIn(tween(250, delayMillis = 100)),
-                    exit = fadeOut(tween(100))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(Color.White.copy(alpha = 0.95f), Color.White.copy(alpha = 0.85f))
+                        )
+                    )
+            ) {
+                // Default product info - always present to maintain height
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp)
+                        .alpha(if (showSizeSelector) 0f else 1f)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(Color.White.copy(alpha = 0.95f), Color.White.copy(alpha = 0.85f))
-                                )
-                            )
-                            .padding(14.dp)
+                    Text(
+                        text = product.name,
+                        color = PrimaryDark,
+                        fontSize = 13.sp,
+                        fontFamily = VazirMatnFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 20.sp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    Text(
+                        text = "${product.colorVariant.colorName} • ${product.brand}",
+                        color = Color.Gray.copy(alpha = 0.8f),
+                        fontSize = 11.sp,
+                        fontFamily = VazirMatnFamily,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    
+                    Spacer(modifier = Modifier.height(10.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = product.name,
-                            color = PrimaryDark,
-                            fontSize = 13.sp,
-                            fontFamily = VazirMatnFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            lineHeight = 20.sp
-                        )
-                        
-                        Spacer(modifier = Modifier.height(4.dp))
-                        
-                        Text(
-                            text = "${product.colorVariant.colorName} • ${product.brand}",
-                            color = Color.Gray.copy(alpha = 0.8f),
-                            fontSize = 11.sp,
-                            fontFamily = VazirMatnFamily,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        
-                        Spacer(modifier = Modifier.height(10.dp))
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                if (product.originalPrice != null && product.originalPrice > product.price) {
-                                    Text(
-                                        text = PersianDigitConverter.formatPriceWithSuffix(product.originalPrice),
-                                        color = Color.Gray.copy(alpha = 0.6f),
-                                        fontSize = 10.sp,
-                                        fontFamily = VazirMatnFamily,
-                                        style = androidx.compose.ui.text.TextStyle(textDecoration = TextDecoration.LineThrough)
-                                    )
-                                }
+                        Column {
+                            if (product.originalPrice != null && product.originalPrice > product.price) {
                                 Text(
-                                    text = PersianDigitConverter.formatPriceWithSuffix(product.price),
-                                    color = Primary,
-                                    fontSize = 14.sp,
+                                    text = PersianDigitConverter.formatPriceWithSuffix(product.originalPrice),
+                                    color = Color.Gray.copy(alpha = 0.6f),
+                                    fontSize = 10.sp,
                                     fontFamily = VazirMatnFamily,
-                                    fontWeight = FontWeight.Bold
+                                    style = androidx.compose.ui.text.TextStyle(textDecoration = TextDecoration.LineThrough)
                                 )
                             }
-                            
-                            // Add to cart button
-                            Box(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(Primary)
-                                    .clickable { showSizeSelector = true },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.ShoppingCart,
-                                    contentDescription = "افزودن به سبد",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
+                            Text(
+                                text = PersianDigitConverter.formatPriceWithSuffix(product.price),
+                                color = Primary,
+                                fontSize = 14.sp,
+                                fontFamily = VazirMatnFamily,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        
+                        // Add to cart button
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Primary)
+                                .clickable { showSizeSelector = true },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.ShoppingCart,
+                                contentDescription = "افزودن به سبد",
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
+                            )
                         }
                     }
                 }
                 
-                // Size selector overlay - slides up from bottom
+                // Size selector overlay
                 androidx.compose.animation.AnimatedVisibility(
                     visible = showSizeSelector,
+                    modifier = Modifier.matchParentSize(),
                     enter = slideInVertically(spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessLow)) { it } + fadeIn(tween(200)),
                     exit = slideOutVertically(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { it } + fadeOut(tween(150))
                 ) {
@@ -290,6 +290,7 @@ fun ProductCard(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SizeSelectorOverlay(
     sizes: List<SizeVariant>,
@@ -299,58 +300,45 @@ private fun SizeSelectorOverlay(
     var sizesVisible by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
-        delay(150)
+        delay(100)
         sizesVisible = true
     }
     
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .background(
                 Brush.verticalGradient(
                     colors = listOf(Primary.copy(alpha = 0.95f), Primary)
                 ),
                 RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
             )
-            .padding(14.dp)
+            .padding(12.dp)
     ) {
-        // Close button row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        // Close button at top end
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.2f))
+                .clickable { onDismiss() },
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "انتخاب سایز",
-                color = Color.White,
-                fontSize = 12.sp,
-                fontFamily = VazirMatnFamily,
-                fontWeight = FontWeight.SemiBold
+            Icon(
+                imageVector = Icons.Rounded.Close,
+                contentDescription = "بستن",
+                tint = Color.White,
+                modifier = Modifier.size(16.dp)
             )
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.2f))
-                    .clickable { onDismiss() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = "بستن",
-                    tint = Color.White,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
         }
         
-        Spacer(modifier = Modifier.height(12.dp))
-        
-        // Size buttons with staggered fade-in
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically
+        // Size buttons centered
+        FlowRow(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
+            maxItemsInEachRow = 4
         ) {
             sizes.forEachIndexed { index, sizeVariant ->
                 val isAvailable = sizeVariant.quantity > 0
@@ -358,29 +346,29 @@ private fun SizeSelectorOverlay(
                 
                 LaunchedEffect(sizesVisible) {
                     if (sizesVisible) {
-                        delay(index * 50L)
+                        delay(index * 40L)
                         itemVisible = true
                     }
                 }
                 
                 val alpha by animateFloatAsState(
                     targetValue = if (itemVisible) 1f else 0f,
-                    animationSpec = tween(200),
+                    animationSpec = tween(150),
                     label = "sizeAlpha$index"
                 )
                 val itemScale by animateFloatAsState(
                     targetValue = if (itemVisible) 1f else 0.7f,
-                    animationSpec = tween(200),
+                    animationSpec = tween(150),
                     label = "sizeScale$index"
                 )
                 
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .height(36.dp)
                         .scale(itemScale)
                         .alpha(alpha)
-                        .clip(RoundedCornerShape(10.dp))
+                        .height(28.dp)
+                        .clip(RoundedCornerShape(8.dp))
                         .background(
                             if (isAvailable) Color.White else Color.White.copy(alpha = 0.3f)
                         )
@@ -393,7 +381,7 @@ private fun SizeSelectorOverlay(
                     Text(
                         text = sizeVariant.size,
                         color = if (isAvailable) Primary else Color.White.copy(alpha = 0.5f),
-                        fontSize = 13.sp,
+                        fontSize = 11.sp,
                         fontFamily = VazirMatnFamily,
                         fontWeight = FontWeight.Bold
                     )
