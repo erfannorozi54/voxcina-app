@@ -1,7 +1,9 @@
 package com.voxcina.shop.presentation.home.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -187,8 +189,8 @@ fun ProductCard(
                 // Default product info
                 androidx.compose.animation.AnimatedVisibility(
                     visible = !showSizeSelector,
-                    enter = fadeIn(tween(200)),
-                    exit = fadeOut(tween(150))
+                    enter = fadeIn(tween(250, delayMillis = 100)),
+                    exit = fadeOut(tween(100))
                 ) {
                     Column(
                         modifier = Modifier
@@ -271,8 +273,8 @@ fun ProductCard(
                 // Size selector overlay - slides up from bottom
                 androidx.compose.animation.AnimatedVisibility(
                     visible = showSizeSelector,
-                    enter = slideInVertically(tween(300)) { it },
-                    exit = slideOutVertically(tween(250)) { it }
+                    enter = slideInVertically(spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessLow)) { it } + fadeIn(tween(200)),
+                    exit = slideOutVertically(spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow)) { it } + fadeOut(tween(150))
                 ) {
                     SizeSelectorOverlay(
                         sizes = product.colorVariant.sizes,
