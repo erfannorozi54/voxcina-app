@@ -146,79 +146,85 @@ fun CartScreenContent(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             containerColor = SecondaryLight
         ) { paddingValues ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    // Screen Header with back button and clear cart action
-                    ScreenHeader(
-                        title = "سبد خرید",
-                        onBackClick = {
-                            onEvent(CartEvent.NavigateBack)
-                            onNavigateBack()
-                        },
-                        actionIcon = if (uiState is CartUiState.Success) Icons.Default.Delete else null,
-                        actionIconTint = Destructive,
-                        onActionClick = { showClearCartDialog = true }
-                    )
-                    
-                    // Main content based on state
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    ) {
-                        when (uiState) {
-                            is CartUiState.Loading -> {
-                                CartLoadingContent()
-                            }
-                            
-                            is CartUiState.Empty -> {
-                                EmptyState(
-                                    icon = Icons.Outlined.ShoppingCart,
-                                    title = uiState.message,
-                                    subtitle = "محصولات مورد علاقه خود را به سبد خرید اضافه کنید",
-                                    actionButtonText = "شروع خرید",
-                                    onActionClick = {
-                                        onEvent(CartEvent.StartShopping)
-                                        onStartShopping()
-                                    }
-                                )
-                            }
-                            
-                            is CartUiState.Error -> {
-                                CartErrorContent(
-                                    message = uiState.message,
-                                    canRetry = uiState.canRetry,
-                                    onRetry = { onEvent(CartEvent.Retry) }
-                                )
-                            }
-                            
-                            is CartUiState.Success -> {
-                                CartSuccessContent(
-                                    state = uiState,
-                                    discountCode = discountCode,
-                                    onDiscountCodeChange = { discountCode = it },
-                                    onEvent = onEvent,
-                                    onCheckout = onCheckout,
-                                    calculateDiscountAmount = calculateDiscountAmount,
-                                    getDiscountPercentage = getDiscountPercentage
-                                )
-                            }
+                // Screen Header with back button and clear cart action
+                ScreenHeader(
+                    title = "سبد خرید",
+                    onBackClick = {
+                        onEvent(CartEvent.NavigateBack)
+                        onNavigateBack()
+                    },
+                    actionIcon = if (uiState is CartUiState.Success) Icons.Default.Delete else null,
+                    actionIconTint = Destructive,
+                    onActionClick = { showClearCartDialog = true }
+                )
+                
+                // Main content based on state (takes remaining space)
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
+                    when (uiState) {
+                        is CartUiState.Loading -> {
+                            CartLoadingContent()
+                        }
+                        
+                        is CartUiState.Empty -> {
+                            EmptyState(
+                                icon = Icons.Outlined.ShoppingCart,
+                                title = uiState.message,
+                                subtitle = "محصولات مورد علاقه خود را به سبد خرید اضافه کنید",
+                                actionButtonText = "شروع خرید",
+                                onActionClick = {
+                                    onEvent(CartEvent.StartShopping)
+                                    onStartShopping()
+                                }
+                            )
+                        }
+                        
+                        is CartUiState.Error -> {
+                            CartErrorContent(
+                                message = uiState.message,
+                                canRetry = uiState.canRetry,
+                                onRetry = { onEvent(CartEvent.Retry) }
+                            )
+                        }
+                        
+                        is CartUiState.Success -> {
+                            CartSuccessContent(
+                                state = uiState,
+                                discountCode = discountCode,
+                                onDiscountCodeChange = { discountCode = it },
+                                onEvent = onEvent,
+                                onCheckout = onCheckout,
+                                calculateDiscountAmount = calculateDiscountAmount,
+                                getDiscountPercentage = getDiscountPercentage
+                            )
                         }
                     }
                 }
                 
-                // Bottom Navigation
+                // Checkout button - fixed above navbar (only for Success state)
+                if (uiState is CartUiState.Success) {
+                    CheckoutButtonContainer(
+                        onCheckout = {
+                            onEvent(CartEvent.Checkout)
+                            onCheckout()
+                        }
+                    )
+                }
+                
+                // Bottom Navigation - always at bottom
                 BottomNavBar(
                     selectedDestination = BottomNavDestination.CART,
                     cartItemCount = (uiState as? CartUiState.Success)?.itemCount ?: 0,
                     onDestinationSelected = onBottomNavClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -344,7 +350,7 @@ private fun CartSuccessContent(
                     start = 16.dp,
                     end = 16.dp,
                     top = 16.dp,
-                    bottom = 180.dp // Space for checkout button and bottom nav
+                    bottom = 16.dp
                 ),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -370,6 +376,7 @@ private fun CartSuccessContent(
                                 )
                             }
                         },
+                        onRemove = { showRemoveItemDialog = item },
                         onSaveForLater = {
                             onEvent(
                                 CartEvent.SaveForLater(
@@ -407,32 +414,23 @@ private fun CartSuccessContent(
                 }
             }
         }
-        
-        // Checkout button container with gradient fade
-        CheckoutButtonContainer(
-            onCheckout = {
-                onEvent(CartEvent.Checkout)
-                onCheckout()
-            },
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
-        
-        // Remove item confirmation dialog
-        showRemoveItemDialog?.let { item ->
-            RemoveItemDialog(
-                productName = item.product.name,
-                onConfirm = {
-                    onEvent(
-                        CartEvent.RemoveItem(
-                            productId = item.product.id,
-                            variantSku = item.variant.sku
-                        )
+    }
+    
+    // Remove item confirmation dialog (outside Box for proper overlay)
+    showRemoveItemDialog?.let { item ->
+        RemoveItemDialog(
+            productName = item.product.name,
+            onConfirm = {
+                onEvent(
+                    CartEvent.RemoveItem(
+                        productId = item.product.id,
+                        variantSku = item.variant.sku
                     )
-                    showRemoveItemDialog = null
-                },
-                onDismiss = { showRemoveItemDialog = null }
-            )
-        }
+                )
+                showRemoveItemDialog = null
+            },
+            onDismiss = { showRemoveItemDialog = null }
+        )
     }
 }
 
@@ -448,6 +446,7 @@ private fun AnimatedCartItem(
     index: Int,
     isUpdating: Boolean,
     onQuantityChange: (Int) -> Unit,
+    onRemove: () -> Unit,
     onSaveForLater: () -> Unit
 ) {
     var visible by remember { mutableStateOf(false) }
@@ -489,6 +488,7 @@ private fun AnimatedCartItem(
         CartItemCard(
             item = item,
             onQuantityChange = onQuantityChange,
+            onRemove = onRemove,
             onSaveForLater = onSaveForLater,
             isUpdating = isUpdating
         )
@@ -496,7 +496,7 @@ private fun AnimatedCartItem(
 }
 
 /**
- * Checkout button container with gradient fade effect.
+ * Checkout button container - fixed at bottom above navbar.
  * Requirements: 7.1, 7.2, 7.3, 7.4, 7.6
  */
 @Composable
@@ -504,16 +504,16 @@ private fun CheckoutButtonContainer(
     onCheckout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 80.dp) // Space for bottom nav
+            .background(SecondaryLight)
     ) {
         // Gradient fade from transparent to background
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp)
+                .height(16.dp)
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
@@ -522,7 +522,6 @@ private fun CheckoutButtonContainer(
                         )
                     )
                 )
-                .align(Alignment.TopCenter)
         )
         
         // Checkout button
@@ -532,8 +531,8 @@ private fun CheckoutButtonContainer(
             icon = Icons.AutoMirrored.Filled.ArrowBack,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 8.dp)
         )
     }
 }

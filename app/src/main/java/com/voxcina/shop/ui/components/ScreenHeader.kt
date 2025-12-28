@@ -91,7 +91,8 @@ fun ScreenHeader(
                         icon = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "بازگشت",
                         onClick = onBackClick,
-                        tint = Primary
+                        tint = Primary,
+                        forceDirection = LayoutDirection.Ltr
                     )
                 } else {
                     // Spacer to maintain layout
@@ -128,7 +129,8 @@ private fun HeaderIconButton(
     icon: ImageVector,
     contentDescription: String,
     onClick: () -> Unit,
-    tint: Color
+    tint: Color,
+    forceDirection: LayoutDirection? = null
 ) {
     Box(
         modifier = Modifier
@@ -137,12 +139,23 @@ private fun HeaderIconButton(
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            modifier = Modifier.size(24.dp),
-            tint = tint
-        )
+        if (forceDirection != null) {
+            CompositionLocalProvider(LocalLayoutDirection provides forceDirection) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = contentDescription,
+                    modifier = Modifier.size(24.dp),
+                    tint = tint
+                )
+            }
+        } else {
+            Icon(
+                imageVector = icon,
+                contentDescription = contentDescription,
+                modifier = Modifier.size(24.dp),
+                tint = tint
+            )
+        }
     }
 }
 

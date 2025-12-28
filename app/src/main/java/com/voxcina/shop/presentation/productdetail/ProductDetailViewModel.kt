@@ -9,6 +9,8 @@ import com.voxcina.shop.domain.model.ProductDetail
 import com.voxcina.shop.domain.model.SizeVariant
 import com.voxcina.shop.domain.repository.CartRepository
 import com.voxcina.shop.domain.usecase.GetProductDetailUseCase
+import com.voxcina.shop.ui.components.NotificationState
+import com.voxcina.shop.ui.components.NotificationType
 import com.voxcina.shop.util.AppError
 import com.voxcina.shop.util.CartError
 import com.voxcina.shop.util.ProductError
@@ -43,6 +45,9 @@ class ProductDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ProductDetailUiState>(ProductDetailUiState.Loading)
     val uiState: StateFlow<ProductDetailUiState> = _uiState.asStateFlow()
 
+    private val _notificationState = MutableStateFlow(NotificationState())
+    val notificationState: StateFlow<NotificationState> = _notificationState.asStateFlow()
+
     private val _snackbarMessage = MutableSharedFlow<String>()
     val snackbarMessage: SharedFlow<String> = _snackbarMessage.asSharedFlow()
 
@@ -51,6 +56,24 @@ class ProductDetailViewModel @Inject constructor(
 
     init {
         loadProduct()
+    }
+
+    /**
+     * Shows a glass notification with the given message and type.
+     */
+    private fun showNotification(message: String, type: NotificationType) {
+        _notificationState.value = NotificationState(
+            message = message,
+            type = type,
+            isVisible = true
+        )
+    }
+
+    /**
+     * Dismisses the current notification.
+     */
+    fun dismissNotification() {
+        _notificationState.update { it.copy(isVisible = false) }
     }
 
     /**
@@ -251,7 +274,7 @@ class ProductDetailViewModel @Inject constructor(
                         } else state
                     }
                     _addToCartSuccess.emit(Unit)
-                    _snackbarMessage.emit("محصول به سبد خرید اضافه شد")
+                    showNotification("محصول به سبد خرید اضافه شد", NotificationType.Success)
                 }
                 is Result.Error -> {
                     _uiState.update { state ->
@@ -262,6 +285,7 @@ class ProductDetailViewModel @Inject constructor(
                             )
                         } else state
                     }
+                    showNotification(mapErrorToMessage(result.error), NotificationType.Error)
                 }
             }
         }

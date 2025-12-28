@@ -55,6 +55,7 @@ import com.voxcina.shop.presentation.productdetail.components.SizeSelector
 import com.voxcina.shop.presentation.productdetail.components.SpecificationGrid
 import com.voxcina.shop.presentation.productdetail.components.TopNavigationOverlay
 import com.voxcina.shop.ui.components.EmptyState
+import com.voxcina.shop.ui.components.GlassNotification
 import com.voxcina.shop.ui.components.ImageGalleryPager
 import com.voxcina.shop.ui.components.VoxcinaLoading
 import com.voxcina.shop.ui.theme.SecondaryLight
@@ -85,6 +86,7 @@ fun ProductDetailScreen(
     viewModel: ProductDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val notificationState by viewModel.notificationState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
@@ -158,6 +160,16 @@ fun ProductDetailScreen(
                     )
                 }
             }
+            
+            // Glass notification for add-to-cart feedback
+            GlassNotification(
+                state = notificationState,
+                onDismiss = { viewModel.dismissNotification() },
+                durationMillis = 3000,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 72.dp)
+            )
         }
     }
 }

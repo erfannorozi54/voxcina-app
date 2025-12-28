@@ -1,7 +1,6 @@
 package com.voxcina.shop.presentation.productdetail.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,9 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
@@ -39,7 +35,7 @@ import com.voxcina.shop.ui.theme.PrimaryDark
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 
 /**
- * Modern specification grid with gradient header and colorful cards.
+ * Modern specification grid using Rows for proper alignment.
  *
  * @param attributes List of product attributes to display
  * @param modifier Modifier for the component
@@ -63,23 +59,30 @@ fun SpecificationGrid(
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            // 3-column grid with consistent styling
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(calculateGridHeight(attributes.size)),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            // Group attributes into rows of 3
+            val rows = attributes.chunked(3)
+            
+            Column(
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
-                userScrollEnabled = false
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(attributes) { attribute ->
-                    val localizedLabel = getLocalizedLabel(attribute.name)
-                    SpecificationCard(
-                        icon = getIconForAttribute(attribute.name),
-                        label = localizedLabel,
-                        value = attribute.value
-                    )
+                rows.forEach { rowItems ->
+                    Row(
+                        modifier = if (rowItems.size == 3) Modifier.fillMaxWidth() else Modifier,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        rowItems.forEach { attribute ->
+                            val localizedLabel = getLocalizedLabel(attribute.name)
+                            SpecificationCard(
+                                icon = getIconForAttribute(attribute.name),
+                                label = localizedLabel,
+                                value = attribute.value,
+                                modifier = if (rowItems.size == 3) Modifier.weight(1f) else Modifier.width(110.dp)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -134,15 +137,6 @@ private fun ModernSectionHeader(
 }
 
 /**
- * Calculates the grid height based on number of items.
- * Each row needs ~105dp (card height + spacing).
- */
-private fun calculateGridHeight(itemCount: Int): androidx.compose.ui.unit.Dp {
-    val rows = (itemCount + 2) / 3
-    return (rows * 105 + 10).dp // Added extra padding to prevent cropping
-}
-
-/**
  * Maps attribute names to localized Persian labels.
  */
 private fun getLocalizedLabel(attributeName: String): String {
@@ -171,7 +165,7 @@ private fun SpecificationGridPreview() {
             attributes = listOf(
                 ProductAttribute(name = "material", value = "نخ‌پنبه"),
                 ProductAttribute(name = "care", value = "دارد"),
-                ProductAttribute(name = "fit", value = "استاندارد\n(Regular Fit)"),
+                ProductAttribute(name = "fit", value = "استاندارد (Regular Fit)"),
                 ProductAttribute(name = "season", value = "تابستان، بهار"),
                 ProductAttribute(name = "thickness", value = "نازک")
             ),

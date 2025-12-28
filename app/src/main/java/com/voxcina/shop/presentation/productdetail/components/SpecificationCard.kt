@@ -77,13 +77,13 @@ fun SpecificationCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 14.dp, horizontal = 10.dp),
+                    .padding(vertical = 10.dp, horizontal = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Icon with gradient background
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(32.dp)
                         .background(
                             brush = Brush.linearGradient(
                                 colors = listOf(
@@ -103,19 +103,19 @@ fun SpecificationCard(
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(16.dp),
                         tint = Primary
                     )
                 }
                 
                 androidx.compose.foundation.layout.Spacer(
-                    modifier = Modifier.size(8.dp)
+                    modifier = Modifier.size(6.dp)
                 )
                 
                 // Label
                 Text(
                     text = label,
-                    fontSize = 11.sp,
+                    fontSize = 10.sp,
                     color = Color.Gray,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -129,13 +129,13 @@ fun SpecificationCard(
                 // Value
                 Text(
                     text = value,
-                    fontSize = 12.sp,
+                    fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     color = PrimaryDark,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
-                    lineHeight = 16.sp
+                    lineHeight = 14.sp
                 )
             }
         }
@@ -144,22 +144,10 @@ fun SpecificationCard(
 
 /**
  * Maps common attribute names to appropriate icons.
+ * Using Info icon for all attributes for consistency.
  */
 fun getIconForAttribute(attributeName: String): ImageVector {
-    return when (attributeName.lowercase()) {
-        "material", "جنس" -> Icons.Rounded.Settings
-        "weight", "وزن" -> Icons.Outlined.Info
-        "warranty", "گارانتی" -> Icons.Rounded.CheckCircle
-        "height", "ارتفاع" -> Icons.Outlined.Info
-        "width", "عرض" -> Icons.Outlined.Info
-        "care", "نگهداری", "قابلیت شستشو" -> Icons.Rounded.CheckCircle
-        "origin", "کشور سازنده" -> Icons.Outlined.Info
-        "date", "تاریخ" -> Icons.Outlined.DateRange
-        "fit", "نوع قواره" -> Icons.Rounded.ShoppingCart
-        "season", "فصل‌ها" -> Icons.Outlined.Star
-        "thickness", "ضخامت پیراهن" -> Icons.Outlined.Info
-        else -> Icons.Outlined.Info
-    }
+    return Icons.Outlined.Info
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
@@ -171,19 +159,19 @@ private fun SpecificationCardPreview() {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             SpecificationCard(
-                icon = Icons.Rounded.Settings,
+                icon = Icons.Outlined.Info,
                 label = "جنس",
                 value = "نخ‌پنبه"
             )
             
             SpecificationCard(
-                icon = Icons.Rounded.CheckCircle,
+                icon = Icons.Outlined.Info,
                 label = "قابلیت شستشو",
                 value = "دارد"
             )
             
             SpecificationCard(
-                icon = Icons.Rounded.ShoppingCart,
+                icon = Icons.Outlined.Info,
                 label = "نوع قواره",
                 value = "استاندارد"
             )

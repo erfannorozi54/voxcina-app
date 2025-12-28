@@ -50,6 +50,7 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
  *
  * @param item The cart item to display
  * @param onQuantityChange Callback when quantity changes
+ * @param onRemove Callback when item should be removed (delete button pressed)
  * @param onSaveForLater Callback when save for later is clicked
  * @param modifier Modifier for the card
  * @param isUpdating Whether the item is being updated (shows loading in quantity selector)
@@ -58,6 +59,7 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
 fun CartItemCard(
     item: CartItem,
     onQuantityChange: (Int) -> Unit,
+    onRemove: () -> Unit,
     onSaveForLater: () -> Unit,
     modifier: Modifier = Modifier,
     isUpdating: Boolean = false
@@ -142,11 +144,13 @@ fun CartItemCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Quantity selector
+                    // Quantity selector with delete support
                     QuantitySelector(
                         quantity = item.quantity,
                         onQuantityChange = onQuantityChange,
-                        isLoading = isUpdating
+                        isLoading = isUpdating,
+                        allowDelete = true,
+                        onDelete = onRemove
                     )
                     
                     // Save for later button
@@ -216,6 +220,39 @@ private fun CartItemCardPreview() {
                 quantity = 2
             ),
             onQuantityChange = {},
+            onRemove = {},
+            onSaveForLater = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
+@Composable
+private fun CartItemCardWithDeletePreview() {
+    VoxcinaTheme {
+        CartItemCard(
+            item = CartItem(
+                product = CartProduct(
+                    id = "1",
+                    name = "شلوار جین مردانه لیوایز کلاسیک",
+                    price = 1250000,
+                    originalPrice = null,
+                    mainImages = listOf("/uploads/products/sample.jpg"),
+                    colorVariants = emptyList(),
+                    brand = "Levi's",
+                    inStock = true
+                ),
+                variant = CartVariant(
+                    size = "32",
+                    color = "#000080",
+                    colorName = "سرمه‌ای",
+                    sku = "SKU456"
+                ),
+                quantity = 1 // Shows delete button
+            ),
+            onQuantityChange = {},
+            onRemove = {},
             onSaveForLater = {},
             modifier = Modifier.padding(16.dp)
         )
@@ -247,6 +284,7 @@ private fun CartItemCardLoadingPreview() {
                 quantity = 1
             ),
             onQuantityChange = {},
+            onRemove = {},
             onSaveForLater = {},
             isUpdating = true,
             modifier = Modifier.padding(16.dp)
