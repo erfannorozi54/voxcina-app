@@ -56,7 +56,9 @@ import com.voxcina.shop.presentation.productdetail.components.SpecificationGrid
 import com.voxcina.shop.presentation.productdetail.components.TopNavigationOverlay
 import com.voxcina.shop.ui.components.EmptyState
 import com.voxcina.shop.ui.components.ImageGalleryPager
+import com.voxcina.shop.ui.components.VoxcinaLoading
 import com.voxcina.shop.ui.theme.SecondaryLight
+import com.voxcina.shop.ui.theme.Secondary
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 import kotlinx.coroutines.flow.collectLatest
 
@@ -164,6 +166,7 @@ fun ProductDetailScreen(
 /**
  * Main content for the product detail screen in success state.
  * Contains scrollable content with all product sections and floating add-to-cart bar.
+ * TopNavigationOverlay is sticky at the top when scrolling.
  */
 @Composable
 private fun ProductDetailContent(
@@ -175,31 +178,25 @@ private fun ProductDetailContent(
 ) {
     var currentImageIndex by remember { mutableIntStateOf(0) }
     val scrollState = rememberScrollState()
+    
+    // Detect if user has scrolled past a threshold (e.g., 100dp worth of pixels)
+    val isScrolled = scrollState.value > 100
 
     Box(modifier = Modifier.fillMaxSize()) {
+        // Scrollable content
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            // Image Gallery with Top Navigation Overlay
-            Box {
-                ImageGalleryPager(
-                    images = state.displayImages,
-                    currentIndex = currentImageIndex,
-                    onIndexChanged = { currentImageIndex = it },
-                    heightFraction = 0.55f,
-                    showGradientOverlay = true
-                )
-
-                TopNavigationOverlay(
-                    onBackClick = onNavigateBack,
-                    onFavoriteClick = { onEvent(ProductDetailEvent.ToggleFavorite) },
-                    onShareClick = onShare,
-                    isFavorite = state.isFavorite,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-            }
+            // Image Gallery (without navigation overlay - it's now sticky)
+            ImageGalleryPager(
+                images = state.displayImages,
+                currentIndex = currentImageIndex,
+                onIndexChanged = { currentImageIndex = it },
+                heightFraction = 0.55f,
+                showGradientOverlay = true
+            )
 
             // Content Sheet with rounded top corners
             Column(
@@ -207,8 +204,8 @@ private fun ProductDetailContent(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
                     .background(SecondaryLight)
-                    .padding(horizontal = 24.dp, vertical = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Product Header (name, brand, rating)
                 ProductHeader(
@@ -285,6 +282,18 @@ private fun ProductDetailContent(
             }
         }
 
+        // Sticky Top Navigation Overlay - stays fixed at top when scrolling
+        TopNavigationOverlay(
+            onBackClick = onNavigateBack,
+            onFavoriteClick = { onEvent(ProductDetailEvent.ToggleFavorite) },
+            onShareClick = onShare,
+            isFavorite = state.isFavorite,
+            isScrolled = isScrolled,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp)
+        )
+
         // Floating Add to Cart Bar
         FloatingAddToCartBar(
             quantity = state.quantity,
@@ -356,16 +365,20 @@ private fun ShimmerImageGallery(
         modifier = modifier
             .fillMaxWidth()
             .height(350.dp)
+            .background(Secondary),
+        contentAlignment = Alignment.Center
     ) {
-        ShimmerBox(
-            modifier = Modifier.fillMaxSize()
+        VoxcinaLoading(
+            size = 100.dp,
+            showText = false
         )
 
         // Shimmer navigation buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .align(Alignment.TopCenter),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             ShimmerBox(

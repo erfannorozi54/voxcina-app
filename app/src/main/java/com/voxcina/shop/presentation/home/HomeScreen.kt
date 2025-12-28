@@ -228,7 +228,7 @@ private fun HomeSuccessContent(
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(bottom = 80.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             HomeHeader(
                 userName = userName,
@@ -245,7 +245,7 @@ private fun HomeSuccessContent(
                 onClick = onSearchClick
             )
             
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             
             HeroCarouselSection(
                 sectionState = state.heroImages,
@@ -282,7 +282,7 @@ private fun HomeSuccessContent(
                 )
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

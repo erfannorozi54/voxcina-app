@@ -2,12 +2,12 @@ package com.voxcina.shop.presentation.productdetail.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
@@ -30,9 +30,7 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
 
 /**
  * Color selector section for the product detail screen.
- * Displays a row of ColorSelectorButton components with a section header.
- *
- * Requirements: 5.1, 5.2, 5.5, 5.6
+ * Displays color buttons in a flow layout that wraps to next row.
  *
  * @param colorVariants List of available color variants
  * @param selectedColorVariant Currently selected color variant
@@ -40,6 +38,7 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
  * @param isColorAvailable Function to check if a color variant is available
  * @param modifier Modifier for the section container
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ColorSelector(
     colorVariants: List<ColorVariant>,
@@ -51,7 +50,7 @@ fun ColorSelector(
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
             modifier = modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Section header with palette icon
             Row(
@@ -72,15 +71,13 @@ fun ColorSelector(
                 )
             }
             
-            // Color buttons row
-            LazyRow(
+            // Color buttons in flow layout (wraps to next row)
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(
-                    items = colorVariants,
-                    key = { it.color }
-                ) { colorVariant ->
+                colorVariants.forEach { colorVariant ->
                     ColorSelectorButton(
                         colorHex = colorVariant.color,
                         isSelected = colorVariant.color == selectedColorVariant.color,
@@ -93,6 +90,7 @@ fun ColorSelector(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Preview(showBackground = true)
 @Composable
 private fun ColorSelectorPreview() {
@@ -135,6 +133,33 @@ private fun ColorSelectorPreview() {
             sizes = listOf(
                 SizeVariant("S", "SKU-007", 10),
                 SizeVariant("M", "SKU-008", 8)
+            )
+        ),
+        ColorVariant(
+            color = "#FFFFFF",
+            colorName = "سفید",
+            images = emptyList(),
+            tryOnImage = null,
+            sizes = listOf(
+                SizeVariant("S", "SKU-009", 5)
+            )
+        ),
+        ColorVariant(
+            color = "#FFC0CB",
+            colorName = "صورتی",
+            images = emptyList(),
+            tryOnImage = null,
+            sizes = listOf(
+                SizeVariant("M", "SKU-010", 3)
+            )
+        ),
+        ColorVariant(
+            color = "#800080",
+            colorName = "بنفش",
+            images = emptyList(),
+            tryOnImage = null,
+            sizes = listOf(
+                SizeVariant("L", "SKU-011", 2)
             )
         )
     )

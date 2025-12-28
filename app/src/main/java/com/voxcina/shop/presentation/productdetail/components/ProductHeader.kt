@@ -51,22 +51,22 @@ fun ProductHeader(
             // Product name and brand (right side in RTL)
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                // Product name - 24sp bold as per requirements
+                // Product name - 20sp bold
                 Text(
                     text = name,
-                    style = MaterialTheme.typography.displayMedium.copy(
-                        fontSize = 24.sp
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontSize = 20.sp
                     ),
                     fontWeight = FontWeight.Bold,
                     color = Primary
                 )
                 
-                // Brand/subtitle - 14sp regular gray
+                // Brand/subtitle - 12sp regular gray
                 Text(
                     text = brand,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
             }

@@ -72,12 +72,12 @@ fun CategorySection(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             
             // Horizontally scrollable category row without visible scrollbar
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(
                     items = categories,
@@ -156,14 +156,14 @@ fun CategoryItem(
 ) {
     Column(
         modifier = modifier
-            .width(72.dp)
+            .width(60.dp)
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Circular icon container with colored background
         Box(
             modifier = Modifier
-                .size(64.dp)
+                .size(52.dp)
                 .clip(CircleShape)
                 .background(category.iconColor.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center
@@ -172,17 +172,17 @@ fun CategoryItem(
                 imageVector = Icons.Default.Star,
                 contentDescription = category.name,
                 tint = category.iconColor,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(22.dp)
             )
         }
         
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         
         // Category name below icon
         Text(
             text = category.name,
             color = PrimaryDark,
-            fontSize = 12.sp,
+            fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
             maxLines = 2,

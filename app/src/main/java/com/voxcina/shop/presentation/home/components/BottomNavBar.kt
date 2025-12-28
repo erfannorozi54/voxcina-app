@@ -23,6 +23,7 @@ import androidx.compose.material3.ripple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,10 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.voxcina.shop.ui.components.BadgeIcon
@@ -108,16 +111,19 @@ fun BottomNavBar(
     onDestinationSelected: (BottomNavDestination) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    GlassBottomNavigation(modifier = modifier) {
-        BottomNavDestination.entries.forEach { destination ->
-            val isSelected = destination == selectedDestination
-            
-            BottomNavItem(
-                destination = destination,
-                isSelected = isSelected,
-                badgeCount = if (destination == BottomNavDestination.CART) cartItemCount else 0,
-                onClick = { onDestinationSelected(destination) }
-            )
+    // Force RTL layout direction for proper ordering (Profile -> Cart -> Categories -> Home)
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        GlassBottomNavigation(modifier = modifier) {
+            BottomNavDestination.entries.forEach { destination ->
+                val isSelected = destination == selectedDestination
+                
+                BottomNavItem(
+                    destination = destination,
+                    isSelected = isSelected,
+                    badgeCount = if (destination == BottomNavDestination.CART) cartItemCount else 0,
+                    onClick = { onDestinationSelected(destination) }
+                )
+            }
         }
     }
 }

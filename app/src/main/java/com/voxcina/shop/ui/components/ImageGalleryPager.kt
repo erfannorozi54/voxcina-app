@@ -28,9 +28,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.voxcina.shop.ui.theme.Secondary
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 import kotlinx.coroutines.launch
 
@@ -96,14 +97,41 @@ fun ImageGalleryPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize()
             ) { page ->
-                AsyncImage(
+                SubcomposeAsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(images[page])
                         .crossfade(true)
                         .build(),
                     contentDescription = "$contentDescription ${page + 1}",
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    loading = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Secondary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            VoxcinaLoading(
+                                size = 80.dp,
+                                showText = false
+                            )
+                        }
+                    },
+                    error = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Secondary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            VoxcinaLoading(
+                                size = 60.dp,
+                                showText = true,
+                                loadingText = "خطا در بارگذاری تصویر"
+                            )
+                        }
+                    }
                 )
             }
         } else {
@@ -111,10 +139,14 @@ fun ImageGalleryPager(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Gray.copy(alpha = 0.2f)),
+                    .background(Secondary),
                 contentAlignment = Alignment.Center
             ) {
-                // Empty state - could add placeholder image here
+                VoxcinaLoading(
+                    size = 80.dp,
+                    showText = true,
+                    loadingText = "بدون تصویر"
+                )
             }
         }
         
