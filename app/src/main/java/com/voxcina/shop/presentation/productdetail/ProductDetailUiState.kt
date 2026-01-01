@@ -2,6 +2,7 @@ package com.voxcina.shop.presentation.productdetail
 
 import com.voxcina.shop.domain.model.ColorVariant
 import com.voxcina.shop.domain.model.ProductDetail
+import com.voxcina.shop.domain.model.ProductReview
 import com.voxcina.shop.domain.model.SizeVariant
 
 /**
@@ -33,7 +34,11 @@ sealed interface ProductDetailUiState {
         val isAddingToCart: Boolean,
         val addToCartError: String?,
         val displayImages: List<String>,
-        val isDescriptionExpanded: Boolean
+        val isDescriptionExpanded: Boolean,
+        val reviews: List<ProductReview> = emptyList(),
+        val isLoadingReviews: Boolean = false,
+        val isSubmittingReview: Boolean = false,
+        val showAddReviewSheet: Boolean = false
     ) : ProductDetailUiState {
 
         /**
@@ -185,4 +190,23 @@ sealed class ProductDetailEvent {
      * Clear add-to-cart error message.
      */
     data object ClearError : ProductDetailEvent()
+
+    /**
+     * User tapped "add review" button.
+     */
+    data object ShowAddReview : ProductDetailEvent()
+
+    /**
+     * User dismissed the add review sheet.
+     */
+    data object DismissAddReview : ProductDetailEvent()
+
+    /**
+     * User submitted a review.
+     */
+    data class SubmitReview(
+        val rating: Int,
+        val comment: String,
+        val isRecommended: Boolean
+    ) : ProductDetailEvent()
 }

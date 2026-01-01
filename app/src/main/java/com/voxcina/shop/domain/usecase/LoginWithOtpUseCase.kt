@@ -40,12 +40,14 @@ class LoginWithOtpUseCase @Inject constructor(
                 // OTP verified, now complete login via SMS
                 when (val loginResult = authRepository.loginWithSms(phone)) {
                     is Result.Success -> {
-                        // Store tokens and user name securely
+                        // Store tokens and user info securely
                         tokenManager.saveTokens(
                             accessToken = loginResult.data.token,
                             refreshToken = loginResult.data.refreshToken
                         )
                         tokenManager.saveUserName(loginResult.data.name)
+                        tokenManager.saveUserPhone(loginResult.data.phone)
+                        loginResult.data.id?.let { tokenManager.saveUserId(it) }
                         Result.Success(
                             User(
                                 id = loginResult.data.id,

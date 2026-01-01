@@ -40,12 +40,14 @@ class SignupWithOtpUseCase @Inject constructor(
             confirmPassword = confirmPassword
         )) {
             is Result.Success -> {
-                // Store tokens and user name securely
+                // Store tokens and user info securely
                 tokenManager.saveTokens(
                     accessToken = result.data.token,
                     refreshToken = result.data.refreshToken
                 )
                 tokenManager.saveUserName(result.data.name)
+                tokenManager.saveUserPhone(result.data.phone)
+                result.data.id?.let { tokenManager.saveUserId(it) }
                 Result.Success(
                     User(
                         id = result.data.id,

@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 /**
  * Implementation of TokenManager using EncryptedSharedPreferences.
- * Provides secure storage for authentication tokens.
+ * Provides secure storage for authentication tokens and basic user info.
  */
 @Singleton
 class TokenManagerImpl @Inject constructor(
@@ -22,6 +22,8 @@ class TokenManagerImpl @Inject constructor(
         private const val KEY_ACCESS_TOKEN = "access_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
         private const val KEY_USER_NAME = "user_name"
+        private const val KEY_USER_PHONE = "user_phone"
+        private const val KEY_USER_ID = "user_id"
     }
     
     private val encryptedPrefs: SharedPreferences by lazy {
@@ -61,7 +63,6 @@ class TokenManagerImpl @Inject constructor(
         encryptedPrefs.edit()
             .remove(KEY_ACCESS_TOKEN)
             .remove(KEY_REFRESH_TOKEN)
-            .remove(KEY_USER_NAME)
             .apply()
     }
     
@@ -75,5 +76,31 @@ class TokenManagerImpl @Inject constructor(
     
     override fun getUserName(): String? {
         return encryptedPrefs.getString(KEY_USER_NAME, null)
+    }
+    
+    override fun saveUserPhone(phone: String) {
+        encryptedPrefs.edit().putString(KEY_USER_PHONE, phone).apply()
+    }
+    
+    override fun getUserPhone(): String? {
+        return encryptedPrefs.getString(KEY_USER_PHONE, null)
+    }
+    
+    override fun saveUserId(id: String) {
+        encryptedPrefs.edit().putString(KEY_USER_ID, id).apply()
+    }
+    
+    override fun getUserId(): String? {
+        return encryptedPrefs.getString(KEY_USER_ID, null)
+    }
+    
+    override fun clearAll() {
+        encryptedPrefs.edit()
+            .remove(KEY_ACCESS_TOKEN)
+            .remove(KEY_REFRESH_TOKEN)
+            .remove(KEY_USER_NAME)
+            .remove(KEY_USER_PHONE)
+            .remove(KEY_USER_ID)
+            .apply()
     }
 }

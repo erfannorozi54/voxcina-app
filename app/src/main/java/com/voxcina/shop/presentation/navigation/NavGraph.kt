@@ -18,12 +18,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.voxcina.shop.BuildConfig
 import com.voxcina.shop.data.local.TokenManager
+import com.voxcina.shop.presentation.addresses.AddressesScreen
 import com.voxcina.shop.presentation.auth.AuthScreen
 import com.voxcina.shop.presentation.cart.CartScreen
 import com.voxcina.shop.presentation.home.HomeScreen
 import com.voxcina.shop.presentation.home.components.BottomNavDestination
 import com.voxcina.shop.presentation.onboarding.OnboardingScreen
 import com.voxcina.shop.presentation.productdetail.ProductDetailScreen
+import com.voxcina.shop.presentation.profile.OrderStatus
+import com.voxcina.shop.presentation.profile.ProfileScreen
 import com.voxcina.shop.presentation.splash.SplashScreen
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.SecondaryLight
@@ -68,6 +71,47 @@ sealed class Screen(val route: String) {
     
     /** Profile screen */
     data object Profile : Screen("profile")
+    
+    /** Edit profile screen */
+    data object EditProfile : Screen("profile/edit")
+    
+    /** Edit account screen */
+    data object EditAccount : Screen("account/edit")
+    
+    /** Orders screen with optional status filter */
+    data object Orders : Screen("orders?status={status}") {
+        fun createRoute(status: OrderStatus? = null): String {
+            return if (status != null) {
+                "orders?status=${status.apiValue}"
+            } else {
+                "orders"
+            }
+        }
+    }
+    
+    /** Addresses screen */
+    data object Addresses : Screen("addresses")
+    
+    /** Favorites screen */
+    data object Favorites : Screen("favorites")
+    
+    /** Recently viewed screen */
+    data object RecentlyViewed : Screen("recently-viewed")
+    
+    /** Settings screen */
+    data object Settings : Screen("settings")
+    
+    /** Support screen */
+    data object Support : Screen("support")
+    
+    /** Wallet screen */
+    data object Wallet : Screen("wallet")
+    
+    /** Loyalty points screen */
+    data object Loyalty : Screen("loyalty")
+    
+    /** Coupons screen */
+    data object Coupons : Screen("coupons")
     
     /** Search screen */
     data object Search : Screen("search")
@@ -296,9 +340,166 @@ fun NavGraph(
         }
         
         // Profile screen
+        // Requirements: 1.6, 2.3, 4.8, 4.9, 5.7, 6.5, 6.6, 7.4
         composable(route = Screen.Profile.route) {
-            // TODO: Implement ProfileScreen
-            PlaceholderScreen(title = "پروفایل")
+            ProfileScreen(
+                onNavigateToEditProfile = {
+                    // Requirement 1.6: Navigate to profile edit screen
+                    navController.navigate(Screen.EditProfile.route)
+                },
+                onNavigateToEditAccount = {
+                    // Requirement 2.3: Navigate to account edit screen
+                    navController.navigate(Screen.EditAccount.route)
+                },
+                onNavigateToAddresses = {
+                    // Requirement 5.7: Navigate to addresses screen
+                    navController.navigate(Screen.Addresses.route)
+                },
+                onNavigateToFavorites = {
+                    // Requirement 5.7: Navigate to favorites screen
+                    navController.navigate(Screen.Favorites.route)
+                },
+                onNavigateToRecentlyViewed = {
+                    // Requirement 5.7: Navigate to recently viewed screen
+                    navController.navigate(Screen.RecentlyViewed.route)
+                },
+                onNavigateToSettings = {
+                    // Requirement 6.5: Navigate to settings screen
+                    navController.navigate(Screen.Settings.route)
+                },
+                onNavigateToSupport = {
+                    // Requirement 6.6: Navigate to support screen
+                    navController.navigate(Screen.Support.route)
+                },
+                onNavigateToOrders = { status ->
+                    // Requirements 4.8, 4.9: Navigate to orders screen with optional filter
+                    navController.navigate(Screen.Orders.createRoute(status))
+                },
+                onNavigateToWallet = {
+                    // Requirement 3.7: Navigate to wallet screen
+                    navController.navigate(Screen.Wallet.route)
+                },
+                onNavigateToLoyalty = {
+                    // Requirement 3.7: Navigate to loyalty screen
+                    navController.navigate(Screen.Loyalty.route)
+                },
+                onNavigateToCoupons = {
+                    // Requirement 3.7: Navigate to coupons screen
+                    navController.navigate(Screen.Coupons.route)
+                },
+                onLogout = {
+                    // Requirement 7.4: Clear session and navigate to auth screen
+                    navController.navigate(Screen.Auth.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onBottomNavClick = { destination ->
+                    when (destination) {
+                        BottomNavDestination.HOME -> {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Profile.route) { inclusive = true }
+                            }
+                        }
+                        BottomNavDestination.CATEGORIES -> {
+                            navController.navigate(Screen.Categories.route)
+                        }
+                        BottomNavDestination.CART -> {
+                            navController.navigate(Screen.Cart.route)
+                        }
+                        BottomNavDestination.PROFILE -> {
+                            // Already on profile, do nothing
+                        }
+                    }
+                }
+            )
+        }
+        
+        // Edit profile screen
+        composable(route = Screen.EditProfile.route) {
+            // TODO: Implement EditProfileScreen
+            PlaceholderScreen(title = "ویرایش پروفایل")
+        }
+        
+        // Edit account screen
+        composable(route = Screen.EditAccount.route) {
+            // TODO: Implement EditAccountScreen
+            PlaceholderScreen(title = "ویرایش حساب کاربری")
+        }
+        
+        // Orders screen with optional status filter
+        composable(
+            route = Screen.Orders.route,
+            arguments = listOf(
+                navArgument("status") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val statusValue = backStackEntry.arguments?.getString("status")
+            // TODO: Implement OrdersScreen with status filter
+            val title = if (statusValue != null) {
+                when (statusValue) {
+                    "pending" -> "سفارش‌های در انتظار"
+                    "processing" -> "سفارش‌های در حال پردازش"
+                    "shipped" -> "سفارش‌های ارسال شده"
+                    "returned" -> "سفارش‌های مرجوعی"
+                    else -> "سفارش‌های من"
+                }
+            } else {
+                "سفارش‌های من"
+            }
+            PlaceholderScreen(title = title)
+        }
+        
+        // Addresses screen
+        composable(route = Screen.Addresses.route) {
+            AddressesScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        // Favorites screen
+        composable(route = Screen.Favorites.route) {
+            // TODO: Implement FavoritesScreen
+            PlaceholderScreen(title = "علاقه‌مندی‌ها")
+        }
+        
+        // Recently viewed screen
+        composable(route = Screen.RecentlyViewed.route) {
+            // TODO: Implement RecentlyViewedScreen
+            PlaceholderScreen(title = "بازدیدهای اخیر")
+        }
+        
+        // Settings screen
+        composable(route = Screen.Settings.route) {
+            // TODO: Implement SettingsScreen
+            PlaceholderScreen(title = "تنظیمات")
+        }
+        
+        // Support screen
+        composable(route = Screen.Support.route) {
+            // TODO: Implement SupportScreen
+            PlaceholderScreen(title = "پشتیبانی و سوالات متداول")
+        }
+        
+        // Wallet screen
+        composable(route = Screen.Wallet.route) {
+            // TODO: Implement WalletScreen
+            PlaceholderScreen(title = "کیف پول")
+        }
+        
+        // Loyalty screen
+        composable(route = Screen.Loyalty.route) {
+            // TODO: Implement LoyaltyScreen
+            PlaceholderScreen(title = "امتیاز باشگاه")
+        }
+        
+        // Coupons screen
+        composable(route = Screen.Coupons.route) {
+            // TODO: Implement CouponsScreen
+            PlaceholderScreen(title = "کوپن‌های من")
         }
         
         // Search screen

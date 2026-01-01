@@ -11,10 +11,12 @@ import com.voxcina.shop.domain.repository.CartRepository
 import com.voxcina.shop.domain.usecase.GetProductDetailUseCase
 import com.voxcina.shop.ui.components.NotificationState
 import com.voxcina.shop.ui.components.NotificationType
+import com.voxcina.shop.domain.repository.ProductRepository
 import com.voxcina.shop.util.AppError
 import com.voxcina.shop.util.CartError
 import com.voxcina.shop.util.ProductError
 import com.voxcina.shop.util.Result
+import com.voxcina.shop.util.ReviewError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +38,7 @@ import javax.inject.Inject
 class ProductDetailViewModel @Inject constructor(
     private val getProductDetailUseCase: GetProductDetailUseCase,
     private val cartRepository: CartRepository,
+    private val productRepository: ProductRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -89,6 +92,9 @@ class ProductDetailViewModel @Inject constructor(
             is ProductDetailEvent.ToggleFavorite -> onToggleFavorite()
             is ProductDetailEvent.ToggleDescription -> onToggleDescription()
             is ProductDetailEvent.ClearError -> clearAddToCartError()
+            is ProductDetailEvent.ShowAddReview -> onShowAddReview()
+            is ProductDetailEvent.DismissAddReview -> onDismissAddReview()
+            is ProductDetailEvent.SubmitReview -> onSubmitReview(event.rating, event.comment, event.isRecommended)
             is ProductDetailEvent.Share -> { /* Handled by UI */ }
             is ProductDetailEvent.NavigateBack -> { /* Handled by UI */ }
             is ProductDetailEvent.ViewAllReviews -> { /* Handled by UI */ }
@@ -120,8 +126,12 @@ class ProductDetailViewModel @Inject constructor(
                         isAddingToCart = false,
                         addToCartError = null,
                         displayImages = displayImages,
-                        isDescriptionExpanded = false
+                        isDescriptionExpanded = false,
+                        reviews = emptyList(),
+                        isLoadingReviews = true
                     )
+                    // Load reviews after product loads
+                    loadReviews()
                 }
                 is Result.Error -> {
                     _uiState.value = when (result.error) {
@@ -323,6 +333,92 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     /**
+     * Loads reviews for the current product.
+     */
+    private fun loadReviews() {
+        viewModelScope.launch {
+            when (val result = productRepository.getProductReviews(productId)) {
+                is Result.Success -> {
+                    _uiState.update { state ->
+                        if (state is ProductDetailUiState.Success) {
+                            state.copy(reviews = result.data, isLoadingReviews = false)
+                        } else state
+                    }
+                }
+                is Result.Error -> {
+                    _uiState.update { state ->
+                        if (state is ProductDetailUiState.Success) {
+                            state.copy(isLoadingReviews = false)
+                        } else state
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Shows the add review bottom sheet.
+     */
+    private fun onShowAddReview() {
+        _uiState.update { state ->
+            if (state is ProductDetailUiState.Success) {
+                state.copy(showAddReviewSheet = true)
+            } else state
+        }
+    }
+
+    /**
+     * Dismisses the add review bottom sheet.
+     */
+    private fun onDismissAddReview() {
+        _uiState.update { state ->
+            if (state is ProductDetailUiState.Success) {
+                state.copy(showAddReviewSheet = false)
+            } else state
+        }
+    }
+
+    /**
+     * Submits a new review.
+     */
+    private fun onSubmitReview(rating: Int, comment: String, isRecommended: Boolean) {
+        val currentState = _uiState.value
+        if (currentState !is ProductDetailUiState.Success) return
+
+        _uiState.update { state ->
+            if (state is ProductDetailUiState.Success) {
+                state.copy(isSubmittingReview = true)
+            } else state
+        }
+
+        viewModelScope.launch {
+            when (val result = productRepository.addReview(productId, rating, comment, isRecommended)) {
+                is Result.Success -> {
+                    _uiState.update { state ->
+                        if (state is ProductDetailUiState.Success) {
+                            state.copy(
+                                isSubmittingReview = false,
+                                showAddReviewSheet = false
+                            )
+                        } else state
+                    }
+                    showNotification("نظر شما ثبت شد و پس از تأیید نمایش داده می‌شود", NotificationType.Success)
+                    // Reload reviews to get updated list
+                    loadReviews()
+                }
+                is Result.Error -> {
+                    _uiState.update { state ->
+                        if (state is ProductDetailUiState.Success) {
+                            state.copy(isSubmittingReview = false)
+                        } else state
+                    }
+                    showNotification(mapErrorToMessage(result.error), NotificationType.Error)
+                }
+            }
+        }
+    }
+
+    /**
      * Clears the add-to-cart error message.
      */
     private fun clearAddToCartError() {
@@ -384,6 +480,10 @@ class ProductDetailViewModel @Inject constructor(
             is ProductError.ProductLoadFailed -> "خطا در بارگذاری محصول"
             is ProductError.InvalidProductId -> "شناسه محصول نامعتبر است"
             is CartError.InsufficientStock -> "موجودی کافی نیست"
+            is ReviewError.NotAuthenticated -> "برای ثبت نظر باید وارد شوید"
+            is ReviewError.InvalidRating -> "امتیاز باید بین ۱ تا ۵ باشد"
+            is ReviewError.ReviewSubmitFailed -> "خطا در ثبت نظر"
+            is ReviewError.ReviewLoadFailed -> "خطا در بارگذاری نظرات"
             is AppError.ServerError -> error.message
             is AppError.UnknownError -> error.message
             else -> error.message

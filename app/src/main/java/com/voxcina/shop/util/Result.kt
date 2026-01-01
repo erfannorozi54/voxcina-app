@@ -178,3 +178,74 @@ sealed class ProductError : AppError() {
         override val message: String = "شناسه محصول نامعتبر است"
     }
 }
+
+/**
+ * Review-specific errors for review operations.
+ */
+sealed class ReviewError : AppError() {
+    data object ReviewLoadFailed : ReviewError() {
+        override val message: String = "خطا در بارگذاری نظرات"
+    }
+
+    data object ReviewSubmitFailed : ReviewError() {
+        override val message: String = "خطا در ثبت نظر"
+    }
+
+    data object InvalidRating : ReviewError() {
+        override val message: String = "امتیاز باید بین ۱ تا ۵ باشد"
+    }
+
+    data object NotAuthenticated : ReviewError() {
+        override val message: String = "برای ثبت نظر باید وارد شوید"
+    }
+}
+
+/**
+ * Profile-specific errors for profile operations.
+ */
+sealed class ProfileError : AppError() {
+    data object ProfileNotFound : ProfileError() {
+        override val message: String = "پروفایل یافت نشد"
+    }
+
+    data object ProfileLoadFailed : ProfileError() {
+        override val message: String = "خطا در بارگذاری پروفایل"
+    }
+
+    data object NotAuthenticated : ProfileError() {
+        override val message: String = "برای مشاهده پروفایل باید وارد شوید"
+    }
+
+    data object LogoutFailed : ProfileError() {
+        override val message: String = "خطا در خروج از حساب کاربری"
+    }
+}
+
+/**
+ * Address-specific errors for address operations.
+ */
+sealed class AddressError : AppError() {
+    data object AddressesLoadFailed : AddressError() {
+        override val message: String = "خطا در بارگذاری آدرس‌ها"
+    }
+
+    data object AddressNotFound : AddressError() {
+        override val message: String = "آدرس یافت نشد"
+    }
+
+    data object AddressSaveFailed : AddressError() {
+        override val message: String = "خطا در ذخیره آدرس"
+    }
+
+    data object AddressDeleteFailed : AddressError() {
+        override val message: String = "خطا در حذف آدرس"
+    }
+
+    data object InvalidAddress : AddressError() {
+        override val message: String = "اطلاعات آدرس نامعتبر است"
+    }
+
+    data object NotAuthenticated : AddressError() {
+        override val message: String = "برای مدیریت آدرس‌ها باید وارد شوید"
+    }
+}

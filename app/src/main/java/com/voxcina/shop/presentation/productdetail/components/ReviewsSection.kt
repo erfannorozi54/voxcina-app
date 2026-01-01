@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,25 +37,25 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
  * Reviews section component with section header, "مشاهده همه" button,
  * and horizontal scrollable LazyRow of ReviewCards.
  *
- * Requirements: 9.1, 9.2, 9.3
- *
  * @param reviews List of product reviews to display
  * @param onViewAllClick Callback when "مشاهده همه" button is clicked
+ * @param onAddReviewClick Callback when "ثبت نظر" button is clicked
+ * @param isLoadingReviews Whether reviews are currently loading
  * @param modifier Modifier for the component
  */
 @Composable
 fun ReviewsSection(
     reviews: List<ProductReview>,
     onViewAllClick: () -> Unit,
+    onAddReviewClick: () -> Unit = {},
+    isLoadingReviews: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    if (reviews.isEmpty()) return
-
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
             modifier = modifier.fillMaxWidth()
         ) {
-            // Section header with "مشاهده همه" button
+            // Section header with buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -79,32 +80,73 @@ fun ReviewsSection(
                     )
                 }
                 
-                // "مشاهده همه" button
-                TextButton(onClick = onViewAllClick) {
-                    Text(
-                        text = "مشاهده همه",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Primary
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = Primary
-                    )
+                // Action buttons
+                Row {
+                    // Add review button
+                    TextButton(onClick = onAddReviewClick) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = Primary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "ثبت نظر",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Primary
+                        )
+                    }
+                    
+                    // View all button (only show if there are reviews)
+                    if (reviews.isNotEmpty()) {
+                        TextButton(onClick = onViewAllClick) {
+                            Text(
+                                text = "مشاهده همه",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = Primary
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = Primary
+                            )
+                        }
+                    }
                 }
             }
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            // Horizontal scrollable list of review cards
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                items(reviews) { review ->
-                    ReviewCard(review = review)
+            when {
+                isLoadingReviews -> {
+                    // Loading state
+                    Text(
+                        text = "در حال بارگذاری نظرات...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Primary.copy(alpha = 0.6f)
+                    )
+                }
+                reviews.isEmpty() -> {
+                    // Empty state
+                    Text(
+                        text = "هنوز نظری ثبت نشده است. اولین نفری باشید که نظر می‌دهد!",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Primary.copy(alpha = 0.6f)
+                    )
+                }
+                else -> {
+                    // Horizontal scrollable list of review cards
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(horizontal = 4.dp)
+                    ) {
+                        items(reviews) { review ->
+                            ReviewCard(review = review)
+                        }
+                    }
                 }
             }
         }
@@ -124,6 +166,7 @@ private fun ReviewsSectionPreview() {
                     userAvatar = null,
                     rating = 5,
                     comment = "محصول عالی بود! کیفیت پارچه خیلی خوبه و سایزش دقیقا اندازه بود.",
+                    isRecommended = true,
                     createdAt = "2024-01-15"
                 ),
                 ProductReview(
@@ -132,20 +175,13 @@ private fun ReviewsSectionPreview() {
                     userName = "مریم احمدی",
                     userAvatar = null,
                     rating = 4,
-                    comment = "کیفیت خوب بود. ارسال سریع و بسته‌بندی مناسب.",
+                    comment = "کیفیت خوب بود. ارسال سریع و بستهبندی مناسب.",
+                    isRecommended = true,
                     createdAt = "2024-01-10"
-                ),
-                ProductReview(
-                    id = "3",
-                    userId = "user3",
-                    userName = "رضا کریمی",
-                    userAvatar = null,
-                    rating = 5,
-                    comment = "خیلی راضی هستم. پیشنهاد می‌کنم.",
-                    createdAt = "2024-01-05"
                 )
             ),
             onViewAllClick = {},
+            onAddReviewClick = {},
             modifier = Modifier.padding(16.dp)
         )
     }
@@ -153,21 +189,12 @@ private fun ReviewsSectionPreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
 @Composable
-private fun ReviewsSectionSingleReviewPreview() {
+private fun ReviewsSectionEmptyPreview() {
     VoxcinaTheme {
         ReviewsSection(
-            reviews = listOf(
-                ProductReview(
-                    id = "1",
-                    userId = "user1",
-                    userName = "علی محمدی",
-                    userAvatar = null,
-                    rating = 5,
-                    comment = "محصول عالی بود!",
-                    createdAt = "2024-01-15"
-                )
-            ),
+            reviews = emptyList(),
             onViewAllClick = {},
+            onAddReviewClick = {},
             modifier = Modifier.padding(16.dp)
         )
     }

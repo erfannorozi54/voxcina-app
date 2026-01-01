@@ -43,6 +43,7 @@ data class ProductReview(
     val userAvatar: String?,
     val rating: Int,
     val comment: String,
+    val isRecommended: Boolean = false,
     val createdAt: String
 )
 

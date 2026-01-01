@@ -1,0 +1,710 @@
+package com.voxcina.shop.presentation.profile
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.HeadsetMic
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.voxcina.shop.presentation.home.components.BottomNavBar
+import com.voxcina.shop.presentation.home.components.BottomNavDestination
+import com.voxcina.shop.presentation.profile.components.EditAccountButton
+import com.voxcina.shop.presentation.profile.components.LogoutButton
+import com.voxcina.shop.presentation.profile.components.OrderStatusSection
+import com.voxcina.shop.presentation.profile.components.ProfileHeader
+import com.voxcina.shop.presentation.profile.components.ProfileMenuGroup
+import com.voxcina.shop.presentation.profile.components.ProfileMenuItem
+import com.voxcina.shop.presentation.profile.components.QuickStatsRow
+import com.voxcina.shop.ui.components.EmptyState
+import com.voxcina.shop.ui.components.VoxcinaLoading
+import com.voxcina.shop.ui.components.VoxcinaPrimaryButton
+import com.voxcina.shop.ui.theme.Destructive
+import com.voxcina.shop.ui.theme.Primary
+import com.voxcina.shop.ui.theme.SecondaryLight
+import com.voxcina.shop.ui.theme.VoxcinaTheme
+
+/**
+ * Main Profile Screen composable that displays user profile information,
+ * quick stats, order status, and navigation menu items.
+ *
+ * Requirements: 8.1, 8.2, 8.3, 8.4
+ *
+ * @param onNavigateToEditProfile Callback when edit profile icon is tapped
+ * @param onNavigateToEditAccount Callback when edit account button is tapped
+ * @param onNavigateToAddresses Callback when addresses menu item is tapped
+ * @param onNavigateToFavorites Callback when favorites menu item is tapped
+ * @param onNavigateToRecentlyViewed Callback when recently viewed menu item is tapped
+ * @param onNavigateToSettings Callback when settings menu item is tapped
+ * @param onNavigateToSupport Callback when support menu item is tapped
+ * @param onNavigateToOrders Callback when order status or view all is tapped
+ * @param onNavigateToWallet Callback when wallet stat card is tapped
+ * @param onNavigateToLoyalty Callback when loyalty stat card is tapped
+ * @param onNavigateToCoupons Callback when coupons stat card is tapped
+ * @param onLogout Callback when logout is confirmed
+ * @param onBottomNavClick Callback when bottom navigation item is tapped
+ * @param viewModel ProfileViewModel instance
+ */
+@Composable
+fun ProfileScreen(
+    onNavigateToEditProfile: () -> Unit,
+    onNavigateToEditAccount: () -> Unit,
+    onNavigateToAddresses: () -> Unit,
+    onNavigateToFavorites: () -> Unit,
+    onNavigateToRecentlyViewed: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onNavigateToSupport: () -> Unit,
+    onNavigateToOrders: (OrderStatus?) -> Unit,
+    onNavigateToWallet: () -> Unit,
+    onNavigateToLoyalty: () -> Unit,
+    onNavigateToCoupons: () -> Unit,
+    onLogout: () -> Unit,
+    onBottomNavClick: (BottomNavDestination) -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val showLogoutDialog by viewModel.showLogoutDialog.collectAsState()
+
+    // Check if logout completed and navigate
+    LaunchedEffect(uiState) {
+        if (uiState is ProfileUiState.Success) {
+            val success = uiState as ProfileUiState.Success
+            if (success.isLoggingOut && !viewModel.isLoggedIn()) {
+                onLogout()
+            }
+        }
+    }
+
+    ProfileScreenContent(
+        uiState = uiState,
+        showLogoutDialog = showLogoutDialog,
+        onNavigateToEditProfile = onNavigateToEditProfile,
+        onNavigateToEditAccount = onNavigateToEditAccount,
+        onNavigateToAddresses = onNavigateToAddresses,
+        onNavigateToFavorites = onNavigateToFavorites,
+        onNavigateToRecentlyViewed = onNavigateToRecentlyViewed,
+        onNavigateToSettings = onNavigateToSettings,
+        onNavigateToSupport = onNavigateToSupport,
+        onNavigateToOrders = onNavigateToOrders,
+        onNavigateToWallet = onNavigateToWallet,
+        onNavigateToLoyalty = onNavigateToLoyalty,
+        onNavigateToCoupons = onNavigateToCoupons,
+        onLogoutClick = { viewModel.onEvent(ProfileEvent.LogoutClicked) },
+        onLogoutConfirm = { viewModel.onEvent(ProfileEvent.LogoutConfirmed) },
+        onLogoutDismiss = { viewModel.onEvent(ProfileEvent.LogoutDismissed) },
+        onRetry = { viewModel.onEvent(ProfileEvent.Retry) },
+        onBottomNavClick = onBottomNavClick
+    )
+}
+
+
+/**
+ * Stateless content composable for ProfileScreen.
+ * Handles UI state rendering (Loading, Success, Error).
+ */
+@Composable
+private fun ProfileScreenContent(
+    uiState: ProfileUiState,
+    showLogoutDialog: Boolean,
+    onNavigateToEditProfile: () -> Unit,
+    onNavigateToEditAccount: () -> Unit,
+    onNavigateToAddresses: () -> Unit,
+    onNavigateToFavorites: () -> Unit,
+    onNavigateToRecentlyViewed: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onNavigateToSupport: () -> Unit,
+    onNavigateToOrders: (OrderStatus?) -> Unit,
+    onNavigateToWallet: () -> Unit,
+    onNavigateToLoyalty: () -> Unit,
+    onNavigateToCoupons: () -> Unit,
+    onLogoutClick: () -> Unit,
+    onLogoutConfirm: () -> Unit,
+    onLogoutDismiss: () -> Unit,
+    onRetry: () -> Unit,
+    onBottomNavClick: (BottomNavDestination) -> Unit
+) {
+    // Get cart item count for bottom nav badge
+    val cartItemCount = when (uiState) {
+        is ProfileUiState.Success -> uiState.cartItemCount
+        is ProfileUiState.Error -> uiState.cachedData?.cartItemCount ?: 0
+        else -> 0
+    }
+
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        Scaffold(
+            bottomBar = {
+                BottomNavBar(
+                    selectedDestination = BottomNavDestination.PROFILE,
+                    cartItemCount = cartItemCount,
+                    onDestinationSelected = onBottomNavClick
+                )
+            },
+            containerColor = SecondaryLight
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                when (uiState) {
+                    is ProfileUiState.Loading -> {
+                        ProfileLoadingState()
+                    }
+                    is ProfileUiState.Success -> {
+                        ProfileSuccessState(
+                            state = uiState,
+                            onNavigateToEditProfile = onNavigateToEditProfile,
+                            onNavigateToEditAccount = onNavigateToEditAccount,
+                            onNavigateToAddresses = onNavigateToAddresses,
+                            onNavigateToFavorites = onNavigateToFavorites,
+                            onNavigateToRecentlyViewed = onNavigateToRecentlyViewed,
+                            onNavigateToSettings = onNavigateToSettings,
+                            onNavigateToSupport = onNavigateToSupport,
+                            onNavigateToOrders = onNavigateToOrders,
+                            onNavigateToWallet = onNavigateToWallet,
+                            onNavigateToLoyalty = onNavigateToLoyalty,
+                            onNavigateToCoupons = onNavigateToCoupons,
+                            onLogoutClick = onLogoutClick
+                        )
+                    }
+                    is ProfileUiState.Error -> {
+                        if (uiState.cachedData != null) {
+                            // Show cached data with error banner
+                            ProfileSuccessState(
+                                state = uiState.cachedData,
+                                onNavigateToEditProfile = onNavigateToEditProfile,
+                                onNavigateToEditAccount = onNavigateToEditAccount,
+                                onNavigateToAddresses = onNavigateToAddresses,
+                                onNavigateToFavorites = onNavigateToFavorites,
+                                onNavigateToRecentlyViewed = onNavigateToRecentlyViewed,
+                                onNavigateToSettings = onNavigateToSettings,
+                                onNavigateToSupport = onNavigateToSupport,
+                                onNavigateToOrders = onNavigateToOrders,
+                                onNavigateToWallet = onNavigateToWallet,
+                                onNavigateToLoyalty = onNavigateToLoyalty,
+                                onNavigateToCoupons = onNavigateToCoupons,
+                                onLogoutClick = onLogoutClick,
+                                errorMessage = uiState.message
+                            )
+                        } else {
+                            ProfileErrorState(
+                                message = uiState.message,
+                                onRetry = onRetry
+                            )
+                        }
+                    }
+                }
+
+                // Logout confirmation dialog
+                if (showLogoutDialog) {
+                    LogoutConfirmationDialog(
+                        onConfirm = onLogoutConfirm,
+                        onDismiss = onLogoutDismiss
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Loading state for profile screen.
+ * Displays centered loading indicator.
+ *
+ * Requirements: 9.1
+ */
+@Composable
+private fun ProfileLoadingState() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        VoxcinaLoading(
+            size = 100.dp,
+            loadingText = "در حال بارگذاری پروفایل..."
+        )
+    }
+}
+
+/**
+ * Error state for profile screen.
+ * Displays error message with retry button.
+ *
+ * Requirements: 9.2
+ */
+@Composable
+private fun ProfileErrorState(
+    message: String,
+    onRetry: () -> Unit
+) {
+    EmptyState(
+        icon = Icons.Default.Error,
+        title = "خطا در بارگذاری",
+        subtitle = message,
+        actionButtonText = "تلاش مجدد",
+        onActionClick = onRetry,
+        iconTint = Destructive.copy(alpha = 0.7f)
+    )
+}
+
+
+/**
+ * Success state for profile screen.
+ * Displays all profile sections in a scrollable column.
+ *
+ * Requirements: 1.1-1.6, 2.1-2.4, 3.1-3.7, 4.1-4.10, 5.1-5.8, 6.1-6.6, 7.1-7.3
+ */
+@Composable
+private fun ProfileSuccessState(
+    state: ProfileUiState.Success,
+    onNavigateToEditProfile: () -> Unit,
+    onNavigateToEditAccount: () -> Unit,
+    onNavigateToAddresses: () -> Unit,
+    onNavigateToFavorites: () -> Unit,
+    onNavigateToRecentlyViewed: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onNavigateToSupport: () -> Unit,
+    onNavigateToOrders: (OrderStatus?) -> Unit,
+    onNavigateToWallet: () -> Unit,
+    onNavigateToLoyalty: () -> Unit,
+    onNavigateToCoupons: () -> Unit,
+    onLogoutClick: () -> Unit,
+    errorMessage: String? = null
+) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(horizontal = 16.dp)
+    ) {
+        // Error banner if showing cached data with error
+        if (errorMessage != null) {
+            ErrorBanner(message = errorMessage)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Profile Header - Requirements: 1.1-1.6
+        ProfileHeader(
+            avatarUrl = state.avatarUrl,
+            userName = state.userName,
+            phoneNumber = state.phoneNumber,
+            onEditClick = onNavigateToEditProfile,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Edit Account Button - Requirements: 2.1-2.4
+        EditAccountButton(
+            onClick = onNavigateToEditAccount,
+            enabled = !state.isLoggingOut
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Quick Stats Row - Requirements: 3.1-3.7
+        QuickStatsRow(
+            walletBalance = state.walletBalance,
+            loyaltyPoints = state.loyaltyPoints,
+            activeCoupons = state.activeCoupons,
+            onWalletClick = onNavigateToWallet,
+            onLoyaltyClick = onNavigateToLoyalty,
+            onCouponsClick = onNavigateToCoupons
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Order Status Section - Requirements: 4.1-4.10
+        OrderStatusSection(
+            pendingCount = state.pendingOrdersCount,
+            processingCount = state.processingOrdersCount,
+            shippedCount = state.shippedOrdersCount,
+            returnedCount = state.returnedOrdersCount,
+            onStatusClick = { status ->
+                onNavigateToOrders(
+                    when (status) {
+                        com.voxcina.shop.presentation.profile.components.OrderStatus.PENDING -> OrderStatus.PENDING
+                        com.voxcina.shop.presentation.profile.components.OrderStatus.PROCESSING -> OrderStatus.PROCESSING
+                        com.voxcina.shop.presentation.profile.components.OrderStatus.SHIPPED -> OrderStatus.SHIPPED
+                        com.voxcina.shop.presentation.profile.components.OrderStatus.RETURNED -> OrderStatus.RETURNED
+                    }
+                )
+            },
+            onViewAllClick = { onNavigateToOrders(null) }
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Account Menu Group - Requirements: 5.1-5.8
+        AccountMenuGroup(
+            onAddressesClick = onNavigateToAddresses,
+            onFavoritesClick = onNavigateToFavorites,
+            onRecentlyViewedClick = onNavigateToRecentlyViewed
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Settings Menu Group - Requirements: 6.1-6.6
+        SettingsMenuGroup(
+            onSettingsClick = onNavigateToSettings,
+            onSupportClick = onNavigateToSupport
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Logout Button - Requirements: 7.1-7.3
+        LogoutButton(
+            onClick = onLogoutClick,
+            enabled = !state.isLoggingOut
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+/**
+ * Error banner displayed at top when showing cached data with error.
+ */
+@Composable
+private fun ErrorBanner(message: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = Destructive.copy(alpha = 0.1f),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+            )
+            .padding(12.dp)
+    ) {
+        Text(
+            text = message,
+            color = Destructive,
+            style = androidx.compose.material3.MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
+
+/**
+ * Account menu group containing addresses, favorites, and recently viewed items.
+ *
+ * Requirements: 5.1-5.8
+ */
+@Composable
+private fun AccountMenuGroup(
+    onAddressesClick: () -> Unit,
+    onFavoritesClick: () -> Unit,
+    onRecentlyViewedClick: () -> Unit
+) {
+    ProfileMenuGroup {
+        // My Addresses - Requirements: 5.2
+        ProfileMenuItem(
+            icon = Icons.Default.LocationOn,
+            label = "آدرس‌های من",
+            onClick = onAddressesClick,
+            showDivider = true
+        )
+
+        // Favorites - Requirements: 5.3
+        ProfileMenuItem(
+            icon = Icons.Default.Favorite,
+            label = "علاقه‌مندی‌ها",
+            onClick = onFavoritesClick,
+            showDivider = true
+        )
+
+        // Recently Viewed - Requirements: 5.4
+        ProfileMenuItem(
+            icon = Icons.Default.History,
+            label = "بازدیدهای اخیر",
+            onClick = onRecentlyViewedClick,
+            showDivider = false
+        )
+    }
+}
+
+/**
+ * Settings menu group containing settings and support items.
+ *
+ * Requirements: 6.1-6.6
+ */
+@Composable
+private fun SettingsMenuGroup(
+    onSettingsClick: () -> Unit,
+    onSupportClick: () -> Unit
+) {
+    ProfileMenuGroup {
+        // Settings - Requirements: 6.2
+        ProfileMenuItem(
+            icon = Icons.Default.Settings,
+            label = "تنظیمات",
+            onClick = onSettingsClick,
+            showDivider = true
+        )
+
+        // Support & FAQ - Requirements: 6.3
+        ProfileMenuItem(
+            icon = Icons.Default.HeadsetMic,
+            label = "پشتیبانی و سوالات متداول",
+            onClick = onSupportClick,
+            showDivider = false
+        )
+    }
+}
+
+/**
+ * Logout confirmation dialog.
+ *
+ * Requirements: 7.3, 7.4, 7.5
+ */
+@Composable
+private fun LogoutConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "خروج از حساب کاربری",
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+        },
+        text = {
+            Text(
+                text = "آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟",
+                color = Color.Gray
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(
+                    text = "خروج",
+                    color = Destructive,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "انصراف",
+                    color = Primary
+                )
+            }
+        },
+        containerColor = Color.White
+    )
+}
+
+// ============== Previews ==============
+
+@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
+@Composable
+private fun ProfileScreenLoadingPreview() {
+    VoxcinaTheme {
+        ProfileScreenContent(
+            uiState = ProfileUiState.Loading,
+            showLogoutDialog = false,
+            onNavigateToEditProfile = {},
+            onNavigateToEditAccount = {},
+            onNavigateToAddresses = {},
+            onNavigateToFavorites = {},
+            onNavigateToRecentlyViewed = {},
+            onNavigateToSettings = {},
+            onNavigateToSupport = {},
+            onNavigateToOrders = {},
+            onNavigateToWallet = {},
+            onNavigateToLoyalty = {},
+            onNavigateToCoupons = {},
+            onLogoutClick = {},
+            onLogoutConfirm = {},
+            onLogoutDismiss = {},
+            onRetry = {},
+            onBottomNavClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
+@Composable
+private fun ProfileScreenSuccessPreview() {
+    VoxcinaTheme {
+        ProfileScreenContent(
+            uiState = ProfileUiState.Success(
+                userName = "علی احمدی",
+                phoneNumber = "09123456789",
+                avatarUrl = null,
+                walletBalance = 250000,
+                loyaltyPoints = 1500,
+                activeCoupons = 3,
+                pendingOrdersCount = 2,
+                processingOrdersCount = 1,
+                shippedOrdersCount = 0,
+                returnedOrdersCount = 0,
+                cartItemCount = 5
+            ),
+            showLogoutDialog = false,
+            onNavigateToEditProfile = {},
+            onNavigateToEditAccount = {},
+            onNavigateToAddresses = {},
+            onNavigateToFavorites = {},
+            onNavigateToRecentlyViewed = {},
+            onNavigateToSettings = {},
+            onNavigateToSupport = {},
+            onNavigateToOrders = {},
+            onNavigateToWallet = {},
+            onNavigateToLoyalty = {},
+            onNavigateToCoupons = {},
+            onLogoutClick = {},
+            onLogoutConfirm = {},
+            onLogoutDismiss = {},
+            onRetry = {},
+            onBottomNavClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
+@Composable
+private fun ProfileScreenErrorPreview() {
+    VoxcinaTheme {
+        ProfileScreenContent(
+            uiState = ProfileUiState.Error(
+                message = "خطا در اتصال به سرور",
+                cachedData = null
+            ),
+            showLogoutDialog = false,
+            onNavigateToEditProfile = {},
+            onNavigateToEditAccount = {},
+            onNavigateToAddresses = {},
+            onNavigateToFavorites = {},
+            onNavigateToRecentlyViewed = {},
+            onNavigateToSettings = {},
+            onNavigateToSupport = {},
+            onNavigateToOrders = {},
+            onNavigateToWallet = {},
+            onNavigateToLoyalty = {},
+            onNavigateToCoupons = {},
+            onLogoutClick = {},
+            onLogoutConfirm = {},
+            onLogoutDismiss = {},
+            onRetry = {},
+            onBottomNavClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
+@Composable
+private fun ProfileScreenWithLogoutDialogPreview() {
+    VoxcinaTheme {
+        ProfileScreenContent(
+            uiState = ProfileUiState.Success(
+                userName = "علی احمدی",
+                phoneNumber = "09123456789",
+                avatarUrl = null,
+                walletBalance = 250000,
+                loyaltyPoints = 1500,
+                activeCoupons = 3,
+                pendingOrdersCount = 2,
+                processingOrdersCount = 1,
+                shippedOrdersCount = 0,
+                returnedOrdersCount = 0,
+                cartItemCount = 5
+            ),
+            showLogoutDialog = true,
+            onNavigateToEditProfile = {},
+            onNavigateToEditAccount = {},
+            onNavigateToAddresses = {},
+            onNavigateToFavorites = {},
+            onNavigateToRecentlyViewed = {},
+            onNavigateToSettings = {},
+            onNavigateToSupport = {},
+            onNavigateToOrders = {},
+            onNavigateToWallet = {},
+            onNavigateToLoyalty = {},
+            onNavigateToCoupons = {},
+            onLogoutClick = {},
+            onLogoutConfirm = {},
+            onLogoutDismiss = {},
+            onRetry = {},
+            onBottomNavClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
+@Composable
+private fun ProfileScreenCachedWithErrorPreview() {
+    VoxcinaTheme {
+        ProfileScreenContent(
+            uiState = ProfileUiState.Error(
+                message = "خطا در بروزرسانی اطلاعات",
+                cachedData = ProfileUiState.Success(
+                    userName = "علی احمدی",
+                    phoneNumber = "09123456789",
+                    avatarUrl = null,
+                    walletBalance = 250000,
+                    loyaltyPoints = 1500,
+                    activeCoupons = 3,
+                    pendingOrdersCount = 2,
+                    processingOrdersCount = 1,
+                    shippedOrdersCount = 0,
+                    returnedOrdersCount = 0,
+                    cartItemCount = 5
+                )
+            ),
+            showLogoutDialog = false,
+            onNavigateToEditProfile = {},
+            onNavigateToEditAccount = {},
+            onNavigateToAddresses = {},
+            onNavigateToFavorites = {},
+            onNavigateToRecentlyViewed = {},
+            onNavigateToSettings = {},
+            onNavigateToSupport = {},
+            onNavigateToOrders = {},
+            onNavigateToWallet = {},
+            onNavigateToLoyalty = {},
+            onNavigateToCoupons = {},
+            onLogoutClick = {},
+            onLogoutConfirm = {},
+            onLogoutDismiss = {},
+            onRetry = {},
+            onBottomNavClick = {}
+        )
+    }
+}

@@ -1,5 +1,6 @@
 package com.voxcina.shop.presentation.productdetail.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,8 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,14 +39,13 @@ import coil3.request.crossfade
 import com.voxcina.shop.domain.model.ProductReview
 import com.voxcina.shop.ui.components.SoftShadowCard
 import com.voxcina.shop.ui.theme.Primary
+import com.voxcina.shop.ui.theme.Success
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 import com.voxcina.shop.ui.theme.Warning
 
 /**
  * Review card component displaying a single user review with avatar,
- * name, star rating row, and comment. Uses SoftShadowCard for styling.
- *
- * Requirements: 9.2, 9.4
+ * name, star rating row, comment, and recommendation badge.
  *
  * @param review The product review to display
  * @param modifier Modifier for the component
@@ -55,7 +57,7 @@ fun ReviewCard(
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         SoftShadowCard(
-            modifier = modifier.widthIn(min = 240.dp),
+            modifier = modifier.widthIn(min = 260.dp, max = 300.dp),
             cornerRadius = 16.dp
         ) {
             Column(
@@ -74,13 +76,14 @@ fun ReviewCard(
                         contentDescription = "تصویر ${review.userName}",
                         modifier = Modifier
                             .size(40.dp)
-                            .clip(CircleShape),
+                            .clip(CircleShape)
+                            .background(Primary.copy(alpha = 0.1f)),
                         contentScale = ContentScale.Crop
                     )
                     
                     Spacer(modifier = Modifier.width(12.dp))
                     
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         // User name
                         Text(
                             text = review.userName,
@@ -95,6 +98,11 @@ fun ReviewCard(
                         
                         // Star rating row
                         StarRatingRow(rating = review.rating)
+                    }
+                    
+                    // Recommendation badge
+                    if (review.isRecommended) {
+                        RecommendationBadge()
                     }
                 }
                 
@@ -115,10 +123,6 @@ fun ReviewCard(
 
 /**
  * Star rating row displaying filled and outlined stars.
- *
- * @param rating Rating value (1-5)
- * @param modifier Modifier for the component
- * @param maxRating Maximum rating value (default: 5)
  */
 @Composable
 private fun StarRatingRow(
@@ -141,6 +145,36 @@ private fun StarRatingRow(
     }
 }
 
+/**
+ * Small badge indicating the user recommends this product.
+ */
+@Composable
+private fun RecommendationBadge(
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(Success.copy(alpha = 0.1f))
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Filled.ThumbUp,
+            contentDescription = "پیشنهاد می‌کنم",
+            modifier = Modifier.size(12.dp),
+            tint = Success
+        )
+        Text(
+            text = "پیشنهاد",
+            style = MaterialTheme.typography.labelSmall,
+            color = Success,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
 @Composable
 private fun ReviewCardPreview() {
@@ -152,7 +186,8 @@ private fun ReviewCardPreview() {
                 userName = "علی محمدی",
                 userAvatar = null,
                 rating = 5,
-                comment = "محصول عالی بود! کیفیت پارچه خیلی خوبه و سایزش دقیقا اندازه بود. پیشنهاد می‌کنم.",
+                comment = "محصول عالی بود! کیفیت پارچه خیلی خوبه و سایزش دقیقا اندازه بود. پیشنهاد میکنم.",
+                isRecommended = true,
                 createdAt = "2024-01-15"
             ),
             modifier = Modifier.padding(16.dp)
@@ -162,7 +197,7 @@ private fun ReviewCardPreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
 @Composable
-private fun ReviewCardLowRatingPreview() {
+private fun ReviewCardNoRecommendPreview() {
     VoxcinaTheme {
         ReviewCard(
             review = ProductReview(
@@ -172,28 +207,8 @@ private fun ReviewCardLowRatingPreview() {
                 userAvatar = null,
                 rating = 3,
                 comment = "کیفیت متوسط بود. انتظار بیشتری داشتم.",
+                isRecommended = false,
                 createdAt = "2024-01-10"
-            ),
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ReviewCardLongCommentPreview() {
-    VoxcinaTheme {
-        ReviewCard(
-            review = ProductReview(
-                id = "3",
-                userId = "user3",
-                userName = "رضا کریمی",
-                userAvatar = null,
-                rating = 4,
-                comment = "این محصول واقعا خوب بود. من خیلی راضی هستم از خریدم. " +
-                        "کیفیت پارچه عالی است و رنگش بعد از چند بار شستشو هم ثابت مانده. " +
-                        "ارسال هم سریع بود و بسته‌بندی مناسب داشت.",
-                createdAt = "2024-01-05"
             ),
             modifier = Modifier.padding(16.dp)
         )

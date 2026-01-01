@@ -45,6 +45,7 @@ import com.voxcina.shop.domain.model.SizeVariant
 import com.voxcina.shop.presentation.home.components.BottomNavBar
 import com.voxcina.shop.presentation.home.components.BottomNavDestination
 import com.voxcina.shop.presentation.home.components.ShimmerBox
+import com.voxcina.shop.presentation.productdetail.components.AddReviewBottomSheet
 import com.voxcina.shop.presentation.productdetail.components.ColorSelector
 import com.voxcina.shop.presentation.productdetail.components.DescriptionSection
 import com.voxcina.shop.presentation.productdetail.components.FloatingAddToCartBar
@@ -143,6 +144,17 @@ fun ProductDetailScreen(
                             context.startActivity(Intent.createChooser(shareIntent, "اشتراک‌گذاری"))
                         }
                     )
+                    
+                    // Add Review Bottom Sheet
+                    if (state.showAddReviewSheet) {
+                        AddReviewBottomSheet(
+                            onDismiss = { viewModel.onEvent(ProductDetailEvent.DismissAddReview) },
+                            onSubmit = { rating, comment, isRecommended ->
+                                viewModel.onEvent(ProductDetailEvent.SubmitReview(rating, comment, isRecommended))
+                            },
+                            isSubmitting = state.isSubmittingReview
+                        )
+                    }
                 }
 
                 is ProductDetailUiState.Error -> {
@@ -270,24 +282,12 @@ private fun ProductDetailContent(
                 }
 
                 // Reviews Section
-                // TODO: Load reviews from API - using placeholder for now
-                val sampleReviews = listOf(
-                    ProductReview(
-                        id = "1",
-                        userId = "user1",
-                        userName = "کاربر نمونه",
-                        userAvatar = null,
-                        rating = 5,
-                        comment = "محصول عالی بود!",
-                        createdAt = "2024-01-15"
-                    )
+                ReviewsSection(
+                    reviews = state.reviews,
+                    onViewAllClick = onNavigateToReviews,
+                    onAddReviewClick = { onEvent(ProductDetailEvent.ShowAddReview) },
+                    isLoadingReviews = state.isLoadingReviews
                 )
-                if (state.product.reviewCount > 0) {
-                    ReviewsSection(
-                        reviews = sampleReviews,
-                        onViewAllClick = onNavigateToReviews
-                    )
-                }
 
                 // Bottom spacing for floating bar
                 Spacer(modifier = Modifier.height(100.dp))
