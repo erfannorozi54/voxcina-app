@@ -4,14 +4,20 @@ import com.voxcina.shop.data.repository.AddressRepositoryImpl
 import com.voxcina.shop.data.repository.AuthRepository
 import com.voxcina.shop.data.repository.AuthRepositoryImpl
 import com.voxcina.shop.data.repository.CartRepositoryImpl
+import com.voxcina.shop.data.repository.FaqRepositoryImpl
 import com.voxcina.shop.data.repository.HomeRepository
 import com.voxcina.shop.data.repository.HomeRepositoryImpl
 import com.voxcina.shop.data.repository.ProductRepositoryImpl
 import com.voxcina.shop.data.repository.ProfileRepositoryImpl
+import com.voxcina.shop.data.repository.PromotionRepositoryImpl
+import com.voxcina.shop.data.repository.TicketRepositoryImpl
 import com.voxcina.shop.domain.repository.AddressRepository
 import com.voxcina.shop.domain.repository.CartRepository
+import com.voxcina.shop.domain.repository.FaqRepository
 import com.voxcina.shop.domain.repository.ProductRepository
 import com.voxcina.shop.domain.repository.ProfileRepository
+import com.voxcina.shop.domain.repository.PromotionRepository
+import com.voxcina.shop.domain.repository.TicketRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -45,4 +51,16 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAddressRepository(impl: AddressRepositoryImpl): AddressRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPromotionRepository(impl: PromotionRepositoryImpl): PromotionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFaqRepository(impl: FaqRepositoryImpl): FaqRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTicketRepository(impl: TicketRepositoryImpl): TicketRepository
 }

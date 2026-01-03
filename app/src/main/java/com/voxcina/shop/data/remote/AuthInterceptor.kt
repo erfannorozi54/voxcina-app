@@ -1,19 +1,33 @@
 package com.voxcina.shop.data.remote
 
+import com.voxcina.shop.data.local.SessionManager
 import com.voxcina.shop.data.local.TokenManager
+import com.voxcina.shop.data.remote.dto.RefreshTokenRequest
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * OkHttp interceptor that adds authentication headers to requests.
- * Automatically injects the Bearer token from TokenManager.
+ * OkHttp interceptor that adds authentication headers and handles token refresh.
  */
 @Singleton
 class AuthInterceptor @Inject constructor(
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val sessionManager: SessionManager
 ) : Interceptor {
+    
+    private val refreshMutex = Mutex()
+    
+    @Volatile
+    private var authApi: AuthApi? = null
+    
+    fun setAuthApi(api: AuthApi) {
+        authApi = api
+    }
     
     companion object {
         private const val HEADER_AUTHORIZATION = "Authorization"
@@ -23,29 +37,63 @@ class AuthInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         
-        // Skip auth header for public endpoints
         if (isPublicEndpoint(originalRequest.url.encodedPath)) {
             return chain.proceed(originalRequest)
         }
         
         val accessToken = tokenManager.getAccessToken()
-        
-        // If no token available, proceed without auth header
         if (accessToken.isNullOrBlank()) {
             return chain.proceed(originalRequest)
         }
         
-        // Add authorization header
         val authenticatedRequest = originalRequest.newBuilder()
             .header(HEADER_AUTHORIZATION, "$BEARER_PREFIX$accessToken")
             .build()
         
-        return chain.proceed(authenticatedRequest)
+        val response = chain.proceed(authenticatedRequest)
+        
+        // Handle 401 - try to refresh token
+        if (response.code == 401 && !isRefreshEndpoint(originalRequest.url.encodedPath)) {
+            response.close()
+            
+            val newToken = runBlocking { tryRefreshToken() }
+            
+            if (newToken != null) {
+                // Retry with new token
+                val retryRequest = originalRequest.newBuilder()
+                    .header(HEADER_AUTHORIZATION, "$BEARER_PREFIX$newToken")
+                    .build()
+                return chain.proceed(retryRequest)
+            } else {
+                // Refresh failed - session expired
+                sessionManager.onSessionExpired()
+            }
+        }
+        
+        return response
     }
     
-    /**
-     * Determines if the endpoint is public and doesn't require authentication.
-     */
+    private suspend fun tryRefreshToken(): String? {
+        return refreshMutex.withLock {
+            val refreshToken = tokenManager.getRefreshToken() ?: return@withLock null
+            val api = authApi ?: return@withLock null
+            
+            try {
+                val response = api.refreshToken(RefreshTokenRequest(refreshToken))
+                if (response.isSuccessful) {
+                    val newToken = response.body()?.accessToken
+                    if (newToken != null) {
+                        tokenManager.saveTokens(newToken, refreshToken)
+                        return@withLock newToken
+                    }
+                }
+            } catch (_: Exception) {
+                // Refresh failed
+            }
+            null
+        }
+    }
+    
     private fun isPublicEndpoint(path: String): Boolean {
         val publicPaths = listOf(
             "/auth/login",
@@ -54,8 +102,14 @@ class AuthInterceptor @Inject constructor(
             "/auth/send-otp",
             "/auth/verify-otp",
             "/auth/forgot-password",
-            "/auth/refresh-token"
+            "/users/login",
+            "/users/check-phone",
+            "/users/register"
         )
         return publicPaths.any { path.contains(it, ignoreCase = true) }
+    }
+    
+    private fun isRefreshEndpoint(path: String): Boolean {
+        return path.contains("/users/refresh", ignoreCase = true)
     }
 }

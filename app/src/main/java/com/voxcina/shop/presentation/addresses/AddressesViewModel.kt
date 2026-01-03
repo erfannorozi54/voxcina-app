@@ -2,6 +2,7 @@ package com.voxcina.shop.presentation.addresses
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.voxcina.shop.data.remote.LocalityApi
 import com.voxcina.shop.domain.repository.AddressRepository
 import com.voxcina.shop.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddressesViewModel @Inject constructor(
-    private val addressRepository: AddressRepository
+    private val addressRepository: AddressRepository,
+    private val localityApi: LocalityApi
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddressesUiState())
@@ -24,6 +26,7 @@ class AddressesViewModel @Inject constructor(
 
     init {
         loadAddresses()
+        loadProvinces()
     }
 
     fun loadAddresses() {
@@ -40,15 +43,51 @@ class AddressesViewModel @Inject constructor(
         }
     }
 
+    private fun loadProvinces() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(loadingProvinces = true) }
+            try {
+                val response = localityApi.getProvinces()
+                if (response.isSuccessful) {
+                    _uiState.update { it.copy(provinces = response.body() ?: emptyList(), loadingProvinces = false) }
+                } else {
+                    _uiState.update { it.copy(loadingProvinces = false) }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(loadingProvinces = false) }
+            }
+        }
+    }
+
+    fun loadCities(provinceCode: Int) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(loadingCities = true, cities = emptyList()) }
+            try {
+                val response = localityApi.getCities(provinceCode)
+                if (response.isSuccessful) {
+                    _uiState.update { it.copy(cities = response.body() ?: emptyList(), loadingCities = false) }
+                } else {
+                    _uiState.update { it.copy(loadingCities = false) }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(loadingCities = false) }
+            }
+        }
+    }
+
     fun showAddDialog() {
-        _formState.value = AddressFormState()
-        _uiState.update { it.copy(showAddDialog = true, editingIndex = null, saveError = null) }
+        _formState.value = AddressFormState(isDefault = _uiState.value.addresses.isEmpty())
+        _uiState.update { it.copy(showAddDialog = true, editingIndex = null, saveError = null, cities = emptyList()) }
     }
 
     fun showEditDialog(index: Int) {
         val address = _uiState.value.addresses.getOrNull(index) ?: return
         _formState.value = address.toFormState()
         _uiState.update { it.copy(showAddDialog = true, editingIndex = index, saveError = null) }
+        // Load cities for the province
+        if (address.provinceCode > 0) {
+            loadCities(address.provinceCode)
+        }
     }
 
     fun dismissDialog() {
@@ -62,7 +101,7 @@ class AddressesViewModel @Inject constructor(
     fun saveAddress() {
         val form = _formState.value
         if (!form.isValid()) {
-            _uiState.update { it.copy(saveError = "لطفاً فیلدهای ضروری را پر کنید") }
+            _uiState.update { it.copy(saveError = "لطفاً تمام فیلدهای ضروری را پر کنید") }
             return
         }
 

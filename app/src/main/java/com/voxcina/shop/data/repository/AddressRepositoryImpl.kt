@@ -54,9 +54,16 @@ class AddressRepositoryImpl @Inject constructor(
     }
 
     private fun UserAddress.toRequest() = AddressRequestDto(
+        title = title,
+        firstName = firstName,
+        lastName = lastName,
+        phoneNumber = phoneNumber,
+        province = province,
+        provinceCode = if (provinceCode > 0) provinceCode else null,
+        city = city,
+        cityCode = if (cityCode > 0) cityCode else null,
         street = street,
         address = address,
-        city = city,
         postalCode = postalCode,
         latitude = latitude,
         longitude = longitude,

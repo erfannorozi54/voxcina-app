@@ -8,9 +8,12 @@ import com.voxcina.shop.data.remote.AuthApi
 import com.voxcina.shop.data.remote.AuthInterceptor
 import com.voxcina.shop.data.remote.CartApi
 import com.voxcina.shop.data.remote.DiscountApi
+import com.voxcina.shop.data.remote.FaqApi
 import com.voxcina.shop.data.remote.HomeApi
+import com.voxcina.shop.data.remote.LocalityApi
 import com.voxcina.shop.data.remote.ProductApi
 import com.voxcina.shop.data.remote.ProfileApi
+import com.voxcina.shop.data.remote.TicketApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,8 +59,10 @@ object NetworkModule {
     
     @Provides
     @Singleton
-    fun provideAuthApi(retrofit: Retrofit): AuthApi {
-        return retrofit.create(AuthApi::class.java)
+    fun provideAuthApi(retrofit: Retrofit, authInterceptor: AuthInterceptor): AuthApi {
+        val api = retrofit.create(AuthApi::class.java)
+        authInterceptor.setAuthApi(api)
+        return api
     }
     
     @Provides
@@ -88,5 +93,23 @@ object NetworkModule {
     @Singleton
     fun provideProfileApi(retrofit: Retrofit): ProfileApi {
         return retrofit.create(ProfileApi::class.java)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideLocalityApi(retrofit: Retrofit): LocalityApi {
+        return retrofit.create(LocalityApi::class.java)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideFaqApi(retrofit: Retrofit): FaqApi {
+        return retrofit.create(FaqApi::class.java)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideTicketApi(retrofit: Retrofit): TicketApi {
+        return retrofit.create(TicketApi::class.java)
     }
 }

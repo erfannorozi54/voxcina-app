@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.HeadsetMic
@@ -65,6 +66,7 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
  * @param onNavigateToRecentlyViewed Callback when recently viewed menu item is tapped
  * @param onNavigateToSettings Callback when settings menu item is tapped
  * @param onNavigateToSupport Callback when support menu item is tapped
+ * @param onNavigateToTickets Callback when tickets menu item is tapped
  * @param onNavigateToOrders Callback when order status or view all is tapped
  * @param onNavigateToWallet Callback when wallet stat card is tapped
  * @param onNavigateToLoyalty Callback when loyalty stat card is tapped
@@ -82,6 +84,7 @@ fun ProfileScreen(
     onNavigateToRecentlyViewed: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToSupport: () -> Unit,
+    onNavigateToTickets: () -> Unit,
     onNavigateToOrders: (OrderStatus?) -> Unit,
     onNavigateToWallet: () -> Unit,
     onNavigateToLoyalty: () -> Unit,
@@ -113,6 +116,7 @@ fun ProfileScreen(
         onNavigateToRecentlyViewed = onNavigateToRecentlyViewed,
         onNavigateToSettings = onNavigateToSettings,
         onNavigateToSupport = onNavigateToSupport,
+        onNavigateToTickets = onNavigateToTickets,
         onNavigateToOrders = onNavigateToOrders,
         onNavigateToWallet = onNavigateToWallet,
         onNavigateToLoyalty = onNavigateToLoyalty,
@@ -141,6 +145,7 @@ private fun ProfileScreenContent(
     onNavigateToRecentlyViewed: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToSupport: () -> Unit,
+    onNavigateToTickets: () -> Unit,
     onNavigateToOrders: (OrderStatus?) -> Unit,
     onNavigateToWallet: () -> Unit,
     onNavigateToLoyalty: () -> Unit,
@@ -188,6 +193,7 @@ private fun ProfileScreenContent(
                             onNavigateToRecentlyViewed = onNavigateToRecentlyViewed,
                             onNavigateToSettings = onNavigateToSettings,
                             onNavigateToSupport = onNavigateToSupport,
+                            onNavigateToTickets = onNavigateToTickets,
                             onNavigateToOrders = onNavigateToOrders,
                             onNavigateToWallet = onNavigateToWallet,
                             onNavigateToLoyalty = onNavigateToLoyalty,
@@ -207,6 +213,7 @@ private fun ProfileScreenContent(
                                 onNavigateToRecentlyViewed = onNavigateToRecentlyViewed,
                                 onNavigateToSettings = onNavigateToSettings,
                                 onNavigateToSupport = onNavigateToSupport,
+                                onNavigateToTickets = onNavigateToTickets,
                                 onNavigateToOrders = onNavigateToOrders,
                                 onNavigateToWallet = onNavigateToWallet,
                                 onNavigateToLoyalty = onNavigateToLoyalty,
@@ -292,6 +299,7 @@ private fun ProfileSuccessState(
     onNavigateToRecentlyViewed: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToSupport: () -> Unit,
+    onNavigateToTickets: () -> Unit,
     onNavigateToOrders: (OrderStatus?) -> Unit,
     onNavigateToWallet: () -> Unit,
     onNavigateToLoyalty: () -> Unit,
@@ -379,7 +387,8 @@ private fun ProfileSuccessState(
         // Settings Menu Group - Requirements: 6.1-6.6
         SettingsMenuGroup(
             onSettingsClick = onNavigateToSettings,
-            onSupportClick = onNavigateToSupport
+            onSupportClick = onNavigateToSupport,
+            onTicketsClick = onNavigateToTickets
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -463,7 +472,8 @@ private fun AccountMenuGroup(
 @Composable
 private fun SettingsMenuGroup(
     onSettingsClick: () -> Unit,
-    onSupportClick: () -> Unit
+    onSupportClick: () -> Unit,
+    onTicketsClick: () -> Unit
 ) {
     ProfileMenuGroup {
         // Settings - Requirements: 6.2
@@ -474,10 +484,18 @@ private fun SettingsMenuGroup(
             showDivider = true
         )
 
+        // Tickets
+        ProfileMenuItem(
+            icon = Icons.Default.ConfirmationNumber,
+            label = "تیکتهای پشتیبانی",
+            onClick = onTicketsClick,
+            showDivider = true
+        )
+
         // Support & FAQ - Requirements: 6.3
         ProfileMenuItem(
             icon = Icons.Default.HeadsetMic,
-            label = "پشتیبانی و سوالات متداول",
+            label = "سوالات متداول",
             onClick = onSupportClick,
             showDivider = false
         )
@@ -546,6 +564,7 @@ private fun ProfileScreenLoadingPreview() {
             onNavigateToRecentlyViewed = {},
             onNavigateToSettings = {},
             onNavigateToSupport = {},
+            onNavigateToTickets = {},
             onNavigateToOrders = {},
             onNavigateToWallet = {},
             onNavigateToLoyalty = {},
@@ -585,6 +604,7 @@ private fun ProfileScreenSuccessPreview() {
             onNavigateToRecentlyViewed = {},
             onNavigateToSettings = {},
             onNavigateToSupport = {},
+            onNavigateToTickets = {},
             onNavigateToOrders = {},
             onNavigateToWallet = {},
             onNavigateToLoyalty = {},
@@ -615,6 +635,7 @@ private fun ProfileScreenErrorPreview() {
             onNavigateToRecentlyViewed = {},
             onNavigateToSettings = {},
             onNavigateToSupport = {},
+            onNavigateToTickets = {},
             onNavigateToOrders = {},
             onNavigateToWallet = {},
             onNavigateToLoyalty = {},
@@ -654,6 +675,7 @@ private fun ProfileScreenWithLogoutDialogPreview() {
             onNavigateToRecentlyViewed = {},
             onNavigateToSettings = {},
             onNavigateToSupport = {},
+            onNavigateToTickets = {},
             onNavigateToOrders = {},
             onNavigateToWallet = {},
             onNavigateToLoyalty = {},
@@ -696,6 +718,7 @@ private fun ProfileScreenCachedWithErrorPreview() {
             onNavigateToRecentlyViewed = {},
             onNavigateToSettings = {},
             onNavigateToSupport = {},
+            onNavigateToTickets = {},
             onNavigateToOrders = {},
             onNavigateToWallet = {},
             onNavigateToLoyalty = {},

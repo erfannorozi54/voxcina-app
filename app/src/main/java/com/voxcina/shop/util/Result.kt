@@ -249,3 +249,31 @@ sealed class AddressError : AppError() {
         override val message: String = "برای مدیریت آدرس‌ها باید وارد شوید"
     }
 }
+
+
+/**
+ * FAQ-specific errors for FAQ operations.
+ */
+sealed class FaqError : AppError() {
+    data object FaqLoadFailed : FaqError() {
+        override val message: String = "خطا در بارگذاری سوالات متداول"
+    }
+}
+
+/**
+ * Ticket-specific errors for ticket operations.
+ */
+sealed class TicketError : AppError() {
+    data object TicketsLoadFailed : TicketError() {
+        override val message: String = "خطا در بارگذاری تیکتها"
+    }
+    data object TicketNotFound : TicketError() {
+        override val message: String = "تیکت یافت نشد"
+    }
+    data object TicketCreateFailed : TicketError() {
+        override val message: String = "خطا در ایجاد تیکت"
+    }
+    data object MessageSendFailed : TicketError() {
+        override val message: String = "خطا در ارسال پیام"
+    }
+}

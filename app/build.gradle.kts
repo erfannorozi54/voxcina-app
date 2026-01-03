@@ -86,6 +86,10 @@ dependencies {
     
     // Google Play Services - SMS Retriever
     implementation(libs.play.services.auth)
+    implementation(libs.play.services.location)
+    
+    // OSMDroid (OpenStreetMap for location picker)
+    implementation(libs.osmdroid)
     
     // Image Loading
     implementation(libs.coil.compose)

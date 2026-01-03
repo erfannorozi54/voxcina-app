@@ -21,9 +21,16 @@ data class UserProfile(
  * Domain model representing a user's address.
  */
 data class UserAddress(
+    val title: String?,
+    val firstName: String?,
+    val lastName: String?,
+    val phoneNumber: String?,
+    val province: String?,
+    val provinceCode: Int,
+    val city: String,
+    val cityCode: Int,
     val street: String?,
     val address: String?,
-    val city: String,
     val postalCode: String,
     val latitude: Double,
     val longitude: Double,
@@ -68,9 +75,16 @@ fun ProfileResponseDto.toDomain(): UserProfile {
  */
 fun AddressDto.toDomain(): UserAddress {
     return UserAddress(
+        title = title,
+        firstName = firstName,
+        lastName = lastName,
+        phoneNumber = phoneNumber,
+        province = province,
+        provinceCode = provinceCode ?: 0,
+        city = city,
+        cityCode = cityCode ?: 0,
         street = street,
         address = address,
-        city = city,
         postalCode = postalCode,
         latitude = latitude,
         longitude = longitude,

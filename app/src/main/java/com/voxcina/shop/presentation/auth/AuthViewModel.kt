@@ -2,6 +2,7 @@ package com.voxcina.shop.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.voxcina.shop.data.local.AppActivityTracker
 import com.voxcina.shop.domain.usecase.CheckPhoneExistsUseCase
 import com.voxcina.shop.domain.usecase.LoginWithOtpUseCase
 import com.voxcina.shop.domain.usecase.LoginWithPasswordUseCase
@@ -39,7 +40,8 @@ class AuthViewModel @Inject constructor(
     private val sendOtpUseCase: SendOtpUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val phoneValidator: PhoneValidator,
-    private val passwordValidator: PasswordValidator
+    private val passwordValidator: PasswordValidator,
+    private val appActivityTracker: AppActivityTracker
 ) : ViewModel() {
 
     companion object {
@@ -184,6 +186,7 @@ class AuthViewModel @Inject constructor(
                 is Result.Success -> {
                     // Login successful (Requirement 3.4)
                     _uiState.value = AuthUiState.Success(message = "ورود موفقیت‌آمیز")
+                    appActivityTracker.trackAppOpen(bypassDebounce = true)
                 }
                 is Result.Error -> {
                     _uiState.update {
@@ -383,6 +386,7 @@ class AuthViewModel @Inject constructor(
             is Result.Success -> {
                 cancelCountdown()
                 _uiState.value = AuthUiState.Success(message = "ورود موفقیت‌آمیز")
+                appActivityTracker.trackAppOpen(bypassDebounce = true)
             }
             is Result.Error -> {
                 _uiState.update {
@@ -543,6 +547,7 @@ class AuthViewModel @Inject constructor(
         )) {
             is Result.Success -> {
                 _uiState.value = AuthUiState.Success(message = "ثبت‌نام موفقیت‌آمیز")
+                appActivityTracker.trackAppOpen(bypassDebounce = true)
             }
             is Result.Error -> {
                 _uiState.update {

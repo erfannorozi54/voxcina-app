@@ -27,7 +27,10 @@ import com.voxcina.shop.presentation.onboarding.OnboardingScreen
 import com.voxcina.shop.presentation.productdetail.ProductDetailScreen
 import com.voxcina.shop.presentation.profile.OrderStatus
 import com.voxcina.shop.presentation.profile.ProfileScreen
+import com.voxcina.shop.presentation.promotions.PromotionsScreen
 import com.voxcina.shop.presentation.splash.SplashScreen
+import com.voxcina.shop.presentation.support.SupportScreen
+import com.voxcina.shop.presentation.tickets.TicketsScreen
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.SecondaryLight
 import com.voxcina.shop.util.OnboardingManager
@@ -98,6 +101,9 @@ sealed class Screen(val route: String) {
     /** Recently viewed screen */
     data object RecentlyViewed : Screen("recently-viewed")
     
+    /** Promotions screen */
+    data object Promotions : Screen("promotions")
+    
     /** Settings screen */
     data object Settings : Screen("settings")
     
@@ -118,6 +124,14 @@ sealed class Screen(val route: String) {
     
     /** Flash sale products screen */
     data object FlashSale : Screen("flash-sale")
+    
+    /** Tickets screen */
+    data object Tickets : Screen("tickets")
+    
+    /** Ticket detail screen */
+    data object TicketDetail : Screen("tickets/{ticketId}") {
+        fun createRoute(ticketId: String): String = "tickets/$ticketId"
+    }
 }
 
 /**
@@ -371,6 +385,10 @@ fun NavGraph(
                     // Requirement 6.6: Navigate to support screen
                     navController.navigate(Screen.Support.route)
                 },
+                onNavigateToTickets = {
+                    // Navigate to tickets screen
+                    navController.navigate(Screen.Tickets.route)
+                },
                 onNavigateToOrders = { status ->
                     // Requirements 4.8, 4.9: Navigate to orders screen with optional filter
                     navController.navigate(Screen.Orders.createRoute(status))
@@ -472,6 +490,13 @@ fun NavGraph(
             PlaceholderScreen(title = "بازدیدهای اخیر")
         }
         
+        // Promotions screen
+        composable(route = Screen.Promotions.route) {
+            PromotionsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
         // Settings screen
         composable(route = Screen.Settings.route) {
             // TODO: Implement SettingsScreen
@@ -480,8 +505,28 @@ fun NavGraph(
         
         // Support screen
         composable(route = Screen.Support.route) {
-            // TODO: Implement SupportScreen
-            PlaceholderScreen(title = "پشتیبانی و سوالات متداول")
+            SupportScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        // Tickets screen
+        composable(route = Screen.Tickets.route) {
+            TicketsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onTicketClick = { ticketId ->
+                    navController.navigate(Screen.TicketDetail.createRoute(ticketId))
+                }
+            )
+        }
+        
+        // Ticket detail screen
+        composable(
+            route = Screen.TicketDetail.route,
+            arguments = listOf(navArgument("ticketId") { type = NavType.StringType })
+        ) {
+            // TODO: Implement TicketDetailScreen
+            PlaceholderScreen(title = "جزئیات تیکت")
         }
         
         // Wallet screen
