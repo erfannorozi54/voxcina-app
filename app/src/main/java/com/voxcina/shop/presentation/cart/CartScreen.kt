@@ -409,7 +409,8 @@ private fun CartSuccessContent(
                     OrderSummary(
                         summary = adjustedSummary,
                         itemCount = state.itemCount,
-                        discountPercentage = appliedDiscount?.let { getDiscountPercentage(it) }
+                        discountPercentage = appliedDiscount?.let { getDiscountPercentage(it) },
+                        isCartPage = true
                     )
                 }
             }

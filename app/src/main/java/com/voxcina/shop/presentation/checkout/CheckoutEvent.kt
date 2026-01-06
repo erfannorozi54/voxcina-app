@@ -119,6 +119,11 @@ sealed class CheckoutEvent {
      */
     data object RemoveDiscount : CheckoutEvent()
 
+    /**
+     * User clicked on a disabled payment method.
+     */
+    data object PaymentMethodComingSoon : CheckoutEvent()
+
     // ============ Checkout Action Events ============
 
     /**
@@ -127,6 +132,11 @@ sealed class CheckoutEvent {
      * Requirements: 8.5
      */
     data object ProcessCheckout : CheckoutEvent()
+
+    /**
+     * User tapped to proceed to payment screen.
+     */
+    data object ProceedToPayment : CheckoutEvent()
 
     /**
      * User tapped to expand order details.

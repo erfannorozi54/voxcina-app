@@ -32,6 +32,7 @@ import com.voxcina.shop.util.PersianDigitConverter
  * @param summary Cart summary with pricing breakdown
  * @param itemCount Number of items in cart
  * @param discountPercentage Optional discount percentage to display
+ * @param isCartPage If true, shows only subtotal with "مجموع سبد خرید" label
  * @param modifier Modifier for the component
  */
 @Composable
@@ -39,6 +40,7 @@ fun OrderSummary(
     summary: CartSummary,
     itemCount: Int,
     discountPercentage: Int? = null,
+    isCartPage: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -50,51 +52,83 @@ fun OrderSummary(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Items price
-                SummaryRow(
-                    label = "قیمت کالاها (${PersianDigitConverter.toPersianDigits(itemCount.toString())})",
-                    value = "${PersianDigitConverter.formatPrice(summary.subtotal)} تومان",
-                    valueColor = Primary
-                )
-                
-                // Discount (if any)
-                if (summary.discount > 0) {
-                    val discountText = if (discountPercentage != null) {
-                        "(${PersianDigitConverter.toPersianDigits(discountPercentage.toString())}٪) ${PersianDigitConverter.formatPrice(summary.discount)} تومان"
-                    } else {
-                        "${PersianDigitConverter.formatPrice(summary.discount)} تومان"
+                if (isCartPage) {
+                    // Cart page: show only subtotal
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "مجموع سبد خرید",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Primary
+                        )
+                        Text(
+                            text = "${PersianDigitConverter.formatPrice(summary.subtotal)} تومان",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Primary
+                        )
                     }
+                } else {
+                    // Checkout page: show full breakdown
+                    // Items price
                     SummaryRow(
-                        label = "تخفیف کالاها",
-                        value = discountText,
-                        valueColor = Destructive,
-                        isNegative = true
+                        label = "قیمت کالاها (${PersianDigitConverter.toPersianDigits(itemCount.toString())})",
+                        value = "${PersianDigitConverter.formatPrice(summary.subtotal)} تومان",
+                        valueColor = Primary
                     )
-                }
-                
-                // Divider
-                HorizontalDivider(
-                    color = Color.Gray.copy(alpha = 0.2f)
-                )
-                
-                // Total payable
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "مبلغ قابل پرداخت",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Primary
+                    
+                    // Shipping cost
+                    if (summary.shipping > 0) {
+                        SummaryRow(
+                            label = "هزینه ارسال",
+                            value = "${PersianDigitConverter.formatPrice(summary.shipping)} تومان",
+                            valueColor = Primary
+                        )
+                    }
+                    
+                    // Discount (if any)
+                    if (summary.discount > 0) {
+                        val discountText = if (discountPercentage != null) {
+                            "(${PersianDigitConverter.toPersianDigits(discountPercentage.toString())}٪) ${PersianDigitConverter.formatPrice(summary.discount)} تومان"
+                        } else {
+                            "${PersianDigitConverter.formatPrice(summary.discount)} تومان"
+                        }
+                        SummaryRow(
+                            label = "تخفیف کالاها",
+                            value = discountText,
+                            valueColor = Destructive,
+                            isNegative = true
+                        )
+                    }
+                    
+                    // Divider
+                    HorizontalDivider(
+                        color = Color.Gray.copy(alpha = 0.2f)
                     )
-                    Text(
-                        text = "${PersianDigitConverter.formatPrice(summary.total)} تومان",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Primary
-                    )
+                    
+                    // Total payable
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "مبلغ قابل پرداخت",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Primary
+                        )
+                        Text(
+                            text = "${PersianDigitConverter.formatPrice(summary.total)} تومان",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Primary
+                        )
+                    }
                 }
             }
         }

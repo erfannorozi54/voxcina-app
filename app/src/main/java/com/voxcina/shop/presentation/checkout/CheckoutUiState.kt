@@ -9,6 +9,11 @@ import com.voxcina.shop.domain.model.UserAddress
 import com.voxcina.shop.presentation.home.components.BottomNavDestination
 
 /**
+ * Rounds price to nearest thousand (cuts off last 3 digits).
+ */
+fun Long.roundToThousand(): Long = (this / 1000) * 1000
+
+/**
  * Sealed class representing all possible UI states for the checkout screen.
  *
  * Requirements: 9.1, 9.2
@@ -72,10 +77,10 @@ sealed class CheckoutUiState {
             get() = (discountState as? CheckoutDiscountState.Applied)?.discount
 
         /**
-         * Returns the shipping cost based on selected shipping method.
+         * Returns the shipping cost based on selected shipping method (rounded to thousand).
          */
         val shippingCost: Long
-            get() = selectedShippingMethod?.price ?: 0L
+            get() = selectedShippingMethod?.price?.roundToThousand() ?: 0L
 
         /**
          * Calculates the total amount including shipping and discount.
@@ -116,10 +121,8 @@ sealed class CheckoutUiState {
                 // Must have a shipping method selected
                 if (selectedShippingMethod == null) return false
                 
-                // If bank card is selected, card details must be valid
-                if (selectedPaymentMethod == PaymentMethod.BANK_CARD && !cardDetails.isValid) {
-                    return false
-                }
+                // Only Zibal (BANK_CARD) payment method is available
+                if (selectedPaymentMethod != PaymentMethod.BANK_CARD) return false
                 
                 return true
             }

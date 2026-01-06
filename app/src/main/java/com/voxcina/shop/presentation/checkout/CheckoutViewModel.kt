@@ -53,6 +53,9 @@ class CheckoutViewModel @Inject constructor(
     private val _snackbarMessage = MutableSharedFlow<String>()
     val snackbarMessage: SharedFlow<String> = _snackbarMessage.asSharedFlow()
 
+    private val _notificationEvent = MutableSharedFlow<String>()
+    val notificationEvent: SharedFlow<String> = _notificationEvent.asSharedFlow()
+
     private val _navigationEvent = MutableSharedFlow<CheckoutNavigationEvent>()
     val navigationEvent: SharedFlow<CheckoutNavigationEvent> = _navigationEvent.asSharedFlow()
 
@@ -84,6 +87,12 @@ class CheckoutViewModel @Inject constructor(
             is CheckoutEvent.ApplyDiscount -> applyDiscount(event.code)
             is CheckoutEvent.RemoveDiscount -> removeDiscount()
             is CheckoutEvent.ProcessCheckout -> processCheckout()
+            is CheckoutEvent.ProceedToPayment -> proceedToPayment()
+            is CheckoutEvent.PaymentMethodComingSoon -> {
+                viewModelScope.launch {
+                    _notificationEvent.emit("این روش پرداخت به زودی فعال خواهد شد")
+                }
+            }
             is CheckoutEvent.ExpandOrderDetails -> { /* Handled by UI */ }
             is CheckoutEvent.CollapseOrderDetails -> { /* Handled by UI */ }
         }
@@ -571,6 +580,65 @@ class CheckoutViewModel @Inject constructor(
     // ============ Payment Handlers ============
 
     /**
+     * Proceed to payment: create order then request payment from Zibal.
+     */
+    private fun proceedToPayment() {
+        viewModelScope.launch {
+            val state = _uiState.value
+            if (state !is CheckoutUiState.Success) return@launch
+            
+            val selectedAddress = state.selectedAddress ?: run {
+                _snackbarMessage.emit("لطفا آدرس تحویل را انتخاب کنید")
+                return@launch
+            }
+
+            _uiState.update { s ->
+                if (s is CheckoutUiState.Success) s.copy(isPaymentLoading = true) else s
+            }
+
+            // Step 1: Create order
+            val orderResult = checkoutRepository.createOrder(
+                items = state.cart.items,
+                totalAmount = state.totalAmount,
+                shippingAddress = selectedAddress
+            )
+
+            when (orderResult) {
+                is Result.Success -> {
+                    val order = orderResult.data
+                    // Step 2: Request payment
+                    val paymentResult = paymentRepository.requestPayment(
+                        orderId = order.id,
+                        amount = state.totalAmount,
+                        description = "سفارش ${order.orderNumber}",
+                        mobile = null
+                    )
+                    
+                    when (paymentResult) {
+                        is Result.Success -> {
+                            _navigationEvent.emit(
+                                CheckoutNavigationEvent.RedirectToPayment(paymentResult.data.payUrl)
+                            )
+                        }
+                        is Result.Error -> {
+                            _uiState.update { s ->
+                                if (s is CheckoutUiState.Success) s.copy(isPaymentLoading = false) else s
+                            }
+                            _snackbarMessage.emit(mapErrorToMessage(paymentResult.error))
+                        }
+                    }
+                }
+                is Result.Error -> {
+                    _uiState.update { s ->
+                        if (s is CheckoutUiState.Success) s.copy(isPaymentLoading = false) else s
+                    }
+                    _snackbarMessage.emit(mapErrorToMessage(orderResult.error))
+                }
+            }
+        }
+    }
+
+    /**
      * Request payment from Zibal gateway.
      */
     fun requestPayment(orderId: String, amount: Long, mobile: String? = null) {
@@ -684,5 +752,6 @@ sealed class CheckoutNavigationEvent {
     data object NavigateBack : CheckoutNavigationEvent()
     data object NavigateToAddresses : CheckoutNavigationEvent()
     data class RedirectToPayment(val payUrl: String) : CheckoutNavigationEvent()
+    data class NavigateToPayment(val orderId: String, val amount: Long) : CheckoutNavigationEvent()
     data class PaymentSuccess(val orderId: String) : CheckoutNavigationEvent()
 }

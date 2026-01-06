@@ -1,9 +1,5 @@
 package com.voxcina.shop.presentation.checkout.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,14 +10,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -37,12 +30,11 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.voxcina.shop.domain.model.ShippingMethod
+import com.voxcina.shop.presentation.checkout.roundToThousand
 import com.voxcina.shop.ui.components.PriceText
 import com.voxcina.shop.ui.components.SoftShadowCard
-import com.voxcina.shop.ui.components.VoxcinaLoading
 import com.voxcina.shop.ui.components.VoxcinaLoadingCompact
 import com.voxcina.shop.ui.theme.Primary
-import com.voxcina.shop.ui.theme.Primary100
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 
 /**
@@ -103,96 +95,33 @@ private fun DeliveryMethodCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val borderColor = if (isSelected) Primary else Color.Transparent
-    val backgroundColor = if (isSelected) Primary100.copy(alpha = 0.5f) else Color.White
-
-    SoftShadowCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(
-                width = 2.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .clickable(onClick = onClick),
-        cornerRadius = 12.dp,
-        backgroundColor = backgroundColor
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Radio button
-            RadioButton(
-                selected = isSelected,
-                onClick = onClick,
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = Primary,
-                    unselectedColor = Color(0xFFE5E7EB)
-                )
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // Courier logo or default icon
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White),
-                contentAlignment = Alignment.Center
-            ) {
-                if (!method.courierLogo.isNullOrEmpty()) {
-                    AsyncImage(
-                        model = method.courierLogo,
-                        contentDescription = method.description,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(RoundedCornerShape(6.dp)),
-                        contentScale = ContentScale.Fit
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.LocalShipping,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = Primary
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            // Method details
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                Text(
-                    text = method.name,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Primary
-                )
-                Text(
-                    text = method.estimatedDays,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+    SelectableMethodCard(
+        title = method.name,
+        description = method.estimatedDays,
+        icon = Icons.Default.LocalShipping,
+        isSelected = isSelected,
+        onClick = onClick,
+        iconContent = if (!method.courierLogo.isNullOrEmpty()) {
+            {
+                AsyncImage(
+                    model = method.courierLogo,
+                    contentDescription = method.description,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(6.dp)),
+                    contentScale = ContentScale.Fit
                 )
             }
-
-            // Price
+        } else null,
+        trailingContent = {
             PriceText(
-                price = method.price,
+                price = method.price.roundToThousand(),
                 priceStyle = MaterialTheme.typography.titleSmall,
                 priceColor = Primary,
                 suffixStyle = MaterialTheme.typography.labelSmall
             )
         }
-    }
+    )
 }
 
 /**

@@ -63,8 +63,13 @@ import com.voxcina.shop.domain.model.PaymentMethod
 import com.voxcina.shop.domain.model.ShippingMethod
 import com.voxcina.shop.domain.model.UserAddress
 import com.voxcina.shop.presentation.cart.components.DiscountCodeInput
+import com.voxcina.shop.presentation.cart.components.OrderSummary
 import com.voxcina.shop.presentation.cart.components.DiscountState
-import com.voxcina.shop.presentation.checkout.components.CardDetailsForm
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import com.voxcina.shop.ui.components.GlassNotification
+import com.voxcina.shop.ui.components.NotificationState
+import com.voxcina.shop.ui.components.NotificationType
 import com.voxcina.shop.presentation.checkout.components.CheckoutBottomBar
 import com.voxcina.shop.presentation.checkout.components.CheckoutBottomBarExpanded
 import com.voxcina.shop.presentation.checkout.components.CheckoutStepper
@@ -103,11 +108,23 @@ fun CheckoutScreen(
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    var notificationState by remember { mutableStateOf(NotificationState()) }
 
     // Collect snackbar messages
     LaunchedEffect(Unit) {
         viewModel.snackbarMessage.collect { message ->
             snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    // Collect notification events for GlassNotification
+    LaunchedEffect(Unit) {
+        viewModel.notificationEvent.collect { message ->
+            notificationState = NotificationState(
+                message = message,
+                type = NotificationType.Info,
+                isVisible = true
+            )
         }
     }
 
@@ -122,6 +139,10 @@ fun CheckoutScreen(
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.payUrl))
                     context.startActivity(intent)
                 }
+                is CheckoutNavigationEvent.NavigateToPayment -> {
+                    // Navigate to payment screen
+                    // This will be handled by the navigation graph
+                }
                 is CheckoutNavigationEvent.PaymentSuccess -> onPaymentSuccess(event.orderId)
             }
         }
@@ -130,6 +151,10 @@ fun CheckoutScreen(
     CheckoutScreenContent(
         uiState = uiState,
         snackbarHostState = snackbarHostState,
+        notificationState = notificationState,
+        onNotificationDismiss = {
+            notificationState = notificationState.copy(isVisible = false)
+        },
         onEvent = viewModel::onEvent,
         onNavigateBack = onNavigateBack,
         onNavigateToAddresses = onNavigateToAddresses,
@@ -148,6 +173,8 @@ fun CheckoutScreen(
 fun CheckoutScreenContent(
     uiState: CheckoutUiState,
     snackbarHostState: SnackbarHostState,
+    notificationState: NotificationState = NotificationState(),
+    onNotificationDismiss: () -> Unit = {},
     onEvent: (CheckoutEvent) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToAddresses: () -> Unit,
@@ -161,34 +188,37 @@ fun CheckoutScreenContent(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             containerColor = SecondaryLight
         ) { paddingValues ->
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Screen Header with back button
-                // Requirements: 1.1, 1.2, 1.3, 1.4
-                ScreenHeader(
-                    title = "تسویه حساب",
-                    onBackClick = {
-                        onEvent(CheckoutEvent.NavigateBack)
-                        onNavigateBack()
-                    }
-                )
-
-                // Checkout Stepper - Step 1 (Information)
-                // Requirements: 2.1
-                CheckoutStepper(
-                    currentStep = 1,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                // Main content based on state (takes remaining space)
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
+                Column(
+                    modifier = Modifier.fillMaxSize()
                 ) {
+                    // Screen Header with back button
+                    // Requirements: 1.1, 1.2, 1.3, 1.4
+                    ScreenHeader(
+                        title = "تسویه حساب",
+                        onBackClick = {
+                            onEvent(CheckoutEvent.NavigateBack)
+                            onNavigateBack()
+                        }
+                    )
+
+                    // Checkout Stepper - Step 1 (Information)
+                    // Requirements: 2.1
+                    CheckoutStepper(
+                        currentStep = 1,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Main content based on state (takes remaining space)
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) {
                     when (uiState) {
                         is CheckoutUiState.Loading -> {
                             // Requirements: 9.1
@@ -243,15 +273,25 @@ fun CheckoutScreenContent(
                             enabled = uiState.canProceedToPayment
                         )
                     }
-                }
+                    }
 
-                // Bottom Navigation - always at bottom
-                // Requirements: 11.1, 11.2, 11.3, 11.4
-                BottomNavBar(
-                    selectedDestination = BottomNavDestination.CART,
-                    cartItemCount = (uiState as? CheckoutUiState.Success)?.itemCount ?: 0,
-                    onDestinationSelected = onBottomNavClick,
-                    modifier = Modifier.fillMaxWidth()
+                    // Bottom Navigation - always at bottom
+                    // Requirements: 11.1, 11.2, 11.3, 11.4
+                    BottomNavBar(
+                        selectedDestination = BottomNavDestination.CART,
+                        cartItemCount = (uiState as? CheckoutUiState.Success)?.itemCount ?: 0,
+                        onDestinationSelected = onBottomNavClick,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            
+                // GlassNotification overlay at top center
+                GlassNotification(
+                    state = notificationState,
+                    onDismiss = onNotificationDismiss,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp)
                 )
             }
         }
@@ -355,28 +395,54 @@ private fun CheckoutSuccessContent(
                 selectedMethod = state.selectedPaymentMethod,
                 onMethodSelected = { method ->
                     onEvent(CheckoutEvent.SelectPaymentMethod(method))
+                },
+                onComingSoon = {
+                    onEvent(CheckoutEvent.PaymentMethodComingSoon)
                 }
             )
         }
 
-        // Card Details Form - Conditionally shown when bank card selected
-        // Requirements: 5.5, 6.1, 6.2, 6.3, 6.4, 6.5
-        if (state.showCardDetailsForm) {
-            item {
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn() + slideInVertically(),
-                    exit = fadeOut() + slideOutVertically()
-                ) {
-                    CardDetailsForm(
-                        cardDetails = state.cardDetails,
-                        onCardDetailsChange = { cardDetails ->
-                            onEvent(CheckoutEvent.UpdateCardDetails(cardDetails))
-                        },
-                        validationErrors = state.validationErrors
+        // Order Summary Section
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            SectionHeader(title = "خلاصه سفارش")
+            Spacer(modifier = Modifier.height(8.dp))
+            val shippingCost = state.selectedShippingMethod?.price?.roundToThousand() ?: 0L
+            val summaryWithShipping = state.cart.summary.copy(
+                shipping = shippingCost,
+                total = state.cart.summary.subtotal + shippingCost - state.cart.summary.discount
+            )
+            OrderSummary(
+                summary = summaryWithShipping,
+                itemCount = state.itemCount,
+                isCartPage = false
+            )
+        }
+
+        // Checkout Button
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    onEvent(CheckoutEvent.ProceedToPayment)
+                },
+                enabled = state.canProceedToPayment && !state.isPaymentLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = 16.dp)
+            ) {
+                if (state.isPaymentLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
                     )
+                } else {
+                    Text("پرداخت")
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // Discount Code Section
