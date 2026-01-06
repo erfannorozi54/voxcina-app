@@ -35,9 +35,15 @@ fun PaymentResultScreen(
     val isRetrying by viewModel.isRetrying.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(trackId) {
+    LaunchedEffect(trackId, orderId) {
         if (trackId > 0) {
             viewModel.verifyPayment(trackId, orderId)
+        } else if (isSuccess) {
+            // trackId=0 with isSuccess=true means payment already confirmed
+            viewModel.setSuccessState(orderNumber = null)
+        } else if (orderId.isNotEmpty()) {
+            // trackId=0, not success - show abandoned state to allow retry
+            viewModel.setAbandonedState(orderId)
         }
     }
 

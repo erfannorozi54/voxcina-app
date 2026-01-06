@@ -109,7 +109,9 @@ enum class OrderStatus(val value: String, val displayName: String) {
 enum class PaymentStatus(val value: String, val displayName: String) {
     PENDING("pending", "در انتظار پرداخت"),
     PAID("paid", "پرداخت شده"),
-    FAILED("failed", "پرداخت ناموفق");
+    FAILED("failed", "پرداخت ناموفق"),
+    ABANDONED("abandoned", "پرداخت ناتمام"),
+    CANCELLED("cancelled", "لغو شده");
     
     companion object {
         fun fromString(value: String): PaymentStatus {

@@ -316,3 +316,16 @@ sealed class CheckoutError : AppError() {
         override val message: String = "برای تکمیل خرید باید وارد شوید"
     }
 }
+
+
+/**
+ * Order-specific errors for order operations.
+ */
+sealed class OrderError : AppError() {
+    data object OrdersLoadFailed : OrderError() {
+        override val message: String = "خطا در بارگذاری سفارشات"
+    }
+    data object OrderNotFound : OrderError() {
+        override val message: String = "سفارش یافت نشد"
+    }
+}

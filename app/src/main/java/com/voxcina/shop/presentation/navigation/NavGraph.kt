@@ -25,6 +25,7 @@ import com.voxcina.shop.presentation.checkout.CheckoutScreen
 import com.voxcina.shop.presentation.home.HomeScreen
 import com.voxcina.shop.presentation.home.components.BottomNavDestination
 import com.voxcina.shop.presentation.onboarding.OnboardingScreen
+import com.voxcina.shop.presentation.orders.OrdersScreen
 import com.voxcina.shop.presentation.productdetail.ProductDetailScreen
 import com.voxcina.shop.presentation.profile.OrderStatus
 import com.voxcina.shop.presentation.profile.ProfileScreen
@@ -452,47 +453,30 @@ fun NavGraph(
                     navController.navigate(Screen.EditAccount.route)
                 },
                 onNavigateToAddresses = {
-                    // Requirement 5.7: Navigate to addresses screen
                     navController.navigate(Screen.Addresses.route)
                 },
                 onNavigateToFavorites = {
-                    // Requirement 5.7: Navigate to favorites screen
                     navController.navigate(Screen.Favorites.route)
                 },
                 onNavigateToRecentlyViewed = {
-                    // Requirement 5.7: Navigate to recently viewed screen
                     navController.navigate(Screen.RecentlyViewed.route)
                 },
+                onNavigateToPromotions = {
+                    navController.navigate(Screen.Promotions.route)
+                },
                 onNavigateToSettings = {
-                    // Requirement 6.5: Navigate to settings screen
                     navController.navigate(Screen.Settings.route)
                 },
                 onNavigateToSupport = {
-                    // Requirement 6.6: Navigate to support screen
                     navController.navigate(Screen.Support.route)
                 },
                 onNavigateToTickets = {
-                    // Navigate to tickets screen
                     navController.navigate(Screen.Tickets.route)
                 },
                 onNavigateToOrders = { status ->
-                    // Requirements 4.8, 4.9: Navigate to orders screen with optional filter
                     navController.navigate(Screen.Orders.createRoute(status))
                 },
-                onNavigateToWallet = {
-                    // Requirement 3.7: Navigate to wallet screen
-                    navController.navigate(Screen.Wallet.route)
-                },
-                onNavigateToLoyalty = {
-                    // Requirement 3.7: Navigate to loyalty screen
-                    navController.navigate(Screen.Loyalty.route)
-                },
-                onNavigateToCoupons = {
-                    // Requirement 3.7: Navigate to coupons screen
-                    navController.navigate(Screen.Coupons.route)
-                },
                 onLogout = {
-                    // Requirement 7.4: Clear session and navigate to auth screen
                     navController.navigate(Screen.Auth.route) {
                         popUpTo(0) { inclusive = true }
                     }
@@ -530,6 +514,7 @@ fun NavGraph(
             PlaceholderScreen(title = "ویرایش حساب کاربری")
         }
         
+
         // Orders screen with optional status filter
         composable(
             route = Screen.Orders.route,
@@ -540,24 +525,14 @@ fun NavGraph(
                     defaultValue = null
                 }
             )
-        ) { backStackEntry ->
-            val statusValue = backStackEntry.arguments?.getString("status")
-            // TODO: Implement OrdersScreen with status filter
-            val title = if (statusValue != null) {
-                when (statusValue) {
-                    "pending" -> "سفارش‌های در انتظار"
-                    "processing" -> "سفارش‌های در حال پردازش"
-                    "shipped" -> "سفارش‌های ارسال شده"
-                    "returned" -> "سفارش‌های مرجوعی"
-                    else -> "سفارش‌های من"
+        ) {
+            OrdersScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onOrderClick = { orderId ->
+                    // TODO: Navigate to order detail when implemented
                 }
-            } else {
-                "سفارش‌های من"
-            }
-            PlaceholderScreen(title = title)
+            )
         }
-        
-        // Addresses screen
         composable(route = Screen.Addresses.route) {
             AddressesScreen(
                 onNavigateBack = { navController.popBackStack() }

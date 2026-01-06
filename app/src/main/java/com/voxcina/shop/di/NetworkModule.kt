@@ -10,6 +10,7 @@ import com.voxcina.shop.data.remote.AuthInterceptor
 import com.voxcina.shop.data.remote.CartApi
 import com.voxcina.shop.data.remote.CheckoutApi
 import com.voxcina.shop.data.remote.DiscountApi
+import com.voxcina.shop.data.remote.OrdersApi
 import com.voxcina.shop.data.remote.FaqApi
 import com.voxcina.shop.data.remote.HomeApi
 import com.voxcina.shop.data.remote.LocalityApi
@@ -132,5 +133,11 @@ object NetworkModule {
     @Singleton
     fun provideCheckoutApi(retrofit: Retrofit): CheckoutApi {
         return retrofit.create(CheckoutApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOrdersApi(retrofit: Retrofit): OrdersApi {
+        return retrofit.create(OrdersApi::class.java)
     }
 }

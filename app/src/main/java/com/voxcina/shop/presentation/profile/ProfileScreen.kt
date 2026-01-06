@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,7 +45,6 @@ import com.voxcina.shop.presentation.profile.components.OrderStatusSection
 import com.voxcina.shop.presentation.profile.components.ProfileHeader
 import com.voxcina.shop.presentation.profile.components.ProfileMenuGroup
 import com.voxcina.shop.presentation.profile.components.ProfileMenuItem
-import com.voxcina.shop.presentation.profile.components.QuickStatsRow
 import com.voxcina.shop.ui.components.EmptyState
 import com.voxcina.shop.ui.components.VoxcinaLoading
 import com.voxcina.shop.ui.components.VoxcinaPrimaryButton
@@ -55,25 +55,7 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
 
 /**
  * Main Profile Screen composable that displays user profile information,
- * quick stats, order status, and navigation menu items.
- *
- * Requirements: 8.1, 8.2, 8.3, 8.4
- *
- * @param onNavigateToEditProfile Callback when edit profile icon is tapped
- * @param onNavigateToEditAccount Callback when edit account button is tapped
- * @param onNavigateToAddresses Callback when addresses menu item is tapped
- * @param onNavigateToFavorites Callback when favorites menu item is tapped
- * @param onNavigateToRecentlyViewed Callback when recently viewed menu item is tapped
- * @param onNavigateToSettings Callback when settings menu item is tapped
- * @param onNavigateToSupport Callback when support menu item is tapped
- * @param onNavigateToTickets Callback when tickets menu item is tapped
- * @param onNavigateToOrders Callback when order status or view all is tapped
- * @param onNavigateToWallet Callback when wallet stat card is tapped
- * @param onNavigateToLoyalty Callback when loyalty stat card is tapped
- * @param onNavigateToCoupons Callback when coupons stat card is tapped
- * @param onLogout Callback when logout is confirmed
- * @param onBottomNavClick Callback when bottom navigation item is tapped
- * @param viewModel ProfileViewModel instance
+ * order status, and navigation menu items.
  */
 @Composable
 fun ProfileScreen(
@@ -82,13 +64,11 @@ fun ProfileScreen(
     onNavigateToAddresses: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onNavigateToRecentlyViewed: () -> Unit,
+    onNavigateToPromotions: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToSupport: () -> Unit,
     onNavigateToTickets: () -> Unit,
     onNavigateToOrders: (OrderStatus?) -> Unit,
-    onNavigateToWallet: () -> Unit,
-    onNavigateToLoyalty: () -> Unit,
-    onNavigateToCoupons: () -> Unit,
     onLogout: () -> Unit,
     onBottomNavClick: (BottomNavDestination) -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
@@ -114,13 +94,11 @@ fun ProfileScreen(
         onNavigateToAddresses = onNavigateToAddresses,
         onNavigateToFavorites = onNavigateToFavorites,
         onNavigateToRecentlyViewed = onNavigateToRecentlyViewed,
+        onNavigateToPromotions = onNavigateToPromotions,
         onNavigateToSettings = onNavigateToSettings,
         onNavigateToSupport = onNavigateToSupport,
         onNavigateToTickets = onNavigateToTickets,
         onNavigateToOrders = onNavigateToOrders,
-        onNavigateToWallet = onNavigateToWallet,
-        onNavigateToLoyalty = onNavigateToLoyalty,
-        onNavigateToCoupons = onNavigateToCoupons,
         onLogoutClick = { viewModel.onEvent(ProfileEvent.LogoutClicked) },
         onLogoutConfirm = { viewModel.onEvent(ProfileEvent.LogoutConfirmed) },
         onLogoutDismiss = { viewModel.onEvent(ProfileEvent.LogoutDismissed) },
@@ -143,13 +121,11 @@ private fun ProfileScreenContent(
     onNavigateToAddresses: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onNavigateToRecentlyViewed: () -> Unit,
+    onNavigateToPromotions: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToSupport: () -> Unit,
     onNavigateToTickets: () -> Unit,
     onNavigateToOrders: (OrderStatus?) -> Unit,
-    onNavigateToWallet: () -> Unit,
-    onNavigateToLoyalty: () -> Unit,
-    onNavigateToCoupons: () -> Unit,
     onLogoutClick: () -> Unit,
     onLogoutConfirm: () -> Unit,
     onLogoutDismiss: () -> Unit,
@@ -191,13 +167,11 @@ private fun ProfileScreenContent(
                             onNavigateToAddresses = onNavigateToAddresses,
                             onNavigateToFavorites = onNavigateToFavorites,
                             onNavigateToRecentlyViewed = onNavigateToRecentlyViewed,
+                            onNavigateToPromotions = onNavigateToPromotions,
                             onNavigateToSettings = onNavigateToSettings,
                             onNavigateToSupport = onNavigateToSupport,
                             onNavigateToTickets = onNavigateToTickets,
                             onNavigateToOrders = onNavigateToOrders,
-                            onNavigateToWallet = onNavigateToWallet,
-                            onNavigateToLoyalty = onNavigateToLoyalty,
-                            onNavigateToCoupons = onNavigateToCoupons,
                             onLogoutClick = onLogoutClick
                         )
                     }
@@ -211,13 +185,11 @@ private fun ProfileScreenContent(
                                 onNavigateToAddresses = onNavigateToAddresses,
                                 onNavigateToFavorites = onNavigateToFavorites,
                                 onNavigateToRecentlyViewed = onNavigateToRecentlyViewed,
+                                onNavigateToPromotions = onNavigateToPromotions,
                                 onNavigateToSettings = onNavigateToSettings,
                                 onNavigateToSupport = onNavigateToSupport,
                                 onNavigateToTickets = onNavigateToTickets,
                                 onNavigateToOrders = onNavigateToOrders,
-                                onNavigateToWallet = onNavigateToWallet,
-                                onNavigateToLoyalty = onNavigateToLoyalty,
-                                onNavigateToCoupons = onNavigateToCoupons,
                                 onLogoutClick = onLogoutClick,
                                 errorMessage = uiState.message
                             )
@@ -286,8 +258,6 @@ private fun ProfileErrorState(
 /**
  * Success state for profile screen.
  * Displays all profile sections in a scrollable column.
- *
- * Requirements: 1.1-1.6, 2.1-2.4, 3.1-3.7, 4.1-4.10, 5.1-5.8, 6.1-6.6, 7.1-7.3
  */
 @Composable
 private fun ProfileSuccessState(
@@ -297,13 +267,11 @@ private fun ProfileSuccessState(
     onNavigateToAddresses: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onNavigateToRecentlyViewed: () -> Unit,
+    onNavigateToPromotions: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToSupport: () -> Unit,
     onNavigateToTickets: () -> Unit,
     onNavigateToOrders: (OrderStatus?) -> Unit,
-    onNavigateToWallet: () -> Unit,
-    onNavigateToLoyalty: () -> Unit,
-    onNavigateToCoupons: () -> Unit,
     onLogoutClick: () -> Unit,
     errorMessage: String? = null
 ) {
@@ -342,18 +310,6 @@ private fun ProfileSuccessState(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Quick Stats Row - Requirements: 3.1-3.7
-        QuickStatsRow(
-            walletBalance = state.walletBalance,
-            loyaltyPoints = state.loyaltyPoints,
-            activeCoupons = state.activeCoupons,
-            onWalletClick = onNavigateToWallet,
-            onLoyaltyClick = onNavigateToLoyalty,
-            onCouponsClick = onNavigateToCoupons
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
         // Order Status Section - Requirements: 4.1-4.10
         OrderStatusSection(
             pendingCount = state.pendingOrdersCount,
@@ -375,16 +331,17 @@ private fun ProfileSuccessState(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Account Menu Group - Requirements: 5.1-5.8
+        // Account Menu Group
         AccountMenuGroup(
             onAddressesClick = onNavigateToAddresses,
             onFavoritesClick = onNavigateToFavorites,
-            onRecentlyViewedClick = onNavigateToRecentlyViewed
+            onRecentlyViewedClick = onNavigateToRecentlyViewed,
+            onPromotionsClick = onNavigateToPromotions
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Settings Menu Group - Requirements: 6.1-6.6
+        // Settings Menu Group
         SettingsMenuGroup(
             onSettingsClick = onNavigateToSettings,
             onSupportClick = onNavigateToSupport,
@@ -427,38 +384,41 @@ private fun ErrorBanner(message: String) {
 
 
 /**
- * Account menu group containing addresses, favorites, and recently viewed items.
- *
- * Requirements: 5.1-5.8
+ * Account menu group containing addresses, favorites, recently viewed, and promotions.
  */
 @Composable
 private fun AccountMenuGroup(
     onAddressesClick: () -> Unit,
     onFavoritesClick: () -> Unit,
-    onRecentlyViewedClick: () -> Unit
+    onRecentlyViewedClick: () -> Unit,
+    onPromotionsClick: () -> Unit
 ) {
     ProfileMenuGroup {
-        // My Addresses - Requirements: 5.2
         ProfileMenuItem(
             icon = Icons.Default.LocationOn,
-            label = "آدرس‌های من",
+            label = "آدرسهای من",
             onClick = onAddressesClick,
             showDivider = true
         )
 
-        // Favorites - Requirements: 5.3
         ProfileMenuItem(
             icon = Icons.Default.Favorite,
-            label = "علاقه‌مندی‌ها",
+            label = "علاقهمندیها",
             onClick = onFavoritesClick,
             showDivider = true
         )
 
-        // Recently Viewed - Requirements: 5.4
         ProfileMenuItem(
             icon = Icons.Default.History,
             label = "بازدیدهای اخیر",
             onClick = onRecentlyViewedClick,
+            showDivider = true
+        )
+
+        ProfileMenuItem(
+            icon = Icons.Outlined.LocalOffer,
+            label = "کدهای تخفیف من",
+            onClick = onPromotionsClick,
             showDivider = false
         )
     }
@@ -466,8 +426,6 @@ private fun AccountMenuGroup(
 
 /**
  * Settings menu group containing settings and support items.
- *
- * Requirements: 6.1-6.6
  */
 @Composable
 private fun SettingsMenuGroup(
@@ -550,6 +508,7 @@ private fun LogoutConfirmationDialog(
 
 // ============== Previews ==============
 
+
 @Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
 @Composable
 private fun ProfileScreenLoadingPreview() {
@@ -562,167 +521,11 @@ private fun ProfileScreenLoadingPreview() {
             onNavigateToAddresses = {},
             onNavigateToFavorites = {},
             onNavigateToRecentlyViewed = {},
+            onNavigateToPromotions = {},
             onNavigateToSettings = {},
             onNavigateToSupport = {},
             onNavigateToTickets = {},
             onNavigateToOrders = {},
-            onNavigateToWallet = {},
-            onNavigateToLoyalty = {},
-            onNavigateToCoupons = {},
-            onLogoutClick = {},
-            onLogoutConfirm = {},
-            onLogoutDismiss = {},
-            onRetry = {},
-            onBottomNavClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ProfileScreenSuccessPreview() {
-    VoxcinaTheme {
-        ProfileScreenContent(
-            uiState = ProfileUiState.Success(
-                userName = "علی احمدی",
-                phoneNumber = "09123456789",
-                avatarUrl = null,
-                walletBalance = 250000,
-                loyaltyPoints = 1500,
-                activeCoupons = 3,
-                pendingOrdersCount = 2,
-                processingOrdersCount = 1,
-                shippedOrdersCount = 0,
-                returnedOrdersCount = 0,
-                cartItemCount = 5
-            ),
-            showLogoutDialog = false,
-            onNavigateToEditProfile = {},
-            onNavigateToEditAccount = {},
-            onNavigateToAddresses = {},
-            onNavigateToFavorites = {},
-            onNavigateToRecentlyViewed = {},
-            onNavigateToSettings = {},
-            onNavigateToSupport = {},
-            onNavigateToTickets = {},
-            onNavigateToOrders = {},
-            onNavigateToWallet = {},
-            onNavigateToLoyalty = {},
-            onNavigateToCoupons = {},
-            onLogoutClick = {},
-            onLogoutConfirm = {},
-            onLogoutDismiss = {},
-            onRetry = {},
-            onBottomNavClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ProfileScreenErrorPreview() {
-    VoxcinaTheme {
-        ProfileScreenContent(
-            uiState = ProfileUiState.Error(
-                message = "خطا در اتصال به سرور",
-                cachedData = null
-            ),
-            showLogoutDialog = false,
-            onNavigateToEditProfile = {},
-            onNavigateToEditAccount = {},
-            onNavigateToAddresses = {},
-            onNavigateToFavorites = {},
-            onNavigateToRecentlyViewed = {},
-            onNavigateToSettings = {},
-            onNavigateToSupport = {},
-            onNavigateToTickets = {},
-            onNavigateToOrders = {},
-            onNavigateToWallet = {},
-            onNavigateToLoyalty = {},
-            onNavigateToCoupons = {},
-            onLogoutClick = {},
-            onLogoutConfirm = {},
-            onLogoutDismiss = {},
-            onRetry = {},
-            onBottomNavClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ProfileScreenWithLogoutDialogPreview() {
-    VoxcinaTheme {
-        ProfileScreenContent(
-            uiState = ProfileUiState.Success(
-                userName = "علی احمدی",
-                phoneNumber = "09123456789",
-                avatarUrl = null,
-                walletBalance = 250000,
-                loyaltyPoints = 1500,
-                activeCoupons = 3,
-                pendingOrdersCount = 2,
-                processingOrdersCount = 1,
-                shippedOrdersCount = 0,
-                returnedOrdersCount = 0,
-                cartItemCount = 5
-            ),
-            showLogoutDialog = true,
-            onNavigateToEditProfile = {},
-            onNavigateToEditAccount = {},
-            onNavigateToAddresses = {},
-            onNavigateToFavorites = {},
-            onNavigateToRecentlyViewed = {},
-            onNavigateToSettings = {},
-            onNavigateToSupport = {},
-            onNavigateToTickets = {},
-            onNavigateToOrders = {},
-            onNavigateToWallet = {},
-            onNavigateToLoyalty = {},
-            onNavigateToCoupons = {},
-            onLogoutClick = {},
-            onLogoutConfirm = {},
-            onLogoutDismiss = {},
-            onRetry = {},
-            onBottomNavClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ProfileScreenCachedWithErrorPreview() {
-    VoxcinaTheme {
-        ProfileScreenContent(
-            uiState = ProfileUiState.Error(
-                message = "خطا در بروزرسانی اطلاعات",
-                cachedData = ProfileUiState.Success(
-                    userName = "علی احمدی",
-                    phoneNumber = "09123456789",
-                    avatarUrl = null,
-                    walletBalance = 250000,
-                    loyaltyPoints = 1500,
-                    activeCoupons = 3,
-                    pendingOrdersCount = 2,
-                    processingOrdersCount = 1,
-                    shippedOrdersCount = 0,
-                    returnedOrdersCount = 0,
-                    cartItemCount = 5
-                )
-            ),
-            showLogoutDialog = false,
-            onNavigateToEditProfile = {},
-            onNavigateToEditAccount = {},
-            onNavigateToAddresses = {},
-            onNavigateToFavorites = {},
-            onNavigateToRecentlyViewed = {},
-            onNavigateToSettings = {},
-            onNavigateToSupport = {},
-            onNavigateToTickets = {},
-            onNavigateToOrders = {},
-            onNavigateToWallet = {},
-            onNavigateToLoyalty = {},
-            onNavigateToCoupons = {},
             onLogoutClick = {},
             onLogoutConfirm = {},
             onLogoutDismiss = {},

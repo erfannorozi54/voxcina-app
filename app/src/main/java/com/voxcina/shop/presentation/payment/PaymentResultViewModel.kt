@@ -40,6 +40,25 @@ class PaymentResultViewModel @Inject constructor(
     private val _isRetrying = MutableStateFlow(false)
     val isRetrying: StateFlow<Boolean> = _isRetrying.asStateFlow()
 
+    /**
+     * Set success state directly when we know payment succeeded
+     * (e.g., when navigating from PaymentSuccess event with trackId=0)
+     */
+    fun setSuccessState(orderNumber: String?) {
+        _uiState.value = PaymentResultUiState.Success(orderNumber = orderNumber, refNumber = null)
+    }
+
+    /**
+     * Set abandoned state when trackId=0 and not success (edge case)
+     */
+    fun setAbandonedState(orderId: String) {
+        _uiState.value = PaymentResultUiState.Abandoned(
+            orderNumber = null,
+            orderId = orderId,
+            message = "پرداخت تکمیل نشد"
+        )
+    }
+
     fun verifyPayment(trackId: Long, orderId: String) {
         viewModelScope.launch {
             _uiState.value = PaymentResultUiState.Loading

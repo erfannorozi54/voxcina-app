@@ -9,6 +9,7 @@ import com.voxcina.shop.data.repository.CheckoutRepositoryImpl
 import com.voxcina.shop.data.repository.FaqRepositoryImpl
 import com.voxcina.shop.data.repository.HomeRepository
 import com.voxcina.shop.data.repository.HomeRepositoryImpl
+import com.voxcina.shop.data.repository.OrderRepositoryImpl
 import com.voxcina.shop.data.repository.ProductRepositoryImpl
 import com.voxcina.shop.data.repository.ProfileRepositoryImpl
 import com.voxcina.shop.data.repository.PromotionRepositoryImpl
@@ -19,6 +20,7 @@ import com.voxcina.shop.domain.repository.AddressRepository
 import com.voxcina.shop.domain.repository.CartRepository
 import com.voxcina.shop.domain.repository.CheckoutRepository
 import com.voxcina.shop.domain.repository.FaqRepository
+import com.voxcina.shop.domain.repository.OrderRepository
 import com.voxcina.shop.domain.repository.ProductRepository
 import com.voxcina.shop.domain.repository.ProfileRepository
 import com.voxcina.shop.domain.repository.PromotionRepository
@@ -81,4 +83,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCheckoutRepository(impl: CheckoutRepositoryImpl): CheckoutRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindOrderRepository(impl: OrderRepositoryImpl): OrderRepository
 }
