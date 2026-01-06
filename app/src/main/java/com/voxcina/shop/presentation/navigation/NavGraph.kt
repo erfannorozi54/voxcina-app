@@ -21,6 +21,7 @@ import com.voxcina.shop.data.local.TokenManager
 import com.voxcina.shop.presentation.addresses.AddressesScreen
 import com.voxcina.shop.presentation.auth.AuthScreen
 import com.voxcina.shop.presentation.cart.CartScreen
+import com.voxcina.shop.presentation.checkout.CheckoutScreen
 import com.voxcina.shop.presentation.home.HomeScreen
 import com.voxcina.shop.presentation.home.components.BottomNavDestination
 import com.voxcina.shop.presentation.onboarding.OnboardingScreen
@@ -72,6 +73,14 @@ sealed class Screen(val route: String) {
     
     /** Cart screen */
     data object Cart : Screen("cart")
+    
+    /** Checkout screen */
+    data object Checkout : Screen("checkout")
+    
+    /** Payment success screen with orderId parameter */
+    data object PaymentSuccess : Screen("payment-success/{orderId}") {
+        fun createRoute(orderId: String): String = "payment-success/$orderId"
+    }
     
     /** Profile screen */
     data object Profile : Screen("profile")
@@ -328,7 +337,8 @@ fun NavGraph(
                     navController.popBackStack()
                 },
                 onCheckout = {
-                    // TODO: Navigate to checkout screen
+                    // Navigate to checkout screen (Requirement 1.2, 8.7)
+                    navController.navigate(Screen.Checkout.route)
                 },
                 onStartShopping = {
                     // Navigate to home screen when user clicks "Start Shopping" in empty cart
@@ -355,6 +365,60 @@ fun NavGraph(
                     }
                 }
             )
+        }
+        
+        // Checkout screen
+        // Requirements: 1.2, 3.4, 8.7
+        composable(route = Screen.Checkout.route) {
+            CheckoutScreen(
+                onNavigateBack = {
+                    // Requirement 1.2: Navigate back to Cart screen
+                    navController.popBackStack()
+                },
+                onNavigateToAddresses = {
+                    // Requirement 3.4: Navigate to address selection screen
+                    navController.navigate(Screen.Addresses.route)
+                },
+                onPaymentSuccess = { orderId ->
+                    // Requirement 8.7: Navigate to payment success screen
+                    navController.navigate(Screen.PaymentSuccess.createRoute(orderId)) {
+                        // Clear checkout from back stack so user can't go back to it
+                        popUpTo(Screen.Cart.route) { inclusive = true }
+                    }
+                },
+                onBottomNavClick = { destination ->
+                    when (destination) {
+                        BottomNavDestination.HOME -> {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Checkout.route) { inclusive = true }
+                            }
+                        }
+                        BottomNavDestination.CATEGORIES -> {
+                            navController.navigate(Screen.Categories.route)
+                        }
+                        BottomNavDestination.CART -> {
+                            // Navigate back to cart
+                            navController.popBackStack()
+                        }
+                        BottomNavDestination.PROFILE -> {
+                            navController.navigate(Screen.Profile.route)
+                        }
+                    }
+                }
+            )
+        }
+        
+        // Payment success screen
+        // Requirement 8.7: Show order confirmation after successful payment
+        composable(
+            route = Screen.PaymentSuccess.route,
+            arguments = listOf(
+                navArgument("orderId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+            // TODO: Implement PaymentSuccessScreen
+            PlaceholderScreen(title = "سفارش شما با موفقیت ثبت شد\n\nشماره سفارش: $orderId")
         }
         
         // Profile screen

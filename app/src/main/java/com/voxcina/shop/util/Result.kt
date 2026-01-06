@@ -277,3 +277,42 @@ sealed class TicketError : AppError() {
         override val message: String = "خطا در ارسال پیام"
     }
 }
+
+/**
+ * Shipping-specific errors for shipping operations.
+ */
+sealed class ShippingError : AppError() {
+    data object ShippingQuotesLoadFailed : ShippingError() {
+        override val message: String = "خطا در دریافت روش‌های ارسال"
+    }
+    data object InvalidCityCode : ShippingError() {
+        override val message: String = "کد شهر نامعتبر است"
+    }
+    data object NoShippingMethodsAvailable : ShippingError() {
+        override val message: String = "روش ارسالی برای این مقصد موجود نیست"
+    }
+}
+
+/**
+ * Checkout-specific errors for checkout operations.
+ */
+sealed class CheckoutError : AppError() {
+    data object OrderCreationFailed : CheckoutError() {
+        override val message: String = "خطا در ثبت سفارش. لطفاً دوباره تلاش کنید"
+    }
+    data object MissingAddress : CheckoutError() {
+        override val message: String = "لطفاً آدرس تحویل را انتخاب کنید"
+    }
+    data object MissingShippingMethod : CheckoutError() {
+        override val message: String = "لطفاً روش ارسال را انتخاب کنید"
+    }
+    data object InvalidCardDetails : CheckoutError() {
+        override val message: String = "اطلاعات کارت نامعتبر است"
+    }
+    data object EmptyCart : CheckoutError() {
+        override val message: String = "سبد خرید خالی است"
+    }
+    data object NotAuthenticated : CheckoutError() {
+        override val message: String = "برای تکمیل خرید باید وارد شوید"
+    }
+}

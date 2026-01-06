@@ -15,7 +15,8 @@ data class ShippingMethod(
     val name: String,
     val price: Long,
     val estimatedDays: String,
-    val description: String
+    val description: String,
+    val courierLogo: String? = null
 )
 
 /**

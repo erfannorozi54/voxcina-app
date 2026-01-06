@@ -45,6 +45,8 @@ android {
 // Enable JUnit 5 for Kotest
 tasks.withType<Test> {
     useJUnitPlatform()
+    // Disable Kotest autoscan to avoid classpath scanning startup cost
+    systemProperty("kotest.framework.classpath.scanning.autoscan.disable", "true")
 }
 
 dependencies {

@@ -8,12 +8,14 @@ import com.voxcina.shop.data.remote.ApiClient
 import com.voxcina.shop.data.remote.AuthApi
 import com.voxcina.shop.data.remote.AuthInterceptor
 import com.voxcina.shop.data.remote.CartApi
+import com.voxcina.shop.data.remote.CheckoutApi
 import com.voxcina.shop.data.remote.DiscountApi
 import com.voxcina.shop.data.remote.FaqApi
 import com.voxcina.shop.data.remote.HomeApi
 import com.voxcina.shop.data.remote.LocalityApi
 import com.voxcina.shop.data.remote.ProductApi
 import com.voxcina.shop.data.remote.ProfileApi
+import com.voxcina.shop.data.remote.ShippingApi
 import com.voxcina.shop.data.remote.TicketApi
 import dagger.Module
 import dagger.Provides
@@ -118,5 +120,17 @@ object NetworkModule {
     @Singleton
     fun provideActivityApi(retrofit: Retrofit): ActivityApi {
         return retrofit.create(ActivityApi::class.java)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideShippingApi(retrofit: Retrofit): ShippingApi {
+        return retrofit.create(ShippingApi::class.java)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideCheckoutApi(retrofit: Retrofit): CheckoutApi {
+        return retrofit.create(CheckoutApi::class.java)
     }
 }
