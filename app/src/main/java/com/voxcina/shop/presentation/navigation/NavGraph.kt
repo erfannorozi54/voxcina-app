@@ -28,6 +28,7 @@ import com.voxcina.shop.presentation.productdetail.ProductDetailScreen
 import com.voxcina.shop.presentation.profile.OrderStatus
 import com.voxcina.shop.presentation.profile.ProfileScreen
 import com.voxcina.shop.presentation.promotions.PromotionsScreen
+import com.voxcina.shop.presentation.recentlyviewed.RecentlyViewedScreen
 import com.voxcina.shop.presentation.splash.SplashScreen
 import com.voxcina.shop.presentation.support.SupportScreen
 import com.voxcina.shop.presentation.tickets.TicketsScreen
@@ -222,6 +223,9 @@ fun NavGraph(
                 },
                 onViewAllCategories = {
                     navController.navigate(Screen.Categories.route)
+                },
+                onViewAllRecentlyViewed = {
+                    navController.navigate(Screen.RecentlyViewed.route)
                 },
                 onSearchClick = {
                     navController.navigate(Screen.Search.route)
@@ -486,8 +490,12 @@ fun NavGraph(
         
         // Recently viewed screen
         composable(route = Screen.RecentlyViewed.route) {
-            // TODO: Implement RecentlyViewedScreen
-            PlaceholderScreen(title = "بازدیدهای اخیر")
+            RecentlyViewedScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onProductClick = { productId, colorHex ->
+                    navController.navigate(Screen.ProductDetail.createRoute(productId, colorHex))
+                }
+            )
         }
         
         // Promotions screen

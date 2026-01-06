@@ -72,18 +72,6 @@ fun OrderSummary(
                     )
                 }
                 
-                // Shipping cost
-                val shippingText = if (summary.shipping > 0) {
-                    "${PersianDigitConverter.formatPrice(summary.shipping)} تومان"
-                } else {
-                    "رایگان"
-                }
-                SummaryRow(
-                    label = "هزینه ارسال",
-                    value = shippingText,
-                    valueColor = if (summary.shipping > 0) Primary else Color(0xFF10B981)
-                )
-                
                 // Divider
                 HorizontalDivider(
                     color = Color.Gray.copy(alpha = 0.2f)

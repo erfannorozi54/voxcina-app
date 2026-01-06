@@ -3,10 +3,13 @@ package com.voxcina.shop.presentation.productdetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.voxcina.shop.data.local.RecentlyViewedDataSource
 import com.voxcina.shop.domain.model.CartVariant
 import com.voxcina.shop.domain.model.ColorVariant
 import com.voxcina.shop.domain.model.ProductDetail
+import com.voxcina.shop.domain.model.RecentlyViewedProduct
 import com.voxcina.shop.domain.model.SizeVariant
+import com.voxcina.shop.domain.repository.ActivityRepository
 import com.voxcina.shop.domain.repository.CartRepository
 import com.voxcina.shop.domain.usecase.GetProductDetailUseCase
 import com.voxcina.shop.ui.components.NotificationState
@@ -39,6 +42,8 @@ class ProductDetailViewModel @Inject constructor(
     private val getProductDetailUseCase: GetProductDetailUseCase,
     private val cartRepository: CartRepository,
     private val productRepository: ProductRepository,
+    private val recentlyViewedDataSource: RecentlyViewedDataSource,
+    private val activityRepository: ActivityRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -130,6 +135,10 @@ class ProductDetailViewModel @Inject constructor(
                         reviews = emptyList(),
                         isLoadingReviews = true
                     )
+                    
+                    // Track product view locally and to backend
+                    trackProductView(product, initialColor)
+                    
                     // Load reviews after product loads
                     loadReviews()
                 }
@@ -143,6 +152,32 @@ class ProductDetailViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * Tracks product view to local storage and backend.
+     */
+    private fun trackProductView(product: ProductDetail, colorVariant: ColorVariant) {
+        viewModelScope.launch {
+            val imageUrl = colorVariant.images.firstOrNull() 
+                ?: product.mainImages.firstOrNull() 
+                ?: ""
+            
+            // Save to local recently viewed
+            recentlyViewedDataSource.addProduct(
+                RecentlyViewedProduct(
+                    productId = product.id,
+                    name = product.name,
+                    price = product.price,
+                    imageUrl = imageUrl,
+                    colorHex = colorVariant.color,
+                    viewedAt = System.currentTimeMillis()
+                )
+            )
+            
+            // Track to backend (fire and forget)
+            activityRepository.trackProductView(product.id, product.name, colorVariant.color)
         }
     }
 
@@ -175,6 +210,9 @@ class ProductDetailViewModel @Inject constructor(
                 )
             } else state
         }
+        
+        // Track the new color variant view
+        trackProductView(currentState.product, colorVariant)
     }
 
     /**

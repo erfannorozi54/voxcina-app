@@ -12,8 +12,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implementation of [RecentlyViewedDataSource] using SharedPreferences with Gson serialization.
- * Stores recently viewed products with timestamp-based ordering, limited to [MAX_ITEMS] items.
+ * Implementation of [RecentlyViewedDataSource] using SharedPreferences.
+ * Stores up to 40 product color variants with timestamp-based ordering.
  */
 @Singleton
 class RecentlyViewedDataSourceImpl @Inject constructor(
@@ -24,7 +24,7 @@ class RecentlyViewedDataSourceImpl @Inject constructor(
     companion object {
         private const val PREFS_FILE_NAME = "voxcina_recently_viewed"
         private const val KEY_RECENTLY_VIEWED = "recently_viewed_products"
-        private const val MAX_ITEMS = 5
+        private const val MAX_ITEMS = 40
     }
     
     private val sharedPreferences: SharedPreferences by lazy {
@@ -34,8 +34,8 @@ class RecentlyViewedDataSourceImpl @Inject constructor(
     override suspend fun addProduct(product: RecentlyViewedProduct) = withContext(Dispatchers.IO) {
         val current = getRecentProductsInternal().toMutableList()
         
-        // Remove if already exists (will be re-added at front with new timestamp)
-        current.removeAll { it.productId == product.productId }
+        // Remove if same product+color already exists (unique by productId + colorHex)
+        current.removeAll { it.productId == product.productId && it.colorHex == product.colorHex }
         
         // Add to front with current timestamp
         val updatedProduct = product.copy(viewedAt = System.currentTimeMillis())
@@ -43,8 +43,6 @@ class RecentlyViewedDataSourceImpl @Inject constructor(
         
         // Keep only MAX_ITEMS
         val trimmed = current.take(MAX_ITEMS)
-        
-        // Save to SharedPreferences
         saveProducts(trimmed)
     }
     
@@ -54,38 +52,23 @@ class RecentlyViewedDataSourceImpl @Inject constructor(
         }
     
     override suspend fun clearAll() = withContext(Dispatchers.IO) {
-        sharedPreferences.edit()
-            .remove(KEY_RECENTLY_VIEWED)
-            .apply()
+        sharedPreferences.edit().remove(KEY_RECENTLY_VIEWED).apply()
     }
     
-    /**
-     * Internal method to retrieve products from SharedPreferences.
-     * Returns products sorted by viewedAt timestamp (most recent first).
-     */
     private fun getRecentProductsInternal(): List<RecentlyViewedProduct> {
-        val json = sharedPreferences.getString(KEY_RECENTLY_VIEWED, null) 
-            ?: return emptyList()
-        
+        val json = sharedPreferences.getString(KEY_RECENTLY_VIEWED, null) ?: return emptyList()
         return try {
             val type = object : TypeToken<List<RecentlyViewedProduct>>() {}.type
             val products: List<RecentlyViewedProduct> = gson.fromJson(json, type)
-            // Ensure sorted by viewedAt descending (most recent first)
             products.sortedByDescending { it.viewedAt }
         } catch (e: Exception) {
-            // If parsing fails, return empty list and clear corrupted data
             sharedPreferences.edit().remove(KEY_RECENTLY_VIEWED).apply()
             emptyList()
         }
     }
     
-    /**
-     * Saves the list of products to SharedPreferences as JSON.
-     */
     private fun saveProducts(products: List<RecentlyViewedProduct>) {
         val json = gson.toJson(products)
-        sharedPreferences.edit()
-            .putString(KEY_RECENTLY_VIEWED, json)
-            .apply()
+        sharedPreferences.edit().putString(KEY_RECENTLY_VIEWED, json).apply()
     }
 }

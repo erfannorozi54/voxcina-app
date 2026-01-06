@@ -3,6 +3,7 @@ package com.voxcina.shop.di
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.voxcina.shop.BuildConfig
+import com.voxcina.shop.data.remote.ActivityApi
 import com.voxcina.shop.data.remote.ApiClient
 import com.voxcina.shop.data.remote.AuthApi
 import com.voxcina.shop.data.remote.AuthInterceptor
@@ -111,5 +112,11 @@ object NetworkModule {
     @Singleton
     fun provideTicketApi(retrofit: Retrofit): TicketApi {
         return retrofit.create(TicketApi::class.java)
+    }
+    
+    @Provides
+    @Singleton
+    fun provideActivityApi(retrofit: Retrofit): ActivityApi {
+        return retrofit.create(ActivityApi::class.java)
     }
 }

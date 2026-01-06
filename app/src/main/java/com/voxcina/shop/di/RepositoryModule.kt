@@ -1,5 +1,6 @@
 package com.voxcina.shop.di
 
+import com.voxcina.shop.data.repository.ActivityRepositoryImpl
 import com.voxcina.shop.data.repository.AddressRepositoryImpl
 import com.voxcina.shop.data.repository.AuthRepository
 import com.voxcina.shop.data.repository.AuthRepositoryImpl
@@ -11,6 +12,7 @@ import com.voxcina.shop.data.repository.ProductRepositoryImpl
 import com.voxcina.shop.data.repository.ProfileRepositoryImpl
 import com.voxcina.shop.data.repository.PromotionRepositoryImpl
 import com.voxcina.shop.data.repository.TicketRepositoryImpl
+import com.voxcina.shop.domain.repository.ActivityRepository
 import com.voxcina.shop.domain.repository.AddressRepository
 import com.voxcina.shop.domain.repository.CartRepository
 import com.voxcina.shop.domain.repository.FaqRepository
@@ -63,4 +65,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTicketRepository(impl: TicketRepositoryImpl): TicketRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindActivityRepository(impl: ActivityRepositoryImpl): ActivityRepository
 }

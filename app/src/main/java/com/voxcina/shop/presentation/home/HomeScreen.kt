@@ -64,6 +64,7 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
  * @param onRecentlyViewedClick Callback when a recently viewed product is clicked
  * @param onViewAllFlashSale Callback when "View All" in flash sale is clicked
  * @param onViewAllCategories Callback when "View All" in categories is clicked
+ * @param onViewAllRecentlyViewed Callback when "View All" in recently viewed is clicked
  * @param onSearchClick Callback when search bar is clicked
  * @param onNotificationClick Callback when notification icon is clicked
  * @param onCartClick Callback when cart icon is clicked
@@ -78,6 +79,7 @@ fun HomeScreen(
     onRecentlyViewedClick: (productId: String, colorHex: String) -> Unit = { _, _ -> },
     onViewAllFlashSale: () -> Unit = {},
     onViewAllCategories: () -> Unit = {},
+    onViewAllRecentlyViewed: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onNotificationClick: () -> Unit = {},
     onCartClick: () -> Unit = {},
@@ -98,6 +100,7 @@ fun HomeScreen(
             onRecentlyViewedClick = onRecentlyViewedClick,
             onViewAllFlashSale = onViewAllFlashSale,
             onViewAllCategories = onViewAllCategories,
+            onViewAllRecentlyViewed = onViewAllRecentlyViewed,
             onSearchClick = onSearchClick,
             onNotificationClick = onNotificationClick,
             onCartClick = onCartClick,
@@ -135,6 +138,7 @@ fun HomeScreenContent(
     onRecentlyViewedClick: (productId: String, colorHex: String) -> Unit,
     onViewAllFlashSale: () -> Unit,
     onViewAllCategories: () -> Unit,
+    onViewAllRecentlyViewed: () -> Unit,
     onSearchClick: () -> Unit,
     onNotificationClick: () -> Unit,
     onCartClick: () -> Unit,
@@ -171,6 +175,7 @@ fun HomeScreenContent(
                         onRecentlyViewedClick = onRecentlyViewedClick,
                         onViewAllFlashSale = onViewAllFlashSale,
                         onViewAllCategories = onViewAllCategories,
+                        onViewAllRecentlyViewed = onViewAllRecentlyViewed,
                         onSearchClick = onSearchClick,
                         onNotificationClick = onNotificationClick,
                         onCartClick = onCartClick,
@@ -209,6 +214,7 @@ private fun HomeSuccessContent(
     onRecentlyViewedClick: (productId: String, colorHex: String) -> Unit,
     onViewAllFlashSale: () -> Unit,
     onViewAllCategories: () -> Unit,
+    onViewAllRecentlyViewed: () -> Unit,
     onSearchClick: () -> Unit,
     onNotificationClick: () -> Unit,
     onCartClick: () -> Unit,
@@ -278,7 +284,8 @@ private fun HomeSuccessContent(
             if (state.showRecentlyViewed) {
                 RecentlyViewedSection(
                     products = state.recentlyViewedProducts,
-                    onProductClick = onRecentlyViewedClick
+                    onProductClick = onRecentlyViewedClick,
+                    onViewAllClick = onViewAllRecentlyViewed
                 )
             }
             
@@ -422,6 +429,7 @@ private fun HomeScreenLoadingPreview() {
             onRecentlyViewedClick = { _, _ -> },
             onViewAllFlashSale = {},
             onViewAllCategories = {},
+            onViewAllRecentlyViewed = {},
             onSearchClick = {},
             onNotificationClick = {},
             onCartClick = {},
@@ -448,6 +456,7 @@ private fun HomeScreenErrorPreview() {
             onRecentlyViewedClick = { _, _ -> },
             onViewAllFlashSale = {},
             onViewAllCategories = {},
+            onViewAllRecentlyViewed = {},
             onSearchClick = {},
             onNotificationClick = {},
             onCartClick = {},
