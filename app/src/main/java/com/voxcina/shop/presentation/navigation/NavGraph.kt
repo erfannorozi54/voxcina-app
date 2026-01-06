@@ -77,9 +77,10 @@ sealed class Screen(val route: String) {
     /** Checkout screen */
     data object Checkout : Screen("checkout")
     
-    /** Payment success screen with orderId parameter */
-    data object PaymentSuccess : Screen("payment-success/{orderId}") {
-        fun createRoute(orderId: String): String = "payment-success/$orderId"
+    /** Payment result screen with parameters */
+    data object PaymentResult : Screen("payment-result?orderId={orderId}&trackId={trackId}&success={success}") {
+        fun createRoute(orderId: String, trackId: Long, success: Boolean): String =
+            "payment-result?orderId=$orderId&trackId=$trackId&success=$success"
     }
     
     /** Profile screen */
@@ -379,10 +380,10 @@ fun NavGraph(
                     // Requirement 3.4: Navigate to address selection screen
                     navController.navigate(Screen.Addresses.route)
                 },
-                onPaymentSuccess = { orderId ->
-                    // Requirement 8.7: Navigate to payment success screen
-                    navController.navigate(Screen.PaymentSuccess.createRoute(orderId)) {
-                        // Clear checkout from back stack so user can't go back to it
+                onNavigateToPaymentResult = { orderId, trackId ->
+                    // Navigate to payment result screen after returning from browser
+                    navController.navigate(Screen.PaymentResult.createRoute(orderId, trackId, false)) {
+                        // Clear checkout from back stack
                         popUpTo(Screen.Cart.route) { inclusive = true }
                     }
                 },
@@ -408,17 +409,34 @@ fun NavGraph(
             )
         }
         
-        // Payment success screen
-        // Requirement 8.7: Show order confirmation after successful payment
+        // Payment result screen
         composable(
-            route = Screen.PaymentSuccess.route,
+            route = Screen.PaymentResult.route,
             arguments = listOf(
-                navArgument("orderId") { type = NavType.StringType }
+                navArgument("orderId") { type = NavType.StringType; defaultValue = "" },
+                navArgument("trackId") { type = NavType.LongType; defaultValue = 0L },
+                navArgument("success") { type = NavType.BoolType; defaultValue = false }
             )
         ) { backStackEntry ->
             val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
-            // TODO: Implement PaymentSuccessScreen
-            PlaceholderScreen(title = "سفارش شما با موفقیت ثبت شد\n\nشماره سفارش: $orderId")
+            val trackId = backStackEntry.arguments?.getLong("trackId") ?: 0L
+            val success = backStackEntry.arguments?.getBoolean("success") ?: false
+            
+            com.voxcina.shop.presentation.payment.PaymentResultScreen(
+                orderId = orderId,
+                trackId = trackId,
+                isSuccess = success,
+                onNavigateToOrders = {
+                    navController.navigate(Screen.Orders.createRoute()) {
+                        popUpTo(Screen.Home.route) { inclusive = false }
+                    }
+                },
+                onRetryPayment = {
+                    navController.navigate(Screen.Checkout.route) {
+                        popUpTo(Screen.Home.route) { inclusive = false }
+                    }
+                }
+            )
         }
         
         // Profile screen

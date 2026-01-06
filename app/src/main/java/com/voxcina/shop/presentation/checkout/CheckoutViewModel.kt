@@ -617,14 +617,18 @@ class CheckoutViewModel @Inject constructor(
                     when (paymentResult) {
                         is Result.Success -> {
                             _navigationEvent.emit(
-                                CheckoutNavigationEvent.RedirectToPayment(paymentResult.data.payUrl)
+                                CheckoutNavigationEvent.RedirectToPayment(
+                                    payUrl = paymentResult.data.payUrl,
+                                    orderId = order.id,
+                                    trackId = paymentResult.data.trackId
+                                )
                             )
                         }
                         is Result.Error -> {
                             _uiState.update { s ->
                                 if (s is CheckoutUiState.Success) s.copy(isPaymentLoading = false) else s
                             }
-                            _snackbarMessage.emit(mapErrorToMessage(paymentResult.error))
+                            _notificationEvent.emit(mapErrorToMessage(paymentResult.error))
                         }
                     }
                 }
@@ -632,7 +636,7 @@ class CheckoutViewModel @Inject constructor(
                     _uiState.update { s ->
                         if (s is CheckoutUiState.Success) s.copy(isPaymentLoading = false) else s
                     }
-                    _snackbarMessage.emit(mapErrorToMessage(orderResult.error))
+                    _notificationEvent.emit(mapErrorToMessage(orderResult.error))
                 }
             }
         }
@@ -659,7 +663,11 @@ class CheckoutViewModel @Inject constructor(
             when (result) {
                 is Result.Success -> {
                     _navigationEvent.emit(
-                        CheckoutNavigationEvent.RedirectToPayment(result.data.payUrl)
+                        CheckoutNavigationEvent.RedirectToPayment(
+                            payUrl = result.data.payUrl,
+                            orderId = orderId,
+                            trackId = result.data.trackId
+                        )
                     )
                 }
                 is Result.Error -> {
@@ -751,7 +759,6 @@ class CheckoutViewModel @Inject constructor(
 sealed class CheckoutNavigationEvent {
     data object NavigateBack : CheckoutNavigationEvent()
     data object NavigateToAddresses : CheckoutNavigationEvent()
-    data class RedirectToPayment(val payUrl: String) : CheckoutNavigationEvent()
-    data class NavigateToPayment(val orderId: String, val amount: Long) : CheckoutNavigationEvent()
+    data class RedirectToPayment(val payUrl: String, val orderId: String, val trackId: Long) : CheckoutNavigationEvent()
     data class PaymentSuccess(val orderId: String) : CheckoutNavigationEvent()
 }

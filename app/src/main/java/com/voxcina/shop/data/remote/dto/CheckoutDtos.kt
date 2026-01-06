@@ -23,10 +23,10 @@ data class CreateOrderRequestDto(
  * Request DTO for a single order item.
  */
 data class OrderItemRequestDto(
-    @SerializedName("productId") val productId: String,
+    @SerializedName("product_id") val productId: String,
     @SerializedName("variant") val variant: OrderVariantRequestDto,
     @SerializedName("quantity") val quantity: Int,
-    @SerializedName("priceAtPurchase") val priceAtPurchase: Long
+    @SerializedName("price_at_purchase") val priceAtPurchase: Long
 )
 
 /**

@@ -37,6 +37,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -94,7 +95,7 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
  * @param viewModel CheckoutViewModel instance
  * @param onNavigateBack Callback when back button is clicked
  * @param onNavigateToAddresses Callback when address change is clicked
- * @param onPaymentSuccess Callback when payment is successful
+ * @param onNavigateToPaymentResult Callback to navigate to payment result screen
  * @param onBottomNavClick Callback when bottom navigation item is clicked
  */
 @Composable
@@ -102,13 +103,17 @@ fun CheckoutScreen(
     viewModel: CheckoutViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {},
     onNavigateToAddresses: () -> Unit = {},
-    onPaymentSuccess: (orderId: String) -> Unit = {},
+    onNavigateToPaymentResult: (orderId: String, trackId: Long) -> Unit = { _, _ -> },
     onBottomNavClick: (BottomNavDestination) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     var notificationState by remember { mutableStateOf(NotificationState()) }
+    
+    // Store payment info for when user returns from browser
+    var pendingPaymentOrderId by remember { mutableStateOf<String?>(null) }
+    var pendingPaymentTrackId by remember { mutableStateOf<Long?>(null) }
 
     // Collect snackbar messages
     LaunchedEffect(Unit) {
@@ -135,16 +140,37 @@ fun CheckoutScreen(
                 is CheckoutNavigationEvent.NavigateBack -> onNavigateBack()
                 is CheckoutNavigationEvent.NavigateToAddresses -> onNavigateToAddresses()
                 is CheckoutNavigationEvent.RedirectToPayment -> {
+                    // Store payment info for when user returns
+                    pendingPaymentOrderId = event.orderId
+                    pendingPaymentTrackId = event.trackId
                     // Open payment URL in browser
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.payUrl))
                     context.startActivity(intent)
                 }
-                is CheckoutNavigationEvent.NavigateToPayment -> {
-                    // Navigate to payment screen
-                    // This will be handled by the navigation graph
+                is CheckoutNavigationEvent.PaymentSuccess -> {
+                    onNavigateToPaymentResult(event.orderId, 0L)
                 }
-                is CheckoutNavigationEvent.PaymentSuccess -> onPaymentSuccess(event.orderId)
             }
+        }
+    }
+    
+    // Check payment status when returning from browser
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                val orderId = pendingPaymentOrderId
+                val trackId = pendingPaymentTrackId
+                if (orderId != null && trackId != null) {
+                    pendingPaymentOrderId = null
+                    pendingPaymentTrackId = null
+                    onNavigateToPaymentResult(orderId, trackId)
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
