@@ -23,4 +23,9 @@ interface PaymentRepository {
      * Verify payment after callback.
      */
     suspend fun verifyPayment(trackId: Long): Result<VerifyPaymentResponse>
+
+    /**
+     * Retry payment for a pending/failed order.
+     */
+    suspend fun retryPayment(orderId: String): Result<PaymentResponse>
 }

@@ -29,7 +29,20 @@ interface PaymentApi {
     suspend fun verifyPayment(
         @Body request: VerifyPaymentDto
     ): Response<VerifyPaymentResponseDto>
+
+    /**
+     * Retry payment for a pending/failed order.
+     * POST /api/payment/retry
+     */
+    @POST("payment/retry")
+    suspend fun retryPayment(
+        @Body request: RetryPaymentDto
+    ): Response<PaymentResponseDto>
 }
+
+data class RetryPaymentDto(
+    val orderId: String
+)
 
 data class VerifyPaymentResponseDto(
     val result: Int,
@@ -42,5 +55,7 @@ data class VerifyPaymentResponseDto(
     val description: String? = null,
     val orderId: String? = null,
     val paymentStatus: String,
-    val statusText: String
+    val statusText: String,
+    val canRetry: Boolean = false,
+    val orderNumber: String? = null
 )

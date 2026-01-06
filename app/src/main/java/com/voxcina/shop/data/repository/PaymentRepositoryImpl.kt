@@ -1,6 +1,7 @@
 package com.voxcina.shop.data.repository
 
 import com.voxcina.shop.data.remote.PaymentApi
+import com.voxcina.shop.data.remote.RetryPaymentDto
 import com.voxcina.shop.data.remote.dto.PaymentRequestDto
 import com.voxcina.shop.data.remote.dto.VerifyPaymentDto
 import com.voxcina.shop.domain.model.PaymentResponse
@@ -75,7 +76,9 @@ class PaymentRepositoryImpl @Inject constructor(
                         description = body.description,
                         orderId = body.orderId,
                         paymentStatus = body.paymentStatus,
-                        statusText = body.statusText
+                        statusText = body.statusText,
+                        canRetry = body.canRetry,
+                        orderNumber = body.orderNumber
                     )
                 )
             } else {
@@ -83,6 +86,30 @@ class PaymentRepositoryImpl @Inject constructor(
             }
         } else {
             Result.Error(AppError.ServerError(response.code(), "Payment verification failed"))
+        }
+    }
+
+    override suspend fun retryPayment(orderId: String): Result<PaymentResponse> = safeApiCall {
+        val request = RetryPaymentDto(orderId = orderId)
+        
+        val response = paymentApi.retryPayment(request)
+        
+        if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null && body.result == 100 && body.trackId != null && body.payUrl != null) {
+                Result.Success(
+                    PaymentResponse(
+                        result = body.result,
+                        message = body.message,
+                        trackId = body.trackId,
+                        payUrl = body.payUrl
+                    )
+                )
+            } else {
+                Result.Error(AppError.ServerError(response.code(), body?.message ?: "Invalid response"))
+            }
+        } else {
+            Result.Error(AppError.ServerError(response.code(), "Retry payment failed"))
         }
     }
 

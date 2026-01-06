@@ -1,16 +1,20 @@
 package com.voxcina.shop.presentation.payment
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,10 +32,24 @@ fun PaymentResultScreen(
     viewModel: PaymentResultViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isRetrying by viewModel.isRetrying.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(trackId) {
         if (trackId > 0) {
             viewModel.verifyPayment(trackId, orderId)
+        }
+    }
+
+    // Handle retry payment event
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is PaymentResultEvent.RetryPayment -> {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.payUrl))
+                    context.startActivity(intent)
+                }
+            }
         }
     }
 
@@ -53,27 +71,45 @@ fun PaymentResultScreen(
             }
             is PaymentResultUiState.Success -> {
                 PaymentResultContent(
-                    isSuccess = true,
+                    type = ResultType.Success,
                     orderNumber = state.orderNumber,
                     message = "پرداخت شما با موفقیت انجام شد",
+                    refNumber = state.refNumber,
                     onPrimaryAction = onNavigateToOrders,
                     primaryButtonText = "مشاهده سفارش‌ها"
                 )
             }
-            is PaymentResultUiState.Failed -> {
+            is PaymentResultUiState.Abandoned -> {
                 PaymentResultContent(
-                    isSuccess = false,
+                    type = ResultType.Abandoned,
                     orderNumber = state.orderNumber,
-                    message = state.message ?: "پرداخت ناموفق بود",
-                    onPrimaryAction = onRetryPayment,
-                    primaryButtonText = "تلاش مجدد",
+                    message = "پرداخت ناتمام ماند\nمی‌توانید دوباره تلاش کنید",
+                    onPrimaryAction = { state.orderId?.let { viewModel.retryPayment(it) } },
+                    primaryButtonText = if (isRetrying) "در حال انتقال..." else "تلاش مجدد پرداخت",
+                    isPrimaryLoading = isRetrying,
                     onSecondaryAction = onNavigateToOrders,
                     secondaryButtonText = "بازگشت به سفارش‌ها"
                 )
             }
+            is PaymentResultUiState.Failed -> {
+                PaymentResultContent(
+                    type = ResultType.Failed,
+                    orderNumber = state.orderNumber,
+                    message = state.message ?: "پرداخت ناموفق بود",
+                    onPrimaryAction = if (state.canRetry && state.orderId != null) {
+                        { viewModel.retryPayment(state.orderId) }
+                    } else onNavigateToOrders,
+                    primaryButtonText = if (state.canRetry) {
+                        if (isRetrying) "در حال انتقال..." else "تلاش مجدد"
+                    } else "بازگشت به سفارش‌ها",
+                    isPrimaryLoading = isRetrying,
+                    onSecondaryAction = if (state.canRetry) onNavigateToOrders else null,
+                    secondaryButtonText = if (state.canRetry) "بازگشت به سفارش‌ها" else null
+                )
+            }
             is PaymentResultUiState.Error -> {
                 PaymentResultContent(
-                    isSuccess = false,
+                    type = ResultType.Failed,
                     orderNumber = null,
                     message = state.message,
                     onPrimaryAction = onNavigateToOrders,
@@ -84,16 +120,37 @@ fun PaymentResultScreen(
     }
 }
 
+private enum class ResultType { Success, Abandoned, Failed }
+
 @Composable
 private fun PaymentResultContent(
-    isSuccess: Boolean,
+    type: ResultType,
     orderNumber: String?,
     message: String,
+    refNumber: String? = null,
     onPrimaryAction: () -> Unit,
     primaryButtonText: String,
+    isPrimaryLoading: Boolean = false,
     onSecondaryAction: (() -> Unit)? = null,
     secondaryButtonText: String? = null
 ) {
+    val iconColor = when (type) {
+        ResultType.Success -> Color(0xFF10B981)
+        ResultType.Abandoned -> Color(0xFFF59E0B)
+        ResultType.Failed -> Color(0xFFEF4444)
+    }
+    val bgColor = iconColor.copy(alpha = 0.1f)
+    val icon = when (type) {
+        ResultType.Success -> Icons.Default.CheckCircle
+        ResultType.Abandoned -> Icons.Default.Warning
+        ResultType.Failed -> Icons.Default.Error
+    }
+    val title = when (type) {
+        ResultType.Success -> "پرداخت موفق"
+        ResultType.Abandoned -> "پرداخت ناتمام"
+        ResultType.Failed -> "پرداخت ناموفق"
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -101,34 +158,27 @@ private fun PaymentResultContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        // Icon
         Box(
             modifier = Modifier
                 .size(100.dp)
-                .background(
-                    color = if (isSuccess) Color(0xFF10B981).copy(alpha = 0.1f)
-                    else Color(0xFFEF4444).copy(alpha = 0.1f),
-                    shape = CircleShape
-                ),
+                .background(color = bgColor, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = if (isSuccess) Icons.Default.CheckCircle else Icons.Default.Error,
+                imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(60.dp),
-                tint = if (isSuccess) Color(0xFF10B981) else Color(0xFFEF4444)
+                tint = iconColor
             )
         }
 
-        // Title
         Text(
-            text = if (isSuccess) "پرداخت موفق" else "پرداخت ناموفق",
+            text = title,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = if (isSuccess) Color(0xFF10B981) else Color(0xFFEF4444)
+            color = iconColor
         )
 
-        // Message
         Text(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
@@ -136,7 +186,6 @@ private fun PaymentResultContent(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
 
-        // Order number
         if (orderNumber != null) {
             Text(
                 text = "شماره سفارش: $orderNumber",
@@ -145,22 +194,35 @@ private fun PaymentResultContent(
             )
         }
 
+        if (refNumber != null) {
+            Text(
+                text = "شماره مرجع: $refNumber",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Primary button
         Button(
             onClick = onPrimaryAction,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isSuccess) Primary else Color(0xFFEF4444)
-            )
+            enabled = !isPrimaryLoading,
+            colors = ButtonDefaults.buttonColors(containerColor = iconColor)
         ) {
-            Text(primaryButtonText)
+            if (isPrimaryLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(primaryButtonText)
+            }
         }
 
-        // Secondary button
         if (onSecondaryAction != null && secondaryButtonText != null) {
             OutlinedButton(
                 onClick = onSecondaryAction,
