@@ -188,7 +188,7 @@ sealed class HomeEvent {
      * User tapped on a bottom navigation item.
      * Requirements: 6.5
      */
-    data class BottomNavClicked(val destination: BottomNavDestination) : HomeEvent()
+    data class BottomNavClicked(val destination: com.voxcina.shop.presentation.home.components.BottomNavDestination) : HomeEvent()
     
     /**
      * Track a product as recently viewed.
@@ -210,14 +210,4 @@ enum class HomeSection {
     CATEGORIES,
     FLASH_SALE,
     RECOMMENDED_PRODUCTS
-}
-
-/**
- * Enum representing bottom navigation destinations.
- */
-enum class BottomNavDestination {
-    HOME,
-    CATEGORIES,
-    CART,
-    PROFILE
 }

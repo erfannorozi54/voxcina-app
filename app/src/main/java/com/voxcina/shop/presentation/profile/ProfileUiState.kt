@@ -197,15 +197,5 @@ sealed class ProfileEvent {
      * User tapped on bottom navigation item.
      * Requirements: 8.4
      */
-    data class BottomNavClicked(val destination: BottomNavDestination) : ProfileEvent()
-}
-
-/**
- * Enum representing bottom navigation destinations.
- */
-enum class BottomNavDestination {
-    HOME,
-    CATEGORIES,
-    CART,
-    PROFILE
+    data class BottomNavClicked(val destination: com.voxcina.shop.presentation.home.components.BottomNavDestination) : ProfileEvent()
 }

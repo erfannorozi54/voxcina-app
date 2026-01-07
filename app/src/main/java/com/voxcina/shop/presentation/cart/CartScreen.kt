@@ -144,6 +144,13 @@ fun CartScreenContent(
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
+            bottomBar = {
+                BottomNavBar(
+                    selectedDestination = BottomNavDestination.CART,
+                    cartItemCount = (uiState as? CartUiState.Success)?.itemCount ?: 0,
+                    onDestinationSelected = onBottomNavClick
+                )
+            },
             containerColor = SecondaryLight
         ) { paddingValues ->
             Column(
@@ -218,14 +225,6 @@ fun CartScreenContent(
                         }
                     )
                 }
-                
-                // Bottom Navigation - always at bottom
-                BottomNavBar(
-                    selectedDestination = BottomNavDestination.CART,
-                    cartItemCount = (uiState as? CartUiState.Success)?.itemCount ?: 0,
-                    onDestinationSelected = onBottomNavClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
             }
         }
         

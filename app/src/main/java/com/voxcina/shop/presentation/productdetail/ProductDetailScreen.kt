@@ -110,7 +110,7 @@ fun ProductDetailScreen(
         bottomBar = {
             BottomNavBar(
                 selectedDestination = BottomNavDestination.HOME,
-                cartItemCount = 0,
+                cartItemCount = (uiState as? ProductDetailUiState.Success)?.cartItemCount ?: 0,
                 onDestinationSelected = onBottomNavClick
             )
         }

@@ -38,7 +38,8 @@ sealed interface ProductDetailUiState {
         val reviews: List<ProductReview> = emptyList(),
         val isLoadingReviews: Boolean = false,
         val isSubmittingReview: Boolean = false,
-        val showAddReviewSheet: Boolean = false
+        val showAddReviewSheet: Boolean = false,
+        val cartItemCount: Int = 0
     ) : ProductDetailUiState {
 
         /**

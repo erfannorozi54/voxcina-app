@@ -124,11 +124,11 @@ private fun GlassBottomNavigationPreview() {
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Home,
-                        contentDescription = "دسته‌بندی",
+                        contentDescription = "محصولات",
                         tint = Color.Gray
                     )
                     Text(
-                        text = "دسته‌بندی",
+                        text = "محصولات",
                         color = Color.Gray
                     )
                 }

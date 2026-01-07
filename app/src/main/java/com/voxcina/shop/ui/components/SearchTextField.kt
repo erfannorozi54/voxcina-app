@@ -17,10 +17,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 
@@ -38,6 +41,10 @@ fun SearchTextField(
             onValueChange = onValueChange,
             modifier = modifier.fillMaxWidth(),
             placeholder = { Text(placeholder) },
+            textStyle = TextStyle(
+                textDirection = TextDirection.ContentOrRtl,
+                fontSize = 14.sp
+            ),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,

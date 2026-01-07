@@ -27,6 +27,7 @@ import com.voxcina.shop.presentation.home.components.BottomNavDestination
 import com.voxcina.shop.presentation.onboarding.OnboardingScreen
 import com.voxcina.shop.presentation.orders.OrdersScreen
 import com.voxcina.shop.presentation.productdetail.ProductDetailScreen
+import com.voxcina.shop.presentation.products.ProductsScreen
 import com.voxcina.shop.presentation.profile.OrderStatus
 import com.voxcina.shop.presentation.profile.ProfileScreen
 import com.voxcina.shop.presentation.promotions.PromotionsScreen
@@ -64,6 +65,13 @@ sealed class Screen(val route: String) {
     
     /** Categories list screen */
     data object Categories : Screen("categories")
+    
+    /** Products list screen with optional category filter */
+    data object Products : Screen("products?categoryId={categoryId}") {
+        fun createRoute(categoryId: String? = null): String {
+            return if (categoryId != null) "products?categoryId=$categoryId" else "products"
+        }
+    }
     
     /** Category products screen with categoryId parameter */
     data object CategoryProducts : Screen("category/{categoryId}") {
@@ -218,8 +226,8 @@ fun NavGraph(
         composable(route = Screen.Home.route) {
             HomeScreen(
                 onCategoryClick = { categoryId ->
-                    // Navigate to category products screen (Requirement 3.4)
-                    navController.navigate(Screen.CategoryProducts.createRoute(categoryId))
+                    // Navigate to products screen with category filter
+                    navController.navigate(Screen.Products.createRoute(categoryId))
                 },
                 onProductClick = { productId, colorHex ->
                     // Navigate to product detail screen (Requirement 5.7)
@@ -233,7 +241,7 @@ fun NavGraph(
                     navController.navigate(Screen.FlashSale.route)
                 },
                 onViewAllCategories = {
-                    navController.navigate(Screen.Categories.route)
+                    navController.navigate(Screen.Products.route)
                 },
                 onViewAllRecentlyViewed = {
                     navController.navigate(Screen.RecentlyViewed.route)
@@ -252,8 +260,8 @@ fun NavGraph(
                         BottomNavDestination.HOME -> {
                             // Already on home, do nothing
                         }
-                        BottomNavDestination.CATEGORIES -> {
-                            navController.navigate(Screen.Categories.route)
+                        BottomNavDestination.PRODUCTS -> {
+                            navController.navigate(Screen.Products.route)
                         }
                         BottomNavDestination.CART -> {
                             navController.navigate(Screen.Cart.route)
@@ -300,8 +308,46 @@ fun NavGraph(
                                 popUpTo(Screen.Home.route) { inclusive = true }
                             }
                         }
-                        BottomNavDestination.CATEGORIES -> {
-                            navController.navigate(Screen.Categories.route)
+                        BottomNavDestination.PRODUCTS -> {
+                            navController.navigate(Screen.Products.route)
+                        }
+                        BottomNavDestination.CART -> {
+                            navController.navigate(Screen.Cart.route)
+                        }
+                        BottomNavDestination.PROFILE -> {
+                            navController.navigate(Screen.Profile.route)
+                        }
+                    }
+                }
+            )
+        }
+        
+        // Products list screen
+        composable(
+            route = Screen.Products.route,
+            arguments = listOf(
+                navArgument("categoryId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId")
+            ProductsScreen(
+                initialCategoryId = categoryId,
+                onProductClick = { productId, colorHex ->
+                    navController.navigate(Screen.ProductDetail.createRoute(productId, colorHex))
+                },
+                onBottomNavClick = { destination ->
+                    when (destination) {
+                        BottomNavDestination.HOME -> {
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Products.route) { inclusive = true }
+                            }
+                        }
+                        BottomNavDestination.PRODUCTS -> {
+                            // Already on products, do nothing
                         }
                         BottomNavDestination.CART -> {
                             navController.navigate(Screen.Cart.route)
@@ -355,8 +401,8 @@ fun NavGraph(
                                 popUpTo(Screen.Cart.route) { inclusive = true }
                             }
                         }
-                        BottomNavDestination.CATEGORIES -> {
-                            navController.navigate(Screen.Categories.route)
+                        BottomNavDestination.PRODUCTS -> {
+                            navController.navigate(Screen.Products.route)
                         }
                         BottomNavDestination.CART -> {
                             // Already on cart, do nothing
@@ -395,8 +441,8 @@ fun NavGraph(
                                 popUpTo(Screen.Checkout.route) { inclusive = true }
                             }
                         }
-                        BottomNavDestination.CATEGORIES -> {
-                            navController.navigate(Screen.Categories.route)
+                        BottomNavDestination.PRODUCTS -> {
+                            navController.navigate(Screen.Products.route)
                         }
                         BottomNavDestination.CART -> {
                             // Navigate back to cart
@@ -488,8 +534,8 @@ fun NavGraph(
                                 popUpTo(Screen.Profile.route) { inclusive = true }
                             }
                         }
-                        BottomNavDestination.CATEGORIES -> {
-                            navController.navigate(Screen.Categories.route)
+                        BottomNavDestination.PRODUCTS -> {
+                            navController.navigate(Screen.Products.route)
                         }
                         BottomNavDestination.CART -> {
                             navController.navigate(Screen.Cart.route)

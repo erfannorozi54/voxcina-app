@@ -63,12 +63,12 @@ enum class BottomNavDestination(
         unselectedIcon = Icons.Outlined.Home,
         contentDescription = "صفحه اصلی"
     ),
-    CATEGORIES(
-        route = "categories",
-        label = "دسته‌بندی",
+    PRODUCTS(
+        route = "products",
+        label = "محصولات",
         selectedIcon = Icons.Filled.Home, // Will use custom icon
         unselectedIcon = Icons.Outlined.Home,
-        contentDescription = "دسته‌بندی محصولات"
+        contentDescription = "محصولات"
     ),
     CART(
         route = "cart",
@@ -89,7 +89,7 @@ enum class BottomNavDestination(
 
 /**
  * Bottom navigation bar with glassmorphism styling.
- * Displays four navigation items: Home, Categories, Cart, and Profile.
+ * Displays four navigation items: Home, Products, Cart, and Profile.
  * 
  * Features:
  * - Active state with primary color and indicator dot
@@ -111,7 +111,7 @@ fun BottomNavBar(
     onDestinationSelected: (BottomNavDestination) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Force RTL layout direction for proper ordering (Profile -> Cart -> Categories -> Home)
+    // Force RTL layout direction for proper ordering (Profile -> Cart -> Products -> Home)
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         GlassBottomNavigation(modifier = modifier) {
             BottomNavDestination.entries.forEach { destination ->
@@ -185,9 +185,9 @@ private fun BottomNavItem(
                     badgeOffsetY = (-4).dp
                 )
             }
-            destination == BottomNavDestination.CATEGORIES -> {
-                // Use custom category icon
-                CategoryIcon(
+            destination == BottomNavDestination.PRODUCTS -> {
+                // Use custom grid icon for products
+                ProductsIcon(
                     isSelected = isSelected,
                     tint = animatedColor
                 )
@@ -224,7 +224,7 @@ private fun BottomNavItem(
 
 
 /**
- * Custom category icon using a grid pattern.
+ * Custom products icon using a grid pattern.
  * Material Icons doesn't have a perfect category icon,
  * so we create a simple grid representation.
  * 
@@ -232,11 +232,11 @@ private fun BottomNavItem(
  * @param tint Color to apply to the icon
  */
 @Composable
-private fun CategoryIcon(
+private fun ProductsIcon(
     isSelected: Boolean,
     tint: Color
 ) {
-    // Using a simple grid layout to represent categories
+    // Using a simple grid layout to represent products
     Box(
         modifier = Modifier.size(24.dp),
         contentAlignment = Alignment.Center
@@ -310,7 +310,7 @@ private fun BottomNavBarPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun BottomNavBarCategoriesSelectedPreview() {
+private fun BottomNavBarProductsSelectedPreview() {
     VoxcinaTheme {
         Box(
             modifier = Modifier
@@ -318,7 +318,7 @@ private fun BottomNavBarCategoriesSelectedPreview() {
                 .padding(top = 100.dp)
         ) {
             BottomNavBar(
-                selectedDestination = BottomNavDestination.CATEGORIES,
+                selectedDestination = BottomNavDestination.PRODUCTS,
                 cartItemCount = 0,
                 onDestinationSelected = {}
             )

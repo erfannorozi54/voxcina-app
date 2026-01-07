@@ -64,6 +64,16 @@ class ProductDetailViewModel @Inject constructor(
 
     init {
         loadProduct()
+        loadCartCount()
+    }
+
+    private fun loadCartCount() {
+        viewModelScope.launch {
+            val count = (cartRepository.getCart() as? Result.Success)?.data?.items?.sumOf { it.quantity } ?: 0
+            _uiState.update { state ->
+                if (state is ProductDetailUiState.Success) state.copy(cartItemCount = count) else state
+            }
+        }
     }
 
     /**
@@ -316,9 +326,10 @@ class ProductDetailViewModel @Inject constructor(
 
             when (result) {
                 is Result.Success -> {
+                    val newCount = result.data.items.sumOf { it.quantity }
                     _uiState.update { state ->
                         if (state is ProductDetailUiState.Success) {
-                            state.copy(isAddingToCart = false)
+                            state.copy(isAddingToCart = false, cartItemCount = newCount)
                         } else state
                     }
                     _addToCartSuccess.emit(Unit)
