@@ -167,10 +167,9 @@ fun NavGraph(
     navController: NavHostController,
     onboardingManager: OnboardingManager,
     tokenManager: TokenManager,
+    smsRetrieverHelper: SmsRetrieverHelper? = null,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val smsRetrieverHelper = remember { SmsRetrieverHelper(context) }
     
     NavHost(
         navController = navController,

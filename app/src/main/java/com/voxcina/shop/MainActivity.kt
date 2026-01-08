@@ -1,9 +1,11 @@
 package com.voxcina.shop
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -15,6 +17,7 @@ import com.voxcina.shop.presentation.navigation.NavGraph
 import com.voxcina.shop.presentation.navigation.Screen
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 import com.voxcina.shop.util.OnboardingManagerImpl
+import com.voxcina.shop.util.SmsRetrieverHelper
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -30,12 +33,28 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var sessionManager: SessionManager
     
+    @Inject
+    lateinit var smsRetrieverHelper: SmsRetrieverHelper
+    
+    private val smsConsentLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            smsRetrieverHelper.handleConsentResult(result.data)
+        }
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         
         // Track app open on cold start (with debounce)
         appActivityTracker.trackAppOpen()
+        
+        // Set up SMS consent launcher using static callback
+        SmsRetrieverHelper.consentLauncher = { intent ->
+            smsConsentLauncher.launch(intent)
+        }
         
         setContent {
             VoxcinaTheme {
@@ -55,7 +74,8 @@ class MainActivity : ComponentActivity() {
                 NavGraph(
                     navController = navController,
                     onboardingManager = onboardingManager,
-                    tokenManager = tokenManager
+                    tokenManager = tokenManager,
+                    smsRetrieverHelper = smsRetrieverHelper
                 )
             }
         }
