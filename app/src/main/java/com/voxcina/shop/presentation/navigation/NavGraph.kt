@@ -62,7 +62,9 @@ sealed class Screen(val route: String) {
     /** Product detail screen with productId and colorHex parameters */
     data object ProductDetail : Screen("product/{productId}?color={colorHex}") {
         fun createRoute(productId: String, colorHex: String): String {
-            return "product/$productId?color=$colorHex"
+            // Remove # prefix as it's a URL fragment identifier
+            val cleanColor = colorHex.removePrefix("#")
+            return "product/$productId?color=$cleanColor"
         }
     }
     
@@ -300,12 +302,23 @@ fun NavGraph(
             val productId = backStackEntry.arguments?.getString("productId") ?: ""
             val colorHex = backStackEntry.arguments?.getString("colorHex") ?: ""
             
+            // Check if previous destination is Home for optimized back navigation
+            val previousRoute = navController.previousBackStackEntry?.destination?.route
+            val isFromHome = previousRoute == Screen.Home.route
+            
             ProductDetailScreen(
                 productId = productId,
                 initialColorHex = colorHex.ifEmpty { null },
                 onNavigateBack = {
-                    // Requirement 2.2: Navigate to previous screen
-                    navController.popBackStack()
+                    if (isFromHome) {
+                        // Navigate to Home for instant transition with loading skeleton
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                        }
+                    } else {
+                        // Normal back navigation for other screens
+                        navController.popBackStack()
+                    }
                 },
                 onNavigateToReviews = { reviewProductId ->
                     // TODO: Navigate to reviews screen when implemented

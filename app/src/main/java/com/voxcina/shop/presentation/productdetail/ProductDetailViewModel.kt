@@ -483,9 +483,11 @@ class ProductDetailViewModel @Inject constructor(
      * Uses initialColorHex if provided, otherwise defaults to first color.
      */
     private fun findInitialColorVariant(product: ProductDetail): ColorVariant {
-        if (initialColorHex != null) {
+        if (!initialColorHex.isNullOrEmpty()) {
+            // Normalize color hex for comparison (handle with or without # prefix)
+            val normalizedInitial = initialColorHex.removePrefix("#").lowercase()
             val matchingColor = product.colorVariants.find { 
-                it.color.equals(initialColorHex, ignoreCase = true) 
+                it.color.removePrefix("#").lowercase() == normalizedInitial
             }
             if (matchingColor != null) return matchingColor
         }
