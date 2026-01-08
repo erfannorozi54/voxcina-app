@@ -25,6 +25,7 @@ import com.voxcina.shop.presentation.checkout.CheckoutScreen
 import com.voxcina.shop.presentation.home.HomeScreen
 import com.voxcina.shop.presentation.home.components.BottomNavDestination
 import com.voxcina.shop.presentation.onboarding.OnboardingScreen
+import com.voxcina.shop.presentation.orders.OrderDetailScreen
 import com.voxcina.shop.presentation.orders.OrdersScreen
 import com.voxcina.shop.presentation.productdetail.ProductDetailScreen
 import com.voxcina.shop.presentation.products.ProductsScreen
@@ -110,6 +111,11 @@ sealed class Screen(val route: String) {
                 "orders"
             }
         }
+    }
+    
+    /** Order detail screen */
+    data object OrderDetail : Screen("orders/{orderId}") {
+        fun createRoute(orderId: String): String = "orders/$orderId"
     }
     
     /** Addresses screen */
@@ -574,10 +580,25 @@ fun NavGraph(
             OrdersScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onOrderClick = { orderId ->
-                    // TODO: Navigate to order detail when implemented
+                    navController.navigate(Screen.OrderDetail.createRoute(orderId))
                 }
             )
         }
+        
+        // Order detail screen
+        composable(
+            route = Screen.OrderDetail.route,
+            arguments = listOf(
+                navArgument("orderId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: return@composable
+            OrderDetailScreen(
+                orderId = orderId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
         composable(route = Screen.Addresses.route) {
             AddressesScreen(
                 onNavigateBack = { navController.popBackStack() }

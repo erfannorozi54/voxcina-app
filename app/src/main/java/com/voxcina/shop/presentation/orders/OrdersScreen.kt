@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.voxcina.shop.domain.model.Order
+import com.voxcina.shop.domain.model.OrderItem
 import com.voxcina.shop.domain.model.OrderStatus
 import com.voxcina.shop.ui.components.EmptyState
 import com.voxcina.shop.ui.components.PriceText
@@ -202,41 +203,23 @@ private fun OrderCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Product images row
-            Row(horizontalArrangement = Arrangement.spacedBy((-8).dp)) {
-                order.items.take(4).forEach { item ->
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(Primary100)
-                    ) {
-                        AsyncImage(
-                            model = item.product.image,
-                            contentDescription = item.product.name,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                }
-                if (order.items.size > 4) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(Primary.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "+${PersianDigitConverter.toPersianDigits((order.items.size - 4).toString())}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Primary
-                        )
-                    }
-                }
+            // Product items with image, name, color
+            order.items.take(2).forEach { item ->
+                OrderItemRow(item = item)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            
+            if (order.items.size > 2) {
+                Text(
+                    text = "+${PersianDigitConverter.toPersianDigits((order.items.size - 2).toString())} کالای دیگر",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Primary,
+                    modifier = Modifier.padding(start = 48.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             // Footer: Item count + Total
             Row(
@@ -255,6 +238,71 @@ private fun OrderCard(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun OrderItemRow(item: OrderItem) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        // Product image
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Primary100)
+        ) {
+            AsyncImage(
+                model = item.product.image,
+                contentDescription = item.product.name,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+        
+        // Product name and variant
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = item.product.name,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                // Color dot
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(parseColor(item.variant.color))
+                )
+                Text(
+                    text = "${item.variant.colorName} - ${item.variant.size}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.Gray
+                )
+            }
+        }
+        
+        // Quantity
+        Text(
+            text = "×${PersianDigitConverter.toPersianDigits(item.quantity.toString())}",
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.Gray
+        )
+    }
+}
+
+private fun parseColor(hex: String): Color {
+    return try {
+        Color(android.graphics.Color.parseColor(hex))
+    } catch (e: Exception) {
+        Color.Gray
     }
 }
 
