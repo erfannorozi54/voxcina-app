@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.domain.model.Faq
 import com.voxcina.shop.ui.theme.Primary
@@ -83,39 +82,5 @@ fun ExpandableFaqItem(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ExpandableFaqItemCollapsedPreview() {
-    VoxcinaTheme {
-        ExpandableFaqItem(
-            faq = Faq(
-                id = "1",
-                question = "چگونه سفارش خود را پیگیری کنم؟",
-                answer = "برای پیگیری سفارش خود میتوانید از بخش سفارشهای من در پروفایل کاربری استفاده کنید."
-            ),
-            isExpanded = false,
-            onClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ExpandableFaqItemExpandedPreview() {
-    VoxcinaTheme {
-        ExpandableFaqItem(
-            faq = Faq(
-                id = "1",
-                question = "چگونه سفارش خود را پیگیری کنم؟",
-                answer = "برای پیگیری سفارش خود میتوانید از بخش سفارشهای من در پروفایل کاربری استفاده کنید."
-            ),
-            isExpanded = true,
-            onClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

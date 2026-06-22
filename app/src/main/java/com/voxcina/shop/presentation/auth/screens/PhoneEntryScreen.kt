@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -95,61 +94,5 @@ fun PhoneEntryScreen(
 
             Spacer(modifier = Modifier.weight(1f))
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PhoneEntryScreenPreview() {
-    VoxcinaTheme {
-        PhoneEntryScreen(
-            phone = "",
-            phoneError = null,
-            isLoading = false,
-            onPhoneChange = {},
-            onContinue = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PhoneEntryScreenWithPhonePreview() {
-    VoxcinaTheme {
-        PhoneEntryScreen(
-            phone = "09123456789",
-            phoneError = null,
-            isLoading = false,
-            onPhoneChange = {},
-            onContinue = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PhoneEntryScreenWithErrorPreview() {
-    VoxcinaTheme {
-        PhoneEntryScreen(
-            phone = "0912",
-            phoneError = "شماره تلفن نامعتبر است",
-            isLoading = false,
-            onPhoneChange = {},
-            onContinue = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PhoneEntryScreenLoadingPreview() {
-    VoxcinaTheme {
-        PhoneEntryScreen(
-            phone = "09123456789",
-            phoneError = null,
-            isLoading = true,
-            onPhoneChange = {},
-            onContinue = {}
-        )
     }
 }

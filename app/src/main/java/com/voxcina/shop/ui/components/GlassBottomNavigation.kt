@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.VoxcinaTheme
@@ -90,79 +89,5 @@ fun GlassBottomNavigation(
             verticalAlignment = Alignment.CenterVertically,
             content = content
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun GlassBottomNavigationPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .background(Color(0xFFF4F1EC))
-                .padding(top = 100.dp)
-        ) {
-            GlassBottomNavigation {
-                // Home - Active
-                androidx.compose.foundation.layout.Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Home,
-                        contentDescription = "خانه",
-                        tint = Primary
-                    )
-                    Text(
-                        text = "خانه",
-                        color = Primary
-                    )
-                }
-                
-                // Categories
-                androidx.compose.foundation.layout.Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Home,
-                        contentDescription = "محصولات",
-                        tint = Color.Gray
-                    )
-                    Text(
-                        text = "محصولات",
-                        color = Color.Gray
-                    )
-                }
-                
-                // Cart
-                androidx.compose.foundation.layout.Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.ShoppingCart,
-                        contentDescription = "سبد خرید",
-                        tint = Color.Gray
-                    )
-                    Text(
-                        text = "سبد خرید",
-                        color = Color.Gray
-                    )
-                }
-                
-                // Profile
-                androidx.compose.foundation.layout.Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = "پروفایل",
-                        tint = Color.Gray
-                    )
-                    Text(
-                        text = "پروفایل",
-                        color = Color.Gray
-                    )
-                }
-            }
-        }
     }
 }

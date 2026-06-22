@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.components.SoftShadowCard
@@ -40,93 +39,5 @@ fun ProfileMenuGroup(
             modifier = Modifier.fillMaxWidth(),
             content = content
         )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ProfileMenuGroupPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            ProfileMenuGroup {
-                ProfileMenuItem(
-                    icon = Icons.Default.LocationOn,
-                    label = "آدرس‌های من",
-                    onClick = {},
-                    showDivider = true
-                )
-                
-                ProfileMenuItem(
-                    icon = Icons.Default.Favorite,
-                    label = "علاقه‌مندی‌ها",
-                    onClick = {},
-                    showDivider = true
-                )
-                
-                ProfileMenuItem(
-                    icon = Icons.Default.History,
-                    label = "بازدیدهای اخیر",
-                    onClick = {},
-                    showDivider = false
-                )
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ProfileMenuGroupSettingsPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            ProfileMenuGroup {
-                ProfileMenuItem(
-                    icon = Icons.Default.Settings,
-                    label = "تنظیمات",
-                    onClick = {},
-                    showDivider = true
-                )
-                
-                ProfileMenuItem(
-                    icon = Icons.Default.HeadsetMic,
-                    label = "پشتیبانی و سوالات متداول",
-                    onClick = {},
-                    showDivider = false
-                )
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8, name = "RTL Layout")
-@Composable
-private fun ProfileMenuGroupRtlPreview() {
-    VoxcinaTheme {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                ProfileMenuGroup {
-                    ProfileMenuItem(
-                        icon = Icons.Default.LocationOn,
-                        label = "آدرس‌های من",
-                        onClick = {},
-                        showDivider = true
-                    )
-                    
-                    ProfileMenuItem(
-                        icon = Icons.Default.Favorite,
-                        label = "علاقه‌مندی‌ها",
-                        onClick = {},
-                        showDivider = true
-                    )
-                    
-                    ProfileMenuItem(
-                        icon = Icons.Default.History,
-                        label = "بازدیدهای اخیر",
-                        onClick = {},
-                        showDivider = false
-                    )
-                }
-            }
-        }
     }
 }

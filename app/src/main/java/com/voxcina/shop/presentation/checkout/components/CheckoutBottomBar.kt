@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.components.GlassCard
@@ -307,94 +306,5 @@ private fun OrderBreakdownRow(
             priceColor = if (isDiscount) Color(0xFF10B981) else Primary,
             suffixStyle = MaterialTheme.typography.labelSmall
         )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CheckoutBottomBarPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .background(SecondaryLight),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            CheckoutBottomBar(
-                totalAmount = 1250000,
-                onDetailsClick = {},
-                onCheckoutClick = {},
-                isProcessing = false
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CheckoutBottomBarProcessingPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .background(SecondaryLight),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            CheckoutBottomBar(
-                totalAmount = 1250000,
-                onDetailsClick = {},
-                onCheckoutClick = {},
-                isProcessing = true
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CheckoutBottomBarExpandedPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(350.dp)
-                .background(SecondaryLight),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            CheckoutBottomBarExpanded(
-                subtotal = 1000000,
-                shippingCost = 150000,
-                tax = 100000,
-                discount = 50000,
-                totalAmount = 1200000,
-                onCollapseClick = {},
-                onCheckoutClick = {},
-                isProcessing = false
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CheckoutBottomBarDisabledPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .background(SecondaryLight),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            CheckoutBottomBar(
-                totalAmount = 1250000,
-                onDetailsClick = {},
-                onCheckoutClick = {},
-                isProcessing = false,
-                enabled = false
-            )
-        }
     }
 }

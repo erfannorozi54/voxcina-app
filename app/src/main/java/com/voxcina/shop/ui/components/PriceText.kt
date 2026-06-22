@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Destructive
@@ -113,66 +112,6 @@ fun PriceWithDiscount(
             PriceText(
                 price = currentPrice,
                 priceColor = currentPriceColor
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PriceTextPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            PriceText(price = 450000)
-            
-            PriceText(
-                price = 1250000,
-                priceStyle = MaterialTheme.typography.titleLarge
-            )
-            
-            PriceText(
-                price = 99000,
-                showSuffix = false
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PriceTextStrikethroughPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            PriceText(
-                price = 550000,
-                isStrikethrough = true
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PriceWithDiscountPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            PriceWithDiscount(
-                currentPrice = 450000,
-                originalPrice = 550000
-            )
-            
-            PriceWithDiscount(
-                currentPrice = 1200000,
-                originalPrice = 1500000
             )
         }
     }

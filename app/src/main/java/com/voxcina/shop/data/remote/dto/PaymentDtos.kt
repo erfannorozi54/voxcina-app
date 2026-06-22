@@ -8,9 +8,7 @@ import com.google.gson.annotations.SerializedName
  */
 data class PaymentRequestDto(
     @SerializedName("orderId") val orderId: String,
-    @SerializedName("amount") val amount: Long,
-    @SerializedName("description") val description: String? = null,
-    @SerializedName("mobile") val mobile: String? = null
+    @SerializedName("gateway") val gateway: String
 )
 
 /**
@@ -19,8 +17,9 @@ data class PaymentRequestDto(
 data class PaymentResponseDto(
     @SerializedName("result") val result: Int,
     @SerializedName("message") val message: String,
-    @SerializedName("trackId") val trackId: Long? = null,
-    @SerializedName("payUrl") val payUrl: String? = null
+    @SerializedName("trackId") val trackId: String? = null,
+    @SerializedName("payUrl") val payUrl: String? = null,
+    @SerializedName("gateway") val gateway: String? = null
 )
 
 /**
@@ -28,5 +27,24 @@ data class PaymentResponseDto(
  * POST /api/payment/verify
  */
 data class VerifyPaymentDto(
-    @SerializedName("trackId") val trackId: Long
+    @SerializedName("trackId") val trackId: String,
+    @SerializedName("gateway") val gateway: String
+)
+
+/**
+ * Request DTO for payment inquiry.
+ * POST /api/payment/inquiry
+ */
+data class PaymentInquiryDto(
+    @SerializedName("trackId") val trackId: String,
+    @SerializedName("gateway") val gateway: String
+)
+
+/**
+ * Request DTO for payment retry.
+ * POST /api/payment/retry
+ */
+data class RetryPaymentRequestDto(
+    @SerializedName("orderId") val orderId: String,
+    @SerializedName("gateway") val gateway: String
 )

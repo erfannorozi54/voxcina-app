@@ -55,9 +55,17 @@ data class ColorVariantListItemDto(
     @SerializedName("productId") val productId: String,
     @SerializedName("colorVariant") val colorVariant: ColorVariantDto,
     @SerializedName("name") val name: String,
+    @SerializedName("description") val description: String?,
     @SerializedName("price") val price: Long,
     @SerializedName("originalPrice") val originalPrice: Long?,
     @SerializedName("brand") val brand: String,
+    @SerializedName("brand_id") val brandId: String?,
+    @SerializedName("category_ids") val categoryIds: List<String>?,
+    @SerializedName("collection") val collection: String?,
+    @SerializedName("is_flash_sale") val isFlashSale: Boolean,
+    @SerializedName("average_rating") val averageRating: Float?,
+    @SerializedName("review_count") val reviewCount: Int?,
+    @SerializedName("created_at") val createdAt: String?,
     @SerializedName("inStock") val inStock: Boolean,
     @SerializedName("totalInventory") val totalInventory: Int
 )
@@ -68,8 +76,10 @@ data class ColorVariantListItemDto(
 data class ColorVariantDto(
     @SerializedName("color") val color: String,
     @SerializedName("colorName") val colorName: String,
+    @SerializedName("swatchImage") val swatchImage: String?,
     @SerializedName("images") val images: List<String>,
     @SerializedName("tryOnImage") val tryOnImage: String?,
+    @SerializedName("tryOnGarmentType") val tryOnGarmentType: String?,
     @SerializedName("sizes") val sizes: List<SizeVariantDto>
 )
 

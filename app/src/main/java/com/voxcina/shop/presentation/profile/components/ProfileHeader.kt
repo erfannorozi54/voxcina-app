@@ -28,7 +28,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -156,62 +155,6 @@ fun ProfileHeader(
                 color = Color.Gray,
                 textAlign = TextAlign.Center
             )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ProfileHeaderPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            ProfileHeader(
-                avatarUrl = null,
-                userName = "علی احمدی",
-                phoneNumber = "09123456789",
-                onEditClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ProfileHeaderWithAvatarPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            ProfileHeader(
-                avatarUrl = "https://example.com/avatar.jpg",
-                userName = "محمد رضایی",
-                phoneNumber = "09351234567",
-                onEditClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8, name = "RTL Layout")
-@Composable
-private fun ProfileHeaderRtlPreview() {
-    VoxcinaTheme {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                ProfileHeader(
-                    avatarUrl = null,
-                    userName = "سارا محمدی",
-                    phoneNumber = "09121234567",
-                    onEditClick = {}
-                )
-            }
         }
     }
 }

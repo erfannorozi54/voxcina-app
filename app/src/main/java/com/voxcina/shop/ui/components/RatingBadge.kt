@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Primary
@@ -113,48 +112,5 @@ private fun formatReviewCount(count: Int): String {
         PersianDigitConverter.toPersianDigits("${(count / 10) * 10}+")
     } else {
         PersianDigitConverter.toPersianDigits(count.toString())
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun RatingBadgePreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            RatingBadge(
-                rating = 4.8f,
-                reviewCount = 120
-            )
-            
-            RatingBadge(
-                rating = 3.5f,
-                reviewCount = 45
-            )
-            
-            RatingBadge(
-                rating = 5.0f,
-                reviewCount = 8
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun RatingBadgeNoBorderPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            RatingBadge(
-                rating = 4.5f,
-                reviewCount = 250,
-                showBorder = false
-            )
-        }
     }
 }

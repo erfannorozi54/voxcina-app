@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.VoxcinaTheme
@@ -48,41 +47,4 @@ fun SoftShadowCard(
             ),
         content = content
     )
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun SoftShadowCardPreview() {
-    VoxcinaTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
-            SoftShadowCard(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Box(modifier = Modifier.padding(16.dp)) {
-                    androidx.compose.material3.Text(
-                        text = "Soft Shadow Card Content"
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun SoftShadowCardCustomRadiusPreview() {
-    VoxcinaTheme {
-        Box(modifier = Modifier.padding(16.dp)) {
-            SoftShadowCard(
-                modifier = Modifier.padding(8.dp),
-                cornerRadius = 16.dp
-            ) {
-                Box(modifier = Modifier.padding(24.dp)) {
-                    androidx.compose.material3.Text(
-                        text = "Card with 16dp radius"
-                    )
-                }
-            }
-        }
-    }
 }

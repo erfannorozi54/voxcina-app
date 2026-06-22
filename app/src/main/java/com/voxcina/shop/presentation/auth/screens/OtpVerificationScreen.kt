@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -167,110 +166,5 @@ fun OtpVerificationScreen(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtpVerificationScreenPreview() {
-    VoxcinaTheme {
-        OtpVerificationScreen(
-            phone = "09123456789",
-            otp = "",
-            flow = OtpFlow.LOGIN,
-            error = null,
-            isLoading = false,
-            resendCountdown = 120,
-            onOtpChange = {},
-            onOtpAutoFilled = {},
-            onSubmit = {},
-            onResend = {},
-            onBack = {},
-            smsRetrieverHelper = null
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtpVerificationScreenWithOtpPreview() {
-    VoxcinaTheme {
-        OtpVerificationScreen(
-            phone = "09123456789",
-            otp = "123",
-            flow = OtpFlow.SIGNUP,
-            error = null,
-            isLoading = false,
-            resendCountdown = 45,
-            onOtpChange = {},
-            onOtpAutoFilled = {},
-            onSubmit = {},
-            onResend = {},
-            onBack = {},
-            smsRetrieverHelper = null
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtpVerificationScreenCompletePreview() {
-    VoxcinaTheme {
-        OtpVerificationScreen(
-            phone = "09123456789",
-            otp = "12345",
-            flow = OtpFlow.LOGIN,
-            error = null,
-            isLoading = false,
-            resendCountdown = 0,
-            onOtpChange = {},
-            onOtpAutoFilled = {},
-            onSubmit = {},
-            onResend = {},
-            onBack = {},
-            smsRetrieverHelper = null
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtpVerificationScreenWithErrorPreview() {
-    VoxcinaTheme {
-        OtpVerificationScreen(
-            phone = "09123456789",
-            otp = "12345",
-            flow = OtpFlow.LOGIN,
-            error = "کد تأیید اشتباه است",
-            isLoading = false,
-            resendCountdown = 0,
-            onOtpChange = {},
-            onOtpAutoFilled = {},
-            onSubmit = {},
-            onResend = {},
-            onBack = {},
-            smsRetrieverHelper = null
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtpVerificationScreenLoadingPreview() {
-    VoxcinaTheme {
-        OtpVerificationScreen(
-            phone = "09123456789",
-            otp = "12345",
-            flow = OtpFlow.FORGOT_PASSWORD,
-            error = null,
-            isLoading = true,
-            resendCountdown = 60,
-            onOtpChange = {},
-            onOtpAutoFilled = {},
-            onSubmit = {},
-            onResend = {},
-            onBack = {},
-            smsRetrieverHelper = null
-        )
     }
 }

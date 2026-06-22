@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Primary
@@ -94,77 +93,6 @@ fun SizeSelectorButton(
                     textAlign = TextAlign.Center
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SizeSelectorButtonPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Selected state
-            SizeSelectorButton(
-                size = "M",
-                isSelected = true,
-                isEnabled = true,
-                onClick = {}
-            )
-            
-            // Unselected state
-            SizeSelectorButton(
-                size = "L",
-                isSelected = false,
-                isEnabled = true,
-                onClick = {}
-            )
-            
-            // Disabled state (out of stock)
-            SizeSelectorButton(
-                size = "XL",
-                isSelected = false,
-                isEnabled = false,
-                onClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SizeSelectorButtonRowPreview() {
-    VoxcinaTheme {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            SizeSelectorButton(
-                size = "S",
-                isSelected = false,
-                isEnabled = true,
-                onClick = {}
-            )
-            SizeSelectorButton(
-                size = "M",
-                isSelected = true,
-                isEnabled = true,
-                onClick = {}
-            )
-            SizeSelectorButton(
-                size = "L",
-                isSelected = false,
-                isEnabled = true,
-                onClick = {}
-            )
-            SizeSelectorButton(
-                size = "XL",
-                isSelected = false,
-                isEnabled = false,
-                onClick = {}
-            )
         }
     }
 }

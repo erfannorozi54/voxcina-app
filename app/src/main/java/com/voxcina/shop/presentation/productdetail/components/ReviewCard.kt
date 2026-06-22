@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -171,46 +170,6 @@ private fun RecommendationBadge(
             style = MaterialTheme.typography.labelSmall,
             color = Success,
             fontWeight = FontWeight.Medium
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ReviewCardPreview() {
-    VoxcinaTheme {
-        ReviewCard(
-            review = ProductReview(
-                id = "1",
-                userId = "user1",
-                userName = "علی محمدی",
-                userAvatar = null,
-                rating = 5,
-                comment = "محصول عالی بود! کیفیت پارچه خیلی خوبه و سایزش دقیقا اندازه بود. پیشنهاد میکنم.",
-                isRecommended = true,
-                createdAt = "2024-01-15"
-            ),
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ReviewCardNoRecommendPreview() {
-    VoxcinaTheme {
-        ReviewCard(
-            review = ProductReview(
-                id = "2",
-                userId = "user2",
-                userName = "مریم احمدی",
-                userAvatar = null,
-                rating = 3,
-                comment = "کیفیت متوسط بود. انتظار بیشتری داشتم.",
-                isRecommended = false,
-                createdAt = "2024-01-10"
-            ),
-            modifier = Modifier.padding(16.dp)
         )
     }
 }

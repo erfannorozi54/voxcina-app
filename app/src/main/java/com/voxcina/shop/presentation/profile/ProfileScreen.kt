@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -506,31 +505,4 @@ private fun LogoutConfirmationDialog(
     )
 }
 
-// ============== Previews ==============
 
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ProfileScreenLoadingPreview() {
-    VoxcinaTheme {
-        ProfileScreenContent(
-            uiState = ProfileUiState.Loading,
-            showLogoutDialog = false,
-            onNavigateToEditProfile = {},
-            onNavigateToEditAccount = {},
-            onNavigateToAddresses = {},
-            onNavigateToFavorites = {},
-            onNavigateToRecentlyViewed = {},
-            onNavigateToPromotions = {},
-            onNavigateToSettings = {},
-            onNavigateToSupport = {},
-            onNavigateToTickets = {},
-            onNavigateToOrders = {},
-            onLogoutClick = {},
-            onLogoutConfirm = {},
-            onLogoutDismiss = {},
-            onRetry = {},
-            onBottomNavClick = {}
-        )
-    }
-}

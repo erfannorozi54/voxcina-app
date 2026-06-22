@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.VoxcinaTheme
@@ -146,71 +145,6 @@ fun GradientButton(
                     }
                 }
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun GradientButtonPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            GradientButton(
-                text = "ادامه فرآیند خرید",
-                onClick = {},
-                icon = Icons.AutoMirrored.Filled.ArrowBack
-            )
-            
-            GradientButton(
-                text = "پرداخت",
-                onClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun GradientButtonStatesPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            GradientButton(
-                text = "غیرفعال",
-                onClick = {},
-                enabled = false
-            )
-            
-            GradientButton(
-                text = "در حال بارگذاری",
-                onClick = {},
-                isLoading = true
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun GradientButtonCustomColorsPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            GradientButton(
-                text = "رنگ سفارشی",
-                onClick = {},
-                gradientColors = listOf(
-                    Color(0xFF10B981),
-                    Color(0xFF059669)
-                )
-            )
         }
     }
 }

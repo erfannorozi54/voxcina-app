@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -121,48 +120,5 @@ fun DescriptionSection(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DescriptionSectionCollapsedPreview() {
-    VoxcinaTheme {
-        DescriptionSection(
-            description = "این تیشرت مردانه از جنس نخ ۱۰۰٪ با کیفیت بالا ساخته شده است. " +
-                    "طراحی کلاسیک و راحت آن برای استفاده روزمره مناسب است. " +
-                    "این محصول قابل شستشو با ماشین بوده و رنگ آن پس از شستشو ثابت می‌ماند. " +
-                    "سایزبندی استاندارد و مناسب برای تمام اندام‌ها. " +
-                    "گارانتی ۲ ساله تعویض در صورت وجود عیب تولید.",
-            isExpanded = false,
-            onExpandToggle = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DescriptionSectionExpandedPreview() {
-    VoxcinaTheme {
-        DescriptionSection(
-            description = "پیراهن مردانه آستین‌بلند ساده نخ‌پنبه",
-            isExpanded = true,
-            onExpandToggle = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DescriptionSectionShortPreview() {
-    VoxcinaTheme {
-        DescriptionSection(
-            description = "تیشرت مردانه با کیفیت بالا.",
-            isExpanded = false,
-            onExpandToggle = {},
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

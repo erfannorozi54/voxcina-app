@@ -51,7 +51,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -103,7 +102,7 @@ fun CheckoutScreen(
     viewModel: CheckoutViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {},
     onNavigateToAddresses: () -> Unit = {},
-    onNavigateToPaymentResult: (orderId: String, trackId: Long) -> Unit = { _, _ -> },
+    onNavigateToPaymentResult: (orderId: String, trackId: String, gateway: String) -> Unit = { _, _, _ -> },
     onBottomNavClick: (BottomNavDestination) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -113,7 +112,8 @@ fun CheckoutScreen(
     
     // Store payment info for when user returns from browser
     var pendingPaymentOrderId by remember { mutableStateOf<String?>(null) }
-    var pendingPaymentTrackId by remember { mutableStateOf<Long?>(null) }
+    var pendingPaymentTrackId by remember { mutableStateOf<String?>(null) }
+    var pendingPaymentGateway by remember { mutableStateOf<String?>(null) }
 
     // Collect snackbar messages
     LaunchedEffect(Unit) {
@@ -143,12 +143,16 @@ fun CheckoutScreen(
                     // Store payment info for when user returns
                     pendingPaymentOrderId = event.orderId
                     pendingPaymentTrackId = event.trackId
+                    pendingPaymentGateway = (uiState as? CheckoutUiState.Success)?.selectedPaymentMethod?.let {
+                        if (it == PaymentMethod.DIGIPAY) "digipay" else "zibal"
+                    } ?: "zibal"
+                    
                     // Open payment URL in browser
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.payUrl))
                     context.startActivity(intent)
                 }
                 is CheckoutNavigationEvent.PaymentSuccess -> {
-                    onNavigateToPaymentResult(event.orderId, 0L)
+                    onNavigateToPaymentResult(event.orderId, "", "zibal")
                 }
             }
         }
@@ -161,10 +165,12 @@ fun CheckoutScreen(
             if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
                 val orderId = pendingPaymentOrderId
                 val trackId = pendingPaymentTrackId
-                if (orderId != null && trackId != null) {
+                val gateway = pendingPaymentGateway
+                if (orderId != null && trackId != null && gateway != null) {
                     pendingPaymentOrderId = null
                     pendingPaymentTrackId = null
-                    onNavigateToPaymentResult(orderId, trackId)
+                    pendingPaymentGateway = null
+                    onNavigateToPaymentResult(orderId, trackId, gateway)
                 }
             }
         }
@@ -857,266 +863,3 @@ private fun shimmerBrush(): Brush {
 }
 
 
-// ============ Preview Functions ============
-
-@Preview(showBackground = true)
-@Composable
-private fun CheckoutScreenLoadingPreview() {
-    VoxcinaTheme {
-        CheckoutScreenContent(
-            uiState = CheckoutUiState.Loading,
-            snackbarHostState = remember { SnackbarHostState() },
-            onEvent = {},
-            onNavigateBack = {},
-            onNavigateToAddresses = {},
-            onBottomNavClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun CheckoutScreenErrorPreview() {
-    VoxcinaTheme {
-        CheckoutScreenContent(
-            uiState = CheckoutUiState.Error(
-                message = "خطا در بارگذاری اطلاعات",
-                canRetry = true
-            ),
-            snackbarHostState = remember { SnackbarHostState() },
-            onEvent = {},
-            onNavigateBack = {},
-            onNavigateToAddresses = {},
-            onBottomNavClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun CheckoutScreenSuccessPreview() {
-    VoxcinaTheme {
-        val sampleCart = Cart(
-            id = "1",
-            userId = "user1",
-            items = listOf(
-                CartItem(
-                    product = CartProduct(
-                        id = "1",
-                        name = "تیشرت مردانه نایکی",
-                        price = 450000,
-                        originalPrice = 550000,
-                        mainImages = listOf("/uploads/products/sample.jpg"),
-                        colorVariants = emptyList(),
-                        brand = "Nike",
-                        inStock = true
-                    ),
-                    variant = CartVariant(
-                        size = "L",
-                        color = "#FF0000",
-                        colorName = "قرمز",
-                        sku = "SKU-001"
-                    ),
-                    quantity = 2
-                )
-            ),
-            summary = CartSummary(
-                subtotal = 900000,
-                shipping = 150000,
-                tax = 90000,
-                discount = 0,
-                total = 1140000
-            ),
-            createdAt = "2024-01-01",
-            updatedAt = "2024-01-01"
-        )
-
-        val sampleAddress = UserAddress(
-            title = "خانه",
-            firstName = "علی",
-            lastName = "محمدی",
-            phoneNumber = "۰۹۱۲۳۴۵۶۷۸۹",
-            province = "تهران",
-            provinceCode = 8,
-            city = "تهران",
-            cityCode = 301,
-            street = "خیابان ولیعصر",
-            address = "پلاک ۱۲۳، واحد ۴",
-            postalCode = "1234567890",
-            latitude = 35.6892,
-            longitude = 51.3890,
-            isDefault = true
-        )
-
-        val sampleShippingMethods = listOf(
-            ShippingMethod(
-                id = "postex_standard",
-                name = "پست پیشتاز",
-                price = 150000,
-                estimatedDays = "۳ تا ۵ روز کاری",
-                description = "ارسال استاندارد"
-            ),
-            ShippingMethod(
-                id = "postex_express",
-                name = "پست ویژه",
-                price = 250000,
-                estimatedDays = "۱ تا ۲ روز کاری",
-                description = "ارسال سریع"
-            )
-        )
-
-        CheckoutScreenContent(
-            uiState = CheckoutUiState.Success(
-                cart = sampleCart,
-                selectedAddress = sampleAddress,
-                shippingMethods = sampleShippingMethods,
-                selectedShippingMethod = sampleShippingMethods[0],
-                selectedPaymentMethod = PaymentMethod.BANK_CARD
-            ),
-            snackbarHostState = remember { SnackbarHostState() },
-            onEvent = {},
-            onNavigateBack = {},
-            onNavigateToAddresses = {},
-            onBottomNavClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun CheckoutScreenNoAddressPreview() {
-    VoxcinaTheme {
-        val sampleCart = Cart(
-            id = "1",
-            userId = "user1",
-            items = listOf(
-                CartItem(
-                    product = CartProduct(
-                        id = "1",
-                        name = "تیشرت مردانه نایکی",
-                        price = 450000,
-                        originalPrice = 550000,
-                        mainImages = listOf("/uploads/products/sample.jpg"),
-                        colorVariants = emptyList(),
-                        brand = "Nike",
-                        inStock = true
-                    ),
-                    variant = CartVariant(
-                        size = "L",
-                        color = "#FF0000",
-                        colorName = "قرمز",
-                        sku = "SKU-001"
-                    ),
-                    quantity = 1
-                )
-            ),
-            summary = CartSummary(
-                subtotal = 450000,
-                shipping = 0,
-                tax = 45000,
-                discount = 0,
-                total = 495000
-            ),
-            createdAt = "2024-01-01",
-            updatedAt = "2024-01-01"
-        )
-
-        CheckoutScreenContent(
-            uiState = CheckoutUiState.Success(
-                cart = sampleCart,
-                selectedAddress = null,
-                shippingMethods = emptyList(),
-                selectedShippingMethod = null,
-                selectedPaymentMethod = PaymentMethod.BANK_CARD
-            ),
-            snackbarHostState = remember { SnackbarHostState() },
-            onEvent = {},
-            onNavigateBack = {},
-            onNavigateToAddresses = {},
-            onBottomNavClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun CheckoutScreenWalletPaymentPreview() {
-    VoxcinaTheme {
-        val sampleCart = Cart(
-            id = "1",
-            userId = "user1",
-            items = listOf(
-                CartItem(
-                    product = CartProduct(
-                        id = "1",
-                        name = "تیشرت مردانه نایکی",
-                        price = 450000,
-                        originalPrice = 550000,
-                        mainImages = listOf("/uploads/products/sample.jpg"),
-                        colorVariants = emptyList(),
-                        brand = "Nike",
-                        inStock = true
-                    ),
-                    variant = CartVariant(
-                        size = "L",
-                        color = "#FF0000",
-                        colorName = "قرمز",
-                        sku = "SKU-001"
-                    ),
-                    quantity = 2
-                )
-            ),
-            summary = CartSummary(
-                subtotal = 900000,
-                shipping = 150000,
-                tax = 90000,
-                discount = 0,
-                total = 1140000
-            ),
-            createdAt = "2024-01-01",
-            updatedAt = "2024-01-01"
-        )
-
-        val sampleAddress = UserAddress(
-            title = "خانه",
-            firstName = "علی",
-            lastName = "محمدی",
-            phoneNumber = "۰۹۱۲۳۴۵۶۷۸۹",
-            province = "تهران",
-            provinceCode = 8,
-            city = "تهران",
-            cityCode = 301,
-            street = "خیابان ولیعصر",
-            address = "پلاک ۱۲۳، واحد ۴",
-            postalCode = "1234567890",
-            latitude = 35.6892,
-            longitude = 51.3890,
-            isDefault = true
-        )
-
-        val sampleShippingMethods = listOf(
-            ShippingMethod(
-                id = "postex_standard",
-                name = "پست پیشتاز",
-                price = 150000,
-                estimatedDays = "۳ تا ۵ روز کاری",
-                description = "ارسال استاندارد"
-            )
-        )
-
-        CheckoutScreenContent(
-            uiState = CheckoutUiState.Success(
-                cart = sampleCart,
-                selectedAddress = sampleAddress,
-                shippingMethods = sampleShippingMethods,
-                selectedShippingMethod = sampleShippingMethods[0],
-                selectedPaymentMethod = PaymentMethod.WALLET
-            ),
-            snackbarHostState = remember { SnackbarHostState() },
-            onEvent = {},
-            onNavigateBack = {},
-            onNavigateToAddresses = {},
-            onBottomNavClick = {}
-        )
-    }
-}

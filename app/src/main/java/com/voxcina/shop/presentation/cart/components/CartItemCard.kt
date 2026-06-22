@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -190,104 +189,5 @@ private fun SaveForLaterButton(
                 color = Color.Gray
             )
         }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CartItemCardPreview() {
-    VoxcinaTheme {
-        CartItemCard(
-            item = CartItem(
-                product = CartProduct(
-                    id = "1",
-                    name = "تیشرت مردانه نایکی اسپرت",
-                    price = 450000,
-                    originalPrice = 550000,
-                    mainImages = listOf("/uploads/products/sample.jpg"),
-                    colorVariants = listOf(
-                        CartColorVariant("#FF0000", listOf("/uploads/products/red.jpg"))
-                    ),
-                    brand = "Nike",
-                    inStock = true
-                ),
-                variant = CartVariant(
-                    size = "L",
-                    color = "#FF0000",
-                    colorName = "قرمز",
-                    sku = "SKU123"
-                ),
-                quantity = 2
-            ),
-            onQuantityChange = {},
-            onRemove = {},
-            onSaveForLater = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CartItemCardWithDeletePreview() {
-    VoxcinaTheme {
-        CartItemCard(
-            item = CartItem(
-                product = CartProduct(
-                    id = "1",
-                    name = "شلوار جین مردانه لیوایز کلاسیک",
-                    price = 1250000,
-                    originalPrice = null,
-                    mainImages = listOf("/uploads/products/sample.jpg"),
-                    colorVariants = emptyList(),
-                    brand = "Levi's",
-                    inStock = true
-                ),
-                variant = CartVariant(
-                    size = "32",
-                    color = "#000080",
-                    colorName = "سرمه‌ای",
-                    sku = "SKU456"
-                ),
-                quantity = 1 // Shows delete button
-            ),
-            onQuantityChange = {},
-            onRemove = {},
-            onSaveForLater = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CartItemCardLoadingPreview() {
-    VoxcinaTheme {
-        CartItemCard(
-            item = CartItem(
-                product = CartProduct(
-                    id = "1",
-                    name = "شلوار جین مردانه لیوایز کلاسیک",
-                    price = 1250000,
-                    originalPrice = null,
-                    mainImages = listOf("/uploads/products/sample.jpg"),
-                    colorVariants = emptyList(),
-                    brand = "Levi's",
-                    inStock = true
-                ),
-                variant = CartVariant(
-                    size = "32",
-                    color = "#000080",
-                    colorName = "سرمه‌ای",
-                    sku = "SKU456"
-                ),
-                quantity = 1
-            ),
-            onQuantityChange = {},
-            onRemove = {},
-            onSaveForLater = {},
-            isUpdating = true,
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

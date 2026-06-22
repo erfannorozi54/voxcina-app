@@ -178,7 +178,7 @@ fun ProductsScreen(
                             ) {
                                 items(
                                     items = uiState.products,
-                                    key = { "${it.productId}_${it.colorVariant.color}" }
+                                    key = { "${it.productId}_${it.colorVariant.color}_${it.colorVariant.colorName}" }
                                 ) { product ->
                                     ProductCard(
                                         product = product,

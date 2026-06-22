@@ -32,7 +32,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -148,33 +147,4 @@ fun SpecificationCard(
  */
 fun getIconForAttribute(attributeName: String): ImageVector {
     return Icons.Outlined.Info
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun SpecificationCardPreview() {
-    VoxcinaTheme {
-        androidx.compose.foundation.layout.Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            SpecificationCard(
-                icon = Icons.Outlined.Info,
-                label = "جنس",
-                value = "نخ‌پنبه"
-            )
-            
-            SpecificationCard(
-                icon = Icons.Outlined.Info,
-                label = "قابلیت شستشو",
-                value = "دارد"
-            )
-            
-            SpecificationCard(
-                icon = Icons.Outlined.Info,
-                label = "نوع قواره",
-                value = "استاندارد"
-            )
-        }
-    }
 }

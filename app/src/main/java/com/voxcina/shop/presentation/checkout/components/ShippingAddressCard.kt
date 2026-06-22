@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.domain.model.UserAddress
@@ -256,71 +255,5 @@ private fun EmptyAddressContent(
                 color = Primary
             )
         }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ShippingAddressCardPreview() {
-    VoxcinaTheme {
-        ShippingAddressCard(
-            address = UserAddress(
-                title = "خانه",
-                firstName = "علی",
-                lastName = "محمدی",
-                phoneNumber = "۰۹۱۲۳۴۵۶۷۸۹",
-                province = "تهران",
-                provinceCode = 8,
-                city = "تهران",
-                cityCode = 301,
-                street = "خیابان ولیعصر",
-                address = "پلاک ۱۲۳، واحد ۴",
-                postalCode = "1234567890",
-                latitude = 35.6892,
-                longitude = 51.3890,
-                isDefault = true
-            ),
-            onChangeClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ShippingAddressCardLongAddressPreview() {
-    VoxcinaTheme {
-        ShippingAddressCard(
-            address = UserAddress(
-                title = "محل کار",
-                firstName = "محمد",
-                lastName = "احمدی",
-                phoneNumber = "۰۹۱۲۳۴۵۶۷۸۹",
-                province = "تهران",
-                provinceCode = 8,
-                city = "تهران",
-                cityCode = 301,
-                street = "خیابان آزادی، بعد از میدان انقلاب، کوچه شهید رجایی",
-                address = "پلاک ۴۵۶، طبقه سوم، واحد ۱۲، ساختمان نور",
-                postalCode = "1234567890",
-                latitude = 35.6892,
-                longitude = 51.3890,
-                isDefault = false
-            ),
-            onChangeClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ShippingAddressCardEmptyPreview() {
-    VoxcinaTheme {
-        ShippingAddressCard(
-            address = null,
-            onChangeClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

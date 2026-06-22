@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -163,85 +162,5 @@ fun LoginScreen(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LoginScreenPreview() {
-    VoxcinaTheme {
-        LoginScreen(
-            phone = "09123456789",
-            password = "",
-            passwordVisible = false,
-            error = null,
-            isLoading = false,
-            onPasswordChange = {},
-            onTogglePasswordVisibility = {},
-            onLogin = {},
-            onLoginWithOtp = {},
-            onForgotPassword = {},
-            onBack = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LoginScreenWithPasswordPreview() {
-    VoxcinaTheme {
-        LoginScreen(
-            phone = "09123456789",
-            password = "password123",
-            passwordVisible = false,
-            error = null,
-            isLoading = false,
-            onPasswordChange = {},
-            onTogglePasswordVisibility = {},
-            onLogin = {},
-            onLoginWithOtp = {},
-            onForgotPassword = {},
-            onBack = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LoginScreenWithErrorPreview() {
-    VoxcinaTheme {
-        LoginScreen(
-            phone = "09123456789",
-            password = "wrongpass",
-            passwordVisible = false,
-            error = "شماره تلفن یا رمز عبور اشتباه است",
-            isLoading = false,
-            onPasswordChange = {},
-            onTogglePasswordVisibility = {},
-            onLogin = {},
-            onLoginWithOtp = {},
-            onForgotPassword = {},
-            onBack = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LoginScreenLoadingPreview() {
-    VoxcinaTheme {
-        LoginScreen(
-            phone = "09123456789",
-            password = "password123",
-            passwordVisible = false,
-            error = null,
-            isLoading = true,
-            onPasswordChange = {},
-            onTogglePasswordVisibility = {},
-            onLogin = {},
-            onLoginWithOtp = {},
-            onForgotPassword = {},
-            onBack = {}
-        )
     }
 }

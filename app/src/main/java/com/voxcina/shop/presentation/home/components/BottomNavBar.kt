@@ -35,7 +35,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -288,76 +287,3 @@ private fun ProductsIcon(
     }
 }
 
-// ============== Previews ==============
-
-@Preview(showBackground = true)
-@Composable
-private fun BottomNavBarPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .background(Secondary)
-                .padding(top = 100.dp)
-        ) {
-            BottomNavBar(
-                selectedDestination = BottomNavDestination.HOME,
-                cartItemCount = 3,
-                onDestinationSelected = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun BottomNavBarProductsSelectedPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .background(Secondary)
-                .padding(top = 100.dp)
-        ) {
-            BottomNavBar(
-                selectedDestination = BottomNavDestination.PRODUCTS,
-                cartItemCount = 0,
-                onDestinationSelected = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun BottomNavBarCartSelectedWithBadgePreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .background(Secondary)
-                .padding(top = 100.dp)
-        ) {
-            BottomNavBar(
-                selectedDestination = BottomNavDestination.CART,
-                cartItemCount = 150, // Should show ۹۹+
-                onDestinationSelected = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun BottomNavBarProfileSelectedPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .background(Secondary)
-                .padding(top = 100.dp)
-        ) {
-            BottomNavBar(
-                selectedDestination = BottomNavDestination.PROFILE,
-                cartItemCount = 5,
-                onDestinationSelected = {}
-            )
-        }
-    }
-}

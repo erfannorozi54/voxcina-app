@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.domain.model.SizeVariant
@@ -93,67 +92,5 @@ fun SizeSelector(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SizeSelectorPreview() {
-    val sizes = listOf(
-        SizeVariant("S", "SKU-001", 5),
-        SizeVariant("M", "SKU-002", 3),
-        SizeVariant("L", "SKU-003", 0),
-        SizeVariant("XL", "SKU-004", 8)
-    )
-    
-    VoxcinaTheme {
-        SizeSelector(
-            sizes = sizes,
-            selectedSize = sizes[1],
-            onSizeSelected = {},
-            isSizeAvailable = { it.quantity > 0 },
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SizeSelectorNoSelectionPreview() {
-    val sizes = listOf(
-        SizeVariant("S", "SKU-001", 5),
-        SizeVariant("M", "SKU-002", 3),
-        SizeVariant("L", "SKU-003", 0),
-        SizeVariant("XL", "SKU-004", 8)
-    )
-    
-    VoxcinaTheme {
-        SizeSelector(
-            sizes = sizes,
-            selectedSize = null,
-            onSizeSelected = {},
-            isSizeAvailable = { it.quantity > 0 },
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SizeSelectorAllDisabledPreview() {
-    val sizes = listOf(
-        SizeVariant("S", "SKU-001", 0),
-        SizeVariant("M", "SKU-002", 0),
-        SizeVariant("L", "SKU-003", 0)
-    )
-    
-    VoxcinaTheme {
-        SizeSelector(
-            sizes = sizes,
-            selectedSize = null,
-            onSizeSelected = {},
-            isSizeAvailable = { it.quantity > 0 },
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

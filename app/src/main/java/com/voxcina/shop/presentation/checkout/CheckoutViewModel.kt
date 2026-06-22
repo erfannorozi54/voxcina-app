@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.voxcina.shop.domain.model.CardDetails
 import com.voxcina.shop.domain.model.Cart
-import com.voxcina.shop.domain.model.Discount
-import com.voxcina.shop.domain.model.DiscountType
 import com.voxcina.shop.domain.model.Order
 import com.voxcina.shop.domain.model.PaymentMethod
 import com.voxcina.shop.domain.model.ShippingMethod
@@ -267,19 +265,8 @@ class CheckoutViewModel @Inject constructor(
     private fun selectPaymentMethod(method: PaymentMethod) {
         _uiState.update { state ->
             if (state is CheckoutUiState.Success) {
-                // Clear card validation errors if switching away from bank card
-                val updatedErrors = if (method != PaymentMethod.BANK_CARD) {
-                    state.validationErrors - setOf(
-                        CheckoutValidationFields.CARD_NUMBER,
-                        CheckoutValidationFields.CARD_EXPIRY,
-                        CheckoutValidationFields.CARD_CVV
-                    )
-                } else {
-                    state.validationErrors
-                }
                 state.copy(
-                    selectedPaymentMethod = method,
-                    validationErrors = updatedErrors
+                    selectedPaymentMethod = method
                 )
             } else state
         }
@@ -542,21 +529,10 @@ class CheckoutViewModel @Inject constructor(
             errors[CheckoutValidationFields.SHIPPING_METHOD] = "لطفاً روش ارسال را انتخاب کنید"
         }
 
-        // Validate card details if bank card is selected
-        if (state.selectedPaymentMethod == PaymentMethod.BANK_CARD) {
-            val cardDetails = state.cardDetails
-
-            if (!cardDetails.isCardNumberValid) {
-                errors[CheckoutValidationFields.CARD_NUMBER] = "شماره کارت باید ۱۶ رقم باشد"
-            }
-
-            if (!cardDetails.isExpiryValid) {
-                errors[CheckoutValidationFields.CARD_EXPIRY] = "تاریخ انقضا نامعتبر است"
-            }
-
-            if (!cardDetails.isCvvValid) {
-                errors[CheckoutValidationFields.CARD_CVV] = "کد CVV2 باید ۳ یا ۴ رقم باشد"
-            }
+        // Validate payment method
+        if (state.selectedPaymentMethod != PaymentMethod.ZIBAL && 
+            state.selectedPaymentMethod != PaymentMethod.DIGIPAY) {
+            errors["payment_method"] = "لطفاً روش پرداخت را انتخاب کنید"
         }
 
         return errors
@@ -606,12 +582,15 @@ class CheckoutViewModel @Inject constructor(
             when (orderResult) {
                 is Result.Success -> {
                     val order = orderResult.data
+                    val gateway = when (state.selectedPaymentMethod) {
+                        PaymentMethod.ZIBAL -> "zibal"
+                        PaymentMethod.DIGIPAY -> "digipay"
+                        else -> "zibal"
+                    }
                     // Step 2: Request payment
                     val paymentResult = paymentRepository.requestPayment(
                         orderId = order.id,
-                        amount = state.totalAmount,
-                        description = "سفارش ${order.orderNumber}",
-                        mobile = null
+                        gateway = gateway
                     )
                     
                     when (paymentResult) {
@@ -643,9 +622,9 @@ class CheckoutViewModel @Inject constructor(
     }
 
     /**
-     * Request payment from Zibal gateway.
+     * Request payment from a gateway.
      */
-    fun requestPayment(orderId: String, amount: Long, mobile: String? = null) {
+    fun requestPayment(orderId: String, gateway: String) {
         viewModelScope.launch {
             _uiState.update { state ->
                 if (state is CheckoutUiState.Success) {
@@ -655,9 +634,7 @@ class CheckoutViewModel @Inject constructor(
 
             val result = paymentRepository.requestPayment(
                 orderId = orderId,
-                amount = amount,
-                description = "خرید از فروشگاه وکسینا",
-                mobile = mobile
+                gateway = gateway
             )
 
             when (result) {
@@ -683,9 +660,9 @@ class CheckoutViewModel @Inject constructor(
     }
 
     /**
-     * Verify payment after callback from Zibal.
+     * Verify payment after callback.
      */
-    fun verifyPayment(trackId: Long) {
+    fun verifyPayment(trackId: String, gateway: String) {
         viewModelScope.launch {
             _uiState.update { state ->
                 if (state is CheckoutUiState.Success) {
@@ -693,16 +670,16 @@ class CheckoutViewModel @Inject constructor(
                 } else state
             }
 
-            val result = paymentRepository.verifyPayment(trackId)
+            val result = paymentRepository.verifyPayment(trackId, gateway)
 
             when (result) {
                 is Result.Success -> {
-                    if (result.data.paymentStatus == "paid") {
+                    if (result.data.isSuccess) {
                         _navigationEvent.emit(
                             CheckoutNavigationEvent.PaymentSuccess(result.data.orderId ?: "")
                         )
                     } else {
-                        _snackbarMessage.emit("پرداخت ناموفق: ${result.data.statusText}")
+                        _snackbarMessage.emit("پرداخت ناموفق: ${result.data.statusText ?: "خطا"}")
                     }
                 }
                 is Result.Error -> {
@@ -759,6 +736,6 @@ class CheckoutViewModel @Inject constructor(
 sealed class CheckoutNavigationEvent {
     data object NavigateBack : CheckoutNavigationEvent()
     data object NavigateToAddresses : CheckoutNavigationEvent()
-    data class RedirectToPayment(val payUrl: String, val orderId: String, val trackId: Long) : CheckoutNavigationEvent()
+    data class RedirectToPayment(val payUrl: String, val orderId: String, val trackId: String) : CheckoutNavigationEvent()
     data class PaymentSuccess(val orderId: String) : CheckoutNavigationEvent()
 }

@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -248,67 +247,3 @@ private fun NoResultsState(hasSearchQuery: Boolean) {
     }
 }
 
-// ============== Previews ==============
-
-@Preview(showBackground = true)
-@Composable
-private fun SupportScreenLoadingPreview() {
-    VoxcinaTheme {
-        SupportScreenContent(
-            uiState = SupportUiState.Loading,
-            onBackClick = {},
-            onSearchQueryChanged = {},
-            onFaqClicked = {},
-            onRetry = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SupportScreenSuccessPreview() {
-    VoxcinaTheme {
-        SupportScreenContent(
-            uiState = SupportUiState.Success(
-                faqs = listOf(
-                    Faq("1", "چگونه سفارش خود را پیگیری کنم؟", "برای پیگیری سفارش خود میتوانید از بخش سفارشهای من در پروفایل کاربری استفاده کنید."),
-                    Faq("2", "هزینه ارسال چقدر است؟", "هزینه ارسال بسته به شهر مقصد متفاوت است و در صفحه پرداخت نمایش داده میشود."),
-                    Faq("3", "آیا امکان مرجوع کردن کالا وجود دارد؟", "بله، تا ۷ روز پس از دریافت کالا امکان مرجوعی وجود دارد.")
-                ),
-                expandedFaqId = "1"
-            ),
-            onBackClick = {},
-            onSearchQueryChanged = {},
-            onFaqClicked = {},
-            onRetry = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SupportScreenEmptyPreview() {
-    VoxcinaTheme {
-        SupportScreenContent(
-            uiState = SupportUiState.Success(faqs = emptyList()),
-            onBackClick = {},
-            onSearchQueryChanged = {},
-            onFaqClicked = {},
-            onRetry = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SupportScreenErrorPreview() {
-    VoxcinaTheme {
-        SupportScreenContent(
-            uiState = SupportUiState.Error("خطا در اتصال به سرور"),
-            onBackClick = {},
-            onSearchQueryChanged = {},
-            onFaqClicked = {},
-            onRetry = {}
-        )
-    }
-}

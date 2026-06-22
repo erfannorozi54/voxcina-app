@@ -38,7 +38,7 @@ sealed class CheckoutUiState {
         val selectedAddress: UserAddress?,
         val shippingMethods: List<ShippingMethod>,
         val selectedShippingMethod: ShippingMethod?,
-        val selectedPaymentMethod: PaymentMethod = PaymentMethod.BANK_CARD,
+        val selectedPaymentMethod: PaymentMethod = PaymentMethod.ZIBAL,
         val cardDetails: CardDetails = CardDetails(),
         val discountState: CheckoutDiscountState = CheckoutDiscountState.Idle,
         val isProcessing: Boolean = false,
@@ -55,12 +55,10 @@ sealed class CheckoutUiState {
 
         /**
          * Returns true if the card details form should be visible.
-         * Only visible when BANK_CARD payment method is selected.
-         *
          * Requirements: 5.5
          */
         val showCardDetailsForm: Boolean
-            get() = selectedPaymentMethod == PaymentMethod.BANK_CARD
+            get() = false // Gateways use WebView, no manual card entry needed
 
         /**
          * Returns true if an address needs to be added.
@@ -121,8 +119,9 @@ sealed class CheckoutUiState {
                 // Must have a shipping method selected
                 if (selectedShippingMethod == null) return false
                 
-                // Only Zibal (BANK_CARD) payment method is available
-                if (selectedPaymentMethod != PaymentMethod.BANK_CARD) return false
+                // Zibal or DigiPay must be selected
+                if (selectedPaymentMethod != PaymentMethod.ZIBAL && 
+                    selectedPaymentMethod != PaymentMethod.DIGIPAY) return false
                 
                 return true
             }

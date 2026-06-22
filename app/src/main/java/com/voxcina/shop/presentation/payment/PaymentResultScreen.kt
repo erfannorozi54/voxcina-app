@@ -25,7 +25,8 @@ import com.voxcina.shop.ui.theme.SecondaryLight
 @Composable
 fun PaymentResultScreen(
     orderId: String,
-    trackId: Long,
+    trackId: String,
+    gateway: String,
     isSuccess: Boolean,
     onNavigateToOrders: () -> Unit,
     onRetryPayment: () -> Unit,
@@ -35,14 +36,12 @@ fun PaymentResultScreen(
     val isRetrying by viewModel.isRetrying.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(trackId, orderId) {
-        if (trackId > 0) {
-            viewModel.verifyPayment(trackId, orderId)
+    LaunchedEffect(trackId, orderId, gateway) {
+        if (trackId.isNotEmpty()) {
+            viewModel.verifyPayment(trackId, orderId, gateway)
         } else if (isSuccess) {
-            // trackId=0 with isSuccess=true means payment already confirmed
-            viewModel.setSuccessState(orderNumber = null)
+            viewModel.setSuccessState(orderNumber = orderId)
         } else if (orderId.isNotEmpty()) {
-            // trackId=0, not success - show abandoned state to allow retry
             viewModel.setAbandonedState(orderId)
         }
     }
@@ -90,7 +89,7 @@ fun PaymentResultScreen(
                     type = ResultType.Abandoned,
                     orderNumber = state.orderNumber,
                     message = "پرداخت ناتمام ماند\nمی‌توانید دوباره تلاش کنید",
-                    onPrimaryAction = { state.orderId?.let { viewModel.retryPayment(it) } },
+                    onPrimaryAction = { state.orderId?.let { viewModel.retryPayment(it, gateway) } },
                     primaryButtonText = if (isRetrying) "در حال انتقال..." else "تلاش مجدد پرداخت",
                     isPrimaryLoading = isRetrying,
                     onSecondaryAction = onNavigateToOrders,
@@ -103,7 +102,7 @@ fun PaymentResultScreen(
                     orderNumber = state.orderNumber,
                     message = state.message ?: "پرداخت ناموفق بود",
                     onPrimaryAction = if (state.canRetry && state.orderId != null) {
-                        { viewModel.retryPayment(state.orderId) }
+                        { viewModel.retryPayment(state.orderId, gateway) }
                     } else onNavigateToOrders,
                     primaryButtonText = if (state.canRetry) {
                         if (isRetrying) "در حال انتقال..." else "تلاش مجدد"

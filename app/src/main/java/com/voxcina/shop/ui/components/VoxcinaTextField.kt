@@ -20,7 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -122,45 +121,6 @@ fun VoxcinaTextField(
                     modifier = Modifier.padding(start = 8.dp, top = 4.dp)
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun VoxcinaTextFieldPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            VoxcinaTextField(
-                value = "",
-                onValueChange = {},
-                label = "شماره موبایل",
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            VoxcinaTextField(
-                value = "۰۹۱۲۳۴۵۶۷۸۹",
-                onValueChange = {},
-                label = "شماره موبایل",
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            VoxcinaTextField(
-                value = "۰۹۱۲",
-                onValueChange = {},
-                label = "شماره موبایل",
-                error = "شماره تلفن نامعتبر است",
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            VoxcinaTextField(
-                value = "",
-                onValueChange = {},
-                label = "رمز عبور",
-                isPassword = true,
-                passwordVisible = false,
-                onPasswordVisibilityToggle = {}
-            )
         }
     }
 }

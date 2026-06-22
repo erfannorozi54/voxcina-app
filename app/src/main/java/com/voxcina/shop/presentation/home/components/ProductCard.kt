@@ -175,12 +175,29 @@ fun ProductCard(
                             .border(1.5.dp, Color.White, CircleShape)
                             .padding(3.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape)
-                                .background(parseColor(product.colorVariant.color))
-                        )
+                        if (!product.colorVariant.swatchImage.isNullOrEmpty()) {
+                            val swatchUrl = product.colorVariant.swatchImage.let {
+                                if (it.startsWith("http")) it else "https://voxcina.com$it"
+                            }
+                            AsyncImage(
+                                model = ImageRequest.Builder(context)
+                                    .data(swatchUrl)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = product.colorVariant.colorName,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                                    .background(parseColor(product.colorVariant.color))
+                            )
+                        }
                     }
                 }
             }

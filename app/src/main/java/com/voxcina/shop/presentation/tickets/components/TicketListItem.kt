@@ -17,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.domain.model.Ticket
 import com.voxcina.shop.ui.theme.Primary
@@ -125,26 +124,4 @@ private fun getCategoryLabel(category: String): String = when (category) {
     "technical" -> "مشکلات فنی"
     "general" -> "عمومی"
     else -> category
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun TicketListItemPreview() {
-    VoxcinaTheme {
-        TicketListItem(
-            ticket = Ticket(
-                id = "1",
-                ticketNumber = "TCK-01001",
-                subject = "مشکل در ثبت سفارش",
-                category = "order",
-                priority = "high",
-                status = "open",
-                messages = emptyList(),
-                createdAt = "",
-                updatedAt = ""
-            ),
-            onClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
 }

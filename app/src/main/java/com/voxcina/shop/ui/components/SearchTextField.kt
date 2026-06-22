@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,30 +73,6 @@ fun SearchTextField(
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { onSearch() })
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SearchTextFieldEmptyPreview() {
-    VoxcinaTheme {
-        SearchTextField(
-            value = "",
-            onValueChange = {},
-            placeholder = "جستجو در سوالات..."
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SearchTextFieldWithValuePreview() {
-    VoxcinaTheme {
-        SearchTextField(
-            value = "ارسال",
-            onValueChange = {},
-            placeholder = "جستجو در سوالات..."
         )
     }
 }

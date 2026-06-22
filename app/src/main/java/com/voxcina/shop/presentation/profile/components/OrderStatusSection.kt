@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -134,76 +133,6 @@ fun OrderStatusSection(
                     count = returnedCount,
                     onClick = { onStatusClick(OrderStatus.RETURNED) },
                     modifier = Modifier.weight(1f)
-                )
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun OrderStatusSectionPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            OrderStatusSection(
-                pendingCount = 2,
-                processingCount = 1,
-                shippedCount = 0,
-                returnedCount = 0,
-                onStatusClick = {},
-                onViewAllClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun OrderStatusSectionAllBadgesPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            OrderStatusSection(
-                pendingCount = 3,
-                processingCount = 2,
-                shippedCount = 5,
-                returnedCount = 1,
-                onStatusClick = {},
-                onViewAllClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun OrderStatusSectionNoBadgesPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            OrderStatusSection(
-                pendingCount = 0,
-                processingCount = 0,
-                shippedCount = 0,
-                returnedCount = 0,
-                onStatusClick = {},
-                onViewAllClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8, name = "RTL Layout")
-@Composable
-private fun OrderStatusSectionRtlPreview() {
-    VoxcinaTheme {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                OrderStatusSection(
-                    pendingCount = 2,
-                    processingCount = 1,
-                    shippedCount = 3,
-                    returnedCount = 0,
-                    onStatusClick = {},
-                    onViewAllClick = {}
                 )
             }
         }

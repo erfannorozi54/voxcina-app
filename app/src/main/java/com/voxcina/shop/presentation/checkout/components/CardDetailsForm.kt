@@ -24,7 +24,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -259,56 +258,3 @@ private fun cardFieldColors(isError: Boolean) = OutlinedTextFieldDefaults.colors
     unfocusedContainerColor = SecondaryLight,
     errorContainerColor = SecondaryLight
 )
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CardDetailsFormEmptyPreview() {
-    VoxcinaTheme {
-        CardDetailsForm(
-            cardDetails = CardDetails(),
-            onCardDetailsChange = {},
-            validationErrors = emptyMap(),
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CardDetailsFormFilledPreview() {
-    VoxcinaTheme {
-        CardDetailsForm(
-            cardDetails = CardDetails(
-                cardNumber = "6221061234567890",
-                expiryDate = "12/26",
-                cvv = "123",
-                saveCard = true
-            ),
-            onCardDetailsChange = {},
-            validationErrors = emptyMap(),
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CardDetailsFormWithErrorsPreview() {
-    VoxcinaTheme {
-        CardDetailsForm(
-            cardDetails = CardDetails(
-                cardNumber = "622106",
-                expiryDate = "13/20",
-                cvv = "12",
-                saveCard = false
-            ),
-            onCardDetailsChange = {},
-            validationErrors = mapOf(
-                CheckoutValidationFields.CARD_NUMBER to "شماره کارت باید ۱۶ رقم باشد",
-                CheckoutValidationFields.CARD_EXPIRY to "تاریخ انقضا نامعتبر است",
-                CheckoutValidationFields.CARD_CVV to "کد CVV2 باید ۳ یا ۴ رقم باشد"
-            ),
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}

@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.domain.model.Discount
@@ -196,87 +195,5 @@ fun DiscountCodeInput(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DiscountCodeInputIdlePreview() {
-    VoxcinaTheme {
-        DiscountCodeInput(
-            code = "",
-            onCodeChange = {},
-            onSubmit = {},
-            state = DiscountState.Idle,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DiscountCodeInputWithCodePreview() {
-    VoxcinaTheme {
-        DiscountCodeInput(
-            code = "SUMMER20",
-            onCodeChange = {},
-            onSubmit = {},
-            state = DiscountState.Idle,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DiscountCodeInputLoadingPreview() {
-    VoxcinaTheme {
-        DiscountCodeInput(
-            code = "SUMMER20",
-            onCodeChange = {},
-            onSubmit = {},
-            state = DiscountState.Loading,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DiscountCodeInputAppliedPreview() {
-    VoxcinaTheme {
-        DiscountCodeInput(
-            code = "SUMMER20",
-            onCodeChange = {},
-            onSubmit = {},
-            state = DiscountState.Applied(
-                discount = Discount(
-                    id = "1",
-                    code = "SUMMER20",
-                    type = DiscountType.PERCENTAGE,
-                    value = 20,
-                    minOrderAmount = 500000,
-                    validFrom = "2024-01-01",
-                    validTo = "2024-12-31",
-                    maxUses = 100,
-                    usedCount = 45
-                )
-            ),
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DiscountCodeInputErrorPreview() {
-    VoxcinaTheme {
-        DiscountCodeInput(
-            code = "INVALID",
-            onCodeChange = {},
-            onSubmit = {},
-            state = DiscountState.Error("کد تخفیف نامعتبر است"),
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -348,72 +347,3 @@ fun GenericFullScreenErrorState(
     )
 }
 
-// ============ Preview Functions ============
-
-@Preview(showBackground = true)
-@Composable
-private fun SectionErrorStatePreview() {
-    VoxcinaTheme {
-        SectionErrorState(
-            message = "خطا در بارگذاری دسته‌بندی‌ها",
-            onRetry = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun CompactSectionErrorStatePreview() {
-    VoxcinaTheme {
-        CompactSectionErrorState(
-            message = "خطا در بارگذاری محصولات",
-            onRetry = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun FullScreenErrorStatePreview() {
-    VoxcinaTheme {
-        FullScreenErrorState(
-            title = "خطا در بارگذاری صفحه",
-            message = "متأسفانه در بارگذاری اطلاعات مشکلی پیش آمده است. لطفاً دوباره تلاش کنید.",
-            onRetry = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun NetworkErrorStatePreview() {
-    VoxcinaTheme {
-        NetworkErrorState(
-            onRetry = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun GenericFullScreenErrorStatePreview() {
-    VoxcinaTheme {
-        GenericFullScreenErrorState(
-            onRetry = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SectionErrorStateLongMessagePreview() {
-    VoxcinaTheme {
-        SectionErrorState(
-            message = "خطا در بارگذاری پیشنهادات شگفت‌انگیز. لطفاً اتصال اینترنت خود را بررسی کنید.",
-            onRetry = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}

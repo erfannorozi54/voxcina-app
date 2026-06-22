@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -18,9 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 
@@ -48,10 +53,12 @@ fun ColorSelectorButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     size: Dp = 48.dp,
-    ringColor: Color = Primary
+    ringColor: Color = Primary,
+    swatchImageUrl: String? = null
 ) {
     val color = parseHexColor(colorHex)
     val contentAlpha = if (isEnabled) 1f else 0.4f
+    val context = LocalContext.current
     
     Box(
         modifier = modifier
@@ -73,12 +80,16 @@ fun ColorSelectorButton(
             )
         }
         
-        // Color circle
+        // Color circle or swatch image
         Box(
             modifier = Modifier
                 .size(size)
                 .clip(CircleShape)
-                .background(color)
+                .then(
+                    if (swatchImageUrl.isNullOrEmpty()) {
+                        Modifier.background(color)
+                    } else Modifier
+                )
                 .border(
                     width = 1.dp,
                     color = Color.Gray.copy(alpha = 0.3f),
@@ -86,12 +97,27 @@ fun ColorSelectorButton(
                 ),
             contentAlignment = Alignment.Center
         ) {
+            if (!swatchImageUrl.isNullOrEmpty()) {
+                val fullUrl = if (swatchImageUrl.startsWith("http")) swatchImageUrl else "https://voxcina.com$swatchImageUrl"
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(fullUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            
             // Checkmark icon when selected
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = "انتخاب شده",
-                    tint = getContrastColor(color),
+                    tint = if (!swatchImageUrl.isNullOrEmpty()) Color.White else getContrastColor(color),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -127,74 +153,4 @@ private fun getContrastColor(backgroundColor: Color): Color {
                     0.587 * backgroundColor.green + 
                     0.114 * backgroundColor.blue
     return if (luminance > 0.5) Color.Black else Color.White
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ColorSelectorButtonPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Selected state
-            ColorSelectorButton(
-                colorHex = "#FF5733",
-                isSelected = true,
-                isEnabled = true,
-                onClick = {}
-            )
-            
-            // Unselected state
-            ColorSelectorButton(
-                colorHex = "#0000FF",
-                isSelected = false,
-                isEnabled = true,
-                onClick = {}
-            )
-            
-            // Disabled state
-            ColorSelectorButton(
-                colorHex = "#00FF00",
-                isSelected = false,
-                isEnabled = false,
-                onClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ColorSelectorButtonVariantsPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Dark color with white checkmark
-            ColorSelectorButton(
-                colorHex = "#1A1A1A",
-                isSelected = true,
-                isEnabled = true,
-                onClick = {}
-            )
-            
-            // Light color with black checkmark
-            ColorSelectorButton(
-                colorHex = "#FFFFFF",
-                isSelected = true,
-                isEnabled = true,
-                onClick = {}
-            )
-            
-            // Yellow color
-            ColorSelectorButton(
-                colorHex = "#FFEB3B",
-                isSelected = true,
-                isEnabled = true,
-                onClick = {}
-            )
-        }
-    }
 }

@@ -1,41 +1,41 @@
 [versions]
 # Your existing versions
-agp = "8.13.2"
-kotlin = "2.0.21"
-coreKtx = "1.10.1"
+agp = "9.2.1"
+kotlin = "2.4.0"
+coreKtx = "1.19.0"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
-lifecycleRuntimeKtx = "2.10.0" # Updated to latest stable for 2025
-activityCompose = "1.12.2"   # Updated to latest stable for 2025
-composeBom = "2024.09.00"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+lifecycleRuntimeKtx = "2.11.0" # Latest stable
+activityCompose = "1.13.0"   # Latest stable
+composeBom = "2025.02.00"
 
 # New versions for Voxcina Shop
 retrofit = "3.0.0"           # Latest major release (May 2025)
-gson = "2.13.2"             # Latest stable (September 2025)
-coil = "3.2.0"              # Latest stable (May 2025)
-media3 = "1.2.1"            # ExoPlayer for video playback
-navigationCompose = "2.7.6" # Compose Navigation
+gson = "2.14.0"             # Latest stable (September 2025)
+coil = "3.5.0"              # Latest stable (May 2025)
+media3 = "1.5.1"            # ExoPlayer for video playback
+navigationCompose = "2.9.8" # Compose Navigation
 
 # Auth & DI dependencies
-hilt = "2.51.1"
-hiltNavigationCompose = "1.2.0"
+hilt = "2.59.2"
+hiltNavigationCompose = "1.3.0"
 okhttp = "4.12.0"
-securityCrypto = "1.1.0-alpha06"
-ksp = "2.0.21-1.0.27"
+securityCrypto = "1.1.0"
+ksp = "2.3.9"
 
 # Google Play Services
 playServicesAuth = "21.3.0"
 playServicesLocation = "21.3.0"
 
 # OSMDroid (OpenStreetMap)
-osmdroid = "6.1.18"
+osmdroid = "6.1.20"
 
 # Testing
-kotest = "5.9.1"
-kotestExtensionsProperty = "5.9.1"
-mockk = "1.13.12"
-coroutinesTest = "1.8.1"
+kotest = "6.2.1"
+kotestExtensionsProperty = "6.2.1"
+mockk = "1.14.11"
+coroutinesTest = "1.11.0"
 
 [libraries]
 # Your existing libraries
@@ -79,6 +79,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+hilt-metadata = { group = "org.jetbrains.kotlin", name = "kotlin-metadata-jvm", version.ref = "kotlin" }
 
 # OkHttp
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }

@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.VoxcinaTheme
@@ -71,75 +70,5 @@ fun QuickStatsRow(
             onClick = onCouponsClick,
             modifier = Modifier.weight(1f)
         )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun QuickStatsRowPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            QuickStatsRow(
-                walletBalance = 250000,
-                loyaltyPoints = 1500,
-                activeCoupons = 3,
-                onWalletClick = {},
-                onLoyaltyClick = {},
-                onCouponsClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun QuickStatsRowLargeValuesPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            QuickStatsRow(
-                walletBalance = 1500000,
-                loyaltyPoints = 12500,
-                activeCoupons = 15,
-                onWalletClick = {},
-                onLoyaltyClick = {},
-                onCouponsClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun QuickStatsRowZeroValuesPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            QuickStatsRow(
-                walletBalance = 0,
-                loyaltyPoints = 0,
-                activeCoupons = 0,
-                onWalletClick = {},
-                onLoyaltyClick = {},
-                onCouponsClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8, name = "RTL Layout")
-@Composable
-private fun QuickStatsRowRtlPreview() {
-    VoxcinaTheme {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                QuickStatsRow(
-                    walletBalance = 250000,
-                    loyaltyPoints = 1500,
-                    activeCoupons = 3,
-                    onWalletClick = {},
-                    onLoyaltyClick = {},
-                    onCouponsClick = {}
-                )
-            }
-        }
     }
 }

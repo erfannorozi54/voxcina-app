@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.components.GradientButton
@@ -91,68 +90,6 @@ fun FloatingAddToCartBar(
                     gradientColors = listOf(AmberColor, OrangeColor)
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFF8F4EF)
-@Composable
-private fun FloatingAddToCartBarPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // Normal state
-            FloatingAddToCartBar(
-                quantity = 1,
-                maxQuantity = 10,
-                onQuantityChanged = {},
-                onAddToCart = {},
-                isLoading = false,
-                enabled = true
-            )
-            
-            // With higher quantity
-            FloatingAddToCartBar(
-                quantity = 3,
-                maxQuantity = 5,
-                onQuantityChanged = {},
-                onAddToCart = {},
-                isLoading = false,
-                enabled = true
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFF8F4EF)
-@Composable
-private fun FloatingAddToCartBarStatesPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // Loading state
-            FloatingAddToCartBar(
-                quantity = 2,
-                maxQuantity = 10,
-                onQuantityChanged = {},
-                onAddToCart = {},
-                isLoading = true,
-                enabled = true
-            )
-            
-            // Disabled state (no size selected)
-            FloatingAddToCartBar(
-                quantity = 1,
-                maxQuantity = 10,
-                onQuantityChanged = {},
-                onAddToCart = {},
-                isLoading = false,
-                enabled = false
-            )
         }
     }
 }

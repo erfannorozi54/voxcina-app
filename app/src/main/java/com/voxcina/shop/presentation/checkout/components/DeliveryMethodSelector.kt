@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -179,95 +178,5 @@ private fun EmptyState() {
                 color = Color.Gray
             )
         }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DeliveryMethodSelectorPreview() {
-    val methods = listOf(
-        ShippingMethod(
-            id = "postex_standard",
-            name = "پست پیشتاز",
-            price = 150000,
-            estimatedDays = "۳ تا ۵ روز کاری",
-            description = "ارسال استاندارد"
-        ),
-        ShippingMethod(
-            id = "postex_express",
-            name = "پست ویژه",
-            price = 250000,
-            estimatedDays = "۱ تا ۲ روز کاری",
-            description = "ارسال سریع"
-        )
-    )
-
-    VoxcinaTheme {
-        DeliveryMethodSelector(
-            methods = methods,
-            selectedMethod = methods[0],
-            isLoading = false,
-            onMethodSelected = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DeliveryMethodSelectorNoSelectionPreview() {
-    val methods = listOf(
-        ShippingMethod(
-            id = "postex_standard",
-            name = "پست پیشتاز",
-            price = 150000,
-            estimatedDays = "۳ تا ۵ روز کاری",
-            description = "ارسال استاندارد"
-        ),
-        ShippingMethod(
-            id = "postex_express",
-            name = "پست ویژه",
-            price = 250000,
-            estimatedDays = "۱ تا ۲ روز کاری",
-            description = "ارسال سریع"
-        )
-    )
-
-    VoxcinaTheme {
-        DeliveryMethodSelector(
-            methods = methods,
-            selectedMethod = null,
-            isLoading = false,
-            onMethodSelected = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DeliveryMethodSelectorLoadingPreview() {
-    VoxcinaTheme {
-        DeliveryMethodSelector(
-            methods = emptyList(),
-            selectedMethod = null,
-            isLoading = true,
-            onMethodSelected = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun DeliveryMethodSelectorEmptyPreview() {
-    VoxcinaTheme {
-        DeliveryMethodSelector(
-            methods = emptyList(),
-            selectedMethod = null,
-            isLoading = false,
-            onMethodSelected = {},
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

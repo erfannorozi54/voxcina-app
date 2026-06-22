@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,58 +78,6 @@ fun ProductHeader(
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ProductHeaderPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            ProductHeader(
-                name = "تیشرت مردانه کلاسیک",
-                brand = "Nike",
-                rating = 4.8f,
-                reviewCount = 120
-            )
-            
-            ProductHeader(
-                name = "کفش ورزشی زنانه",
-                brand = "Adidas",
-                rating = 4.2f,
-                reviewCount = 45
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ProductHeaderNoRatingPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // Product without rating
-            ProductHeader(
-                name = "محصول جدید",
-                brand = "برند نمونه",
-                rating = null,
-                reviewCount = null
-            )
-            
-            // Product with zero reviews
-            ProductHeader(
-                name = "محصول بدون نظر",
-                brand = "برند تست",
-                rating = 0f,
-                reviewCount = 0
-            )
         }
     }
 }

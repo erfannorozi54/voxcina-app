@@ -34,7 +34,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Secondary
@@ -668,85 +667,3 @@ fun ShimmerHomeContent(
     }
 }
 
-// ============ Preview Functions ============
-
-@Preview(showBackground = true)
-@Composable
-private fun ShimmerHeroCarouselPreview() {
-    VoxcinaTheme {
-        ShimmerHeroCarousel(
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ShimmerCategorySectionPreview() {
-    VoxcinaTheme {
-        ShimmerCategorySection(
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ShimmerFlashSaleSectionPreview() {
-    VoxcinaTheme {
-        ShimmerFlashSaleSection(
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ShimmerProductGridPreview() {
-    VoxcinaTheme {
-        ShimmerProductGrid(
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ShimmerProductCardPreview() {
-    VoxcinaTheme {
-        ShimmerProductCard(
-            modifier = Modifier
-                .width(180.dp)
-                .padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ShimmerRecentlyViewedSectionPreview() {
-    VoxcinaTheme {
-        ShimmerRecentlyViewedSection(
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ShimmerHomeContentPreview() {
-    VoxcinaTheme {
-        ShimmerHomeContent()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ShimmerHomeContentMinimalPreview() {
-    VoxcinaTheme {
-        ShimmerHomeContent(
-            showFlashSale = false,
-            showRecentlyViewed = false
-        )
-    }
-}

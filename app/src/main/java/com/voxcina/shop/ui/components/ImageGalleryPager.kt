@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
@@ -222,42 +221,5 @@ private fun PaginationDots(
                     .clickable { onDotClick(index) }
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ImageGalleryPagerPreview() {
-    VoxcinaTheme {
-        ImageGalleryPager(
-            images = listOf(
-                "https://example.com/image1.jpg",
-                "https://example.com/image2.jpg",
-                "https://example.com/image3.jpg"
-            ),
-            heightFraction = 0.4f
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ImageGalleryPagerEmptyPreview() {
-    VoxcinaTheme {
-        ImageGalleryPager(
-            images = emptyList(),
-            heightFraction = 0.4f
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ImageGalleryPagerSingleImagePreview() {
-    VoxcinaTheme {
-        ImageGalleryPager(
-            images = listOf("https://example.com/image1.jpg"),
-            heightFraction = 0.4f
-        )
     }
 }

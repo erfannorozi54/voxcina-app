@@ -92,9 +92,9 @@ sealed class Screen(val route: String) {
     data object Checkout : Screen("checkout")
     
     /** Payment result screen with parameters */
-    data object PaymentResult : Screen("payment-result?orderId={orderId}&trackId={trackId}&success={success}") {
-        fun createRoute(orderId: String, trackId: Long, success: Boolean): String =
-            "payment-result?orderId=$orderId&trackId=$trackId&success=$success"
+    data object PaymentResult : Screen("payment-result?orderId={orderId}&trackId={trackId}&success={success}&gateway={gateway}") {
+        fun createRoute(orderId: String, trackId: String, success: Boolean, gateway: String): String =
+            "payment-result?orderId=$orderId&trackId=$trackId&success=$success&gateway=$gateway"
     }
     
     /** Profile screen */
@@ -451,9 +451,9 @@ fun NavGraph(
                     // Requirement 3.4: Navigate to address selection screen
                     navController.navigate(Screen.Addresses.route)
                 },
-                onNavigateToPaymentResult = { orderId, trackId ->
+                onNavigateToPaymentResult = { orderId, trackId, gateway ->
                     // Navigate to payment result screen after returning from browser
-                    navController.navigate(Screen.PaymentResult.createRoute(orderId, trackId, false)) {
+                    navController.navigate(Screen.PaymentResult.createRoute(orderId, trackId, false, gateway)) {
                         // Clear checkout from back stack
                         popUpTo(Screen.Cart.route) { inclusive = true }
                     }
@@ -485,17 +485,20 @@ fun NavGraph(
             route = Screen.PaymentResult.route,
             arguments = listOf(
                 navArgument("orderId") { type = NavType.StringType; defaultValue = "" },
-                navArgument("trackId") { type = NavType.LongType; defaultValue = 0L },
-                navArgument("success") { type = NavType.BoolType; defaultValue = false }
+                navArgument("trackId") { type = NavType.StringType; defaultValue = "" },
+                navArgument("success") { type = NavType.BoolType; defaultValue = false },
+                navArgument("gateway") { type = NavType.StringType; defaultValue = "zibal" }
             )
         ) { backStackEntry ->
             val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
-            val trackId = backStackEntry.arguments?.getLong("trackId") ?: 0L
+            val trackId = backStackEntry.arguments?.getString("trackId") ?: ""
             val success = backStackEntry.arguments?.getBoolean("success") ?: false
+            val gateway = backStackEntry.arguments?.getString("gateway") ?: "zibal"
             
             com.voxcina.shop.presentation.payment.PaymentResultScreen(
                 orderId = orderId,
                 trackId = trackId,
+                gateway = gateway,
                 isSuccess = success,
                 onNavigateToOrders = {
                     navController.navigate(Screen.Orders.createRoute()) {

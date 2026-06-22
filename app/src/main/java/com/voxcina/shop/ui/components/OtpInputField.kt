@@ -27,7 +27,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -154,48 +153,5 @@ private fun OtpDigitBox(
                 textAlign = TextAlign.Center
             )
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtpInputFieldPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // Empty state
-            OtpInputField(
-                otp = "",
-                onOtpChange = {}
-            )
-
-            // Partial entry
-            OtpInputField(
-                otp = "123",
-                onOtpChange = {}
-            )
-
-            // Complete entry
-            OtpInputField(
-                otp = "12345",
-                onOtpChange = {}
-            )
-
-            // Error state
-            OtpInputField(
-                otp = "12345",
-                onOtpChange = {},
-                error = "کد تأیید اشتباه است"
-            )
-
-            // Disabled state
-            OtpInputField(
-                otp = "123",
-                onOtpChange = {},
-                enabled = false
-            )
-        }
     }
 }

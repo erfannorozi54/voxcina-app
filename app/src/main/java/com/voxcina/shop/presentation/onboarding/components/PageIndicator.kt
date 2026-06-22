@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.VoxcinaTheme
@@ -49,16 +48,5 @@ fun PageIndicator(
                     )
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PageIndicatorPreview() {
-    VoxcinaTheme {
-        PageIndicator(
-            pageCount = 3,
-            currentPage = 1
-        )
     }
 }

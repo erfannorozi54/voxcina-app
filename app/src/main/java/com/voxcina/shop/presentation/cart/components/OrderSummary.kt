@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.domain.model.CartSummary
@@ -160,62 +159,6 @@ private fun SummaryRow(
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
             color = valueColor
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun OrderSummaryPreview() {
-    VoxcinaTheme {
-        OrderSummary(
-            summary = CartSummary(
-                subtotal = 900000,
-                shipping = 150000,
-                tax = 90000,
-                discount = 0,
-                total = 1140000
-            ),
-            itemCount = 2,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun OrderSummaryWithDiscountPreview() {
-    VoxcinaTheme {
-        OrderSummary(
-            summary = CartSummary(
-                subtotal = 1500000,
-                shipping = 150000,
-                tax = 135000,
-                discount = 300000,
-                total = 1485000
-            ),
-            itemCount = 3,
-            discountPercentage = 20,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun OrderSummaryFreeShippingPreview() {
-    VoxcinaTheme {
-        OrderSummary(
-            summary = CartSummary(
-                subtotal = 2500000,
-                shipping = 0,
-                tax = 250000,
-                discount = 500000,
-                total = 2250000
-            ),
-            itemCount = 5,
-            discountPercentage = 20,
-            modifier = Modifier.padding(16.dp)
         )
     }
 }

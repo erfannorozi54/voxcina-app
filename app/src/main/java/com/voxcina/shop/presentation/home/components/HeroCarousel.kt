@@ -33,7 +33,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -354,83 +353,3 @@ fun PageIndicator(
     }
 }
 
-// ============ Preview Functions ============
-
-@Preview(showBackground = true)
-@Composable
-private fun HeroCarouselPreview() {
-    VoxcinaTheme {
-        HeroCarousel(
-            heroImages = listOf(
-                HeroImage(
-                    id = "1",
-                    imageUrl = "https://example.com/image1.jpg",
-                    gradient = null,
-                    noGradient = false,
-                    displayOrder = 1
-                ),
-                HeroImage(
-                    id = "2",
-                    imageUrl = "https://example.com/image2.jpg",
-                    gradient = null,
-                    noGradient = false,
-                    displayOrder = 2
-                ),
-                HeroImage(
-                    id = "3",
-                    imageUrl = "https://example.com/image3.jpg",
-                    gradient = null,
-                    noGradient = true,
-                    displayOrder = 3
-                )
-            ),
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LocalHeroCarouselPreview() {
-    VoxcinaTheme {
-        LocalHeroCarousel(
-            localBanners = defaultLocalBanners,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PageIndicatorPreview() {
-    VoxcinaTheme {
-        PageIndicator(
-            currentPage = 1,
-            pageCount = 5,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PageIndicatorFirstPagePreview() {
-    VoxcinaTheme {
-        PageIndicator(
-            currentPage = 0,
-            pageCount = 3,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun HeroCarouselEmptyPreview() {
-    VoxcinaTheme {
-        HeroCarousel(
-            heroImages = emptyList(),
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-    }
-}

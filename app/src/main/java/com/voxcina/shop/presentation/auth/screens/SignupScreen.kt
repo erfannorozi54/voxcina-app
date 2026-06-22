@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -144,77 +143,5 @@ fun SignupScreen(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SignupScreenPreview() {
-    VoxcinaTheme {
-        SignupScreen(
-            phone = "09123456789",
-            firstName = "",
-            lastName = "",
-            error = null,
-            isLoading = false,
-            onFirstNameChange = {},
-            onLastNameChange = {},
-            onContinue = {},
-            onBack = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SignupScreenWithDataPreview() {
-    VoxcinaTheme {
-        SignupScreen(
-            phone = "09123456789",
-            firstName = "علی",
-            lastName = "احمدی",
-            error = null,
-            isLoading = false,
-            onFirstNameChange = {},
-            onLastNameChange = {},
-            onContinue = {},
-            onBack = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SignupScreenWithErrorPreview() {
-    VoxcinaTheme {
-        SignupScreen(
-            phone = "09123456789",
-            firstName = "علی",
-            lastName = "",
-            error = "نام خانوادگی را وارد کنید",
-            isLoading = false,
-            onFirstNameChange = {},
-            onLastNameChange = {},
-            onContinue = {},
-            onBack = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SignupScreenLoadingPreview() {
-    VoxcinaTheme {
-        SignupScreen(
-            phone = "09123456789",
-            firstName = "علی",
-            lastName = "احمدی",
-            error = null,
-            isLoading = true,
-            onFirstNameChange = {},
-            onLastNameChange = {},
-            onContinue = {},
-            onBack = {}
-        )
     }
 }

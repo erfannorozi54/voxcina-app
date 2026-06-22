@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.domain.model.ProductReview
@@ -150,52 +149,5 @@ fun ReviewsSection(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ReviewsSectionPreview() {
-    VoxcinaTheme {
-        ReviewsSection(
-            reviews = listOf(
-                ProductReview(
-                    id = "1",
-                    userId = "user1",
-                    userName = "علی محمدی",
-                    userAvatar = null,
-                    rating = 5,
-                    comment = "محصول عالی بود! کیفیت پارچه خیلی خوبه و سایزش دقیقا اندازه بود.",
-                    isRecommended = true,
-                    createdAt = "2024-01-15"
-                ),
-                ProductReview(
-                    id = "2",
-                    userId = "user2",
-                    userName = "مریم احمدی",
-                    userAvatar = null,
-                    rating = 4,
-                    comment = "کیفیت خوب بود. ارسال سریع و بستهبندی مناسب.",
-                    isRecommended = true,
-                    createdAt = "2024-01-10"
-                )
-            ),
-            onViewAllClick = {},
-            onAddReviewClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun ReviewsSectionEmptyPreview() {
-    VoxcinaTheme {
-        ReviewsSection(
-            reviews = emptyList(),
-            onViewAllClick = {},
-            onAddReviewClick = {},
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

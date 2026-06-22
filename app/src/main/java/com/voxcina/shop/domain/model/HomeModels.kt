@@ -34,14 +34,20 @@ data class Category(
 data class Product(
     val productId: String,
     val name: String,
+    val description: String?,
     val price: Long,
     val originalPrice: Long?,
     val brand: String,
+    val brandId: String?,
+    val categoryIds: List<String>?,
+    val collection: String?,
+    val isFlashSale: Boolean,
     val inStock: Boolean,
     val totalInventory: Int,
     val colorVariant: ColorVariant,
     val averageRating: Float?,
-    val reviewCount: Int?
+    val reviewCount: Int?,
+    val createdAt: String?
 )
 
 /**
@@ -50,8 +56,10 @@ data class Product(
 data class ColorVariant(
     val color: String,
     val colorName: String,
+    val swatchImage: String?,
     val images: List<String>,
     val tryOnImage: String?,
+    val tryOnGarmentType: String?,
     val sizes: List<SizeVariant>
 )
 
@@ -155,8 +163,10 @@ fun SizeVariantDto.toDomain(): SizeVariant = SizeVariant(
 fun ColorVariantDto.toDomain(): ColorVariant = ColorVariant(
     color = color,
     colorName = colorName,
+    swatchImage = swatchImage,
     images = images,
     tryOnImage = tryOnImage,
+    tryOnGarmentType = tryOnGarmentType,
     sizes = sizes.map { it.toDomain() }
 )
 
@@ -166,14 +176,20 @@ fun ColorVariantDto.toDomain(): ColorVariant = ColorVariant(
 fun ColorVariantListItemDto.toDomain(): Product = Product(
     productId = productId,
     name = name,
+    description = description,
     price = price,
     originalPrice = originalPrice,
     brand = brand,
+    brandId = brandId,
+    categoryIds = categoryIds,
+    collection = collection,
+    isFlashSale = isFlashSale,
     inStock = inStock,
     totalInventory = totalInventory,
     colorVariant = colorVariant.toDomain(),
-    averageRating = null, // Not available in list response
-    reviewCount = null
+    averageRating = averageRating,
+    reviewCount = reviewCount,
+    createdAt = createdAt
 )
 
 /**

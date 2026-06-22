@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,56 +80,5 @@ fun EditAccountButton(
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun EditAccountButtonPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            EditAccountButton(
-                onClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun EditAccountButtonDisabledPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            EditAccountButton(
-                onClick = {},
-                enabled = false
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-@Composable
-private fun EditAccountButtonOnWhitePreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            EditAccountButton(
-                onClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8, name = "RTL Layout")
-@Composable
-private fun EditAccountButtonRtlPreview() {
-    VoxcinaTheme {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                EditAccountButton(
-                    onClick = {}
-                )
-            }
-        }
     }
 }

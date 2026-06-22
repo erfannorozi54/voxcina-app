@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -196,39 +195,6 @@ private fun StepConnector(
                 .fillMaxWidth(),
             thickness = 2.dp,
             color = if (isCompleted) Primary else Color(0xFFE5E7EB)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CheckoutStepperStep0Preview() {
-    VoxcinaTheme {
-        CheckoutStepper(
-            currentStep = 0,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CheckoutStepperStep1Preview() {
-    VoxcinaTheme {
-        CheckoutStepper(
-            currentStep = 1,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun CheckoutStepperStep2Preview() {
-    VoxcinaTheme {
-        CheckoutStepper(
-            currentStep = 2,
-            modifier = Modifier.padding(16.dp)
         )
     }
 }

@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -129,36 +128,6 @@ fun VoxcinaPhoneTextField(
                     modifier = Modifier.padding(start = 8.dp, top = 4.dp)
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun VoxcinaPhoneTextFieldPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            VoxcinaPhoneTextField(
-                value = "",
-                onValueChange = {},
-                label = "شماره موبایل",
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            VoxcinaPhoneTextField(
-                value = "09123456789",
-                onValueChange = {},
-                label = "شماره موبایل",
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            VoxcinaPhoneTextField(
-                value = "0912",
-                onValueChange = {},
-                label = "شماره موبایل",
-                error = "شماره تلفن نامعتبر است",
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
         }
     }
 }

@@ -42,14 +42,13 @@ class PaymentResultViewModel @Inject constructor(
 
     /**
      * Set success state directly when we know payment succeeded
-     * (e.g., when navigating from PaymentSuccess event with trackId=0)
      */
     fun setSuccessState(orderNumber: String?) {
         _uiState.value = PaymentResultUiState.Success(orderNumber = orderNumber, refNumber = null)
     }
 
     /**
-     * Set abandoned state when trackId=0 and not success (edge case)
+     * Set abandoned state
      */
     fun setAbandonedState(orderId: String) {
         _uiState.value = PaymentResultUiState.Abandoned(
@@ -59,32 +58,32 @@ class PaymentResultViewModel @Inject constructor(
         )
     }
 
-    fun verifyPayment(trackId: Long, orderId: String) {
+    fun verifyPayment(trackId: String, orderId: String, gateway: String) {
         viewModelScope.launch {
             _uiState.value = PaymentResultUiState.Loading
             
-            when (val result = paymentRepository.verifyPayment(trackId)) {
+            when (val result = paymentRepository.verifyPayment(trackId, gateway)) {
                 is Result.Success -> {
                     val response = result.data
                     when {
                         response.isSuccess -> {
                             _uiState.value = PaymentResultUiState.Success(
-                                orderNumber = response.orderNumber,
+                                orderNumber = response.orderId, // Using orderId as number if needed
                                 refNumber = response.refNumber
                             )
                         }
                         response.isAbandoned -> {
                             _uiState.value = PaymentResultUiState.Abandoned(
-                                orderNumber = response.orderNumber,
-                                orderId = response.orderId,
-                                message = response.statusText
+                                orderNumber = null,
+                                orderId = response.orderId ?: orderId,
+                                message = response.statusText ?: "پرداخت ناتمام"
                             )
                         }
                         else -> {
                             _uiState.value = PaymentResultUiState.Failed(
-                                orderNumber = response.orderNumber,
-                                orderId = response.orderId,
-                                message = response.statusText.ifEmpty { "پرداخت تایید نشد" },
+                                orderNumber = null,
+                                orderId = response.orderId ?: orderId,
+                                message = response.statusText ?: "پرداخت تایید نشد",
                                 canRetry = response.canRetry
                             )
                         }
@@ -97,11 +96,11 @@ class PaymentResultViewModel @Inject constructor(
         }
     }
 
-    fun retryPayment(orderId: String) {
+    fun retryPayment(orderId: String, gateway: String) {
         viewModelScope.launch {
             _isRetrying.value = true
             
-            when (val result = paymentRepository.retryPayment(orderId)) {
+            when (val result = paymentRepository.retryPayment(orderId, gateway)) {
                 is Result.Success -> {
                     _event.emit(PaymentResultEvent.RetryPayment(result.data.payUrl))
                 }

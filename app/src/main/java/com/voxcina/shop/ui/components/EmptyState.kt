@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Primary
@@ -99,56 +98,5 @@ fun EmptyState(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun EmptyStateCartPreview() {
-    VoxcinaTheme {
-        EmptyState(
-            icon = Icons.Outlined.ShoppingCart,
-            title = "سبد خرید شما خالی است",
-            subtitle = "محصولات مورد علاقه خود را به سبد خرید اضافه کنید",
-            actionButtonText = "شروع خرید",
-            onActionClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun EmptyStateWishlistPreview() {
-    VoxcinaTheme {
-        EmptyState(
-            icon = Icons.Outlined.Favorite,
-            title = "لیست علاقه‌مندی‌ها خالی است",
-            subtitle = "محصولات مورد علاقه خود را ذخیره کنید",
-            actionButtonText = "مشاهده محصولات",
-            onActionClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun EmptyStateSearchPreview() {
-    VoxcinaTheme {
-        EmptyState(
-            icon = Icons.Outlined.Search,
-            title = "نتیجه‌ای یافت نشد",
-            subtitle = "عبارت دیگری را جستجو کنید"
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun EmptyStateMinimalPreview() {
-    VoxcinaTheme {
-        EmptyState(
-            icon = Icons.Outlined.ShoppingCart,
-            title = "سبد خرید خالی است"
-        )
     }
 }

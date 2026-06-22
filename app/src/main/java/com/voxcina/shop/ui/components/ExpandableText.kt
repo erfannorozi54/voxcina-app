@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Primary
@@ -150,51 +149,4 @@ fun ExpandableTextStateful(
         collapseButtonText = collapseButtonText,
         buttonColor = buttonColor
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ExpandableTextCollapsedPreview() {
-    VoxcinaTheme {
-        var isExpanded by remember { mutableStateOf(false) }
-        
-        ExpandableText(
-            text = "این یک متن طولانی برای تست است که باید در چند خط نمایش داده شود. " +
-                    "این متن شامل توضیحات کامل محصول است و ممکن است بیش از چهار خط باشد. " +
-                    "کاربر می‌تواند با کلیک روی دکمه بیشتر بخوانید، متن کامل را مشاهده کند. " +
-                    "این قابلیت برای نمایش توضیحات محصول و نظرات کاربران استفاده می‌شود. " +
-                    "متن می‌تواند شامل جزئیات فنی، ویژگی‌ها و مزایای محصول باشد.",
-            isExpanded = isExpanded,
-            onExpandToggle = { isExpanded = !isExpanded },
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ExpandableTextExpandedPreview() {
-    VoxcinaTheme {
-        var isExpanded by remember { mutableStateOf(true) }
-        
-        ExpandableText(
-            text = "این یک متن طولانی برای تست است که باید در چند خط نمایش داده شود. " +
-                    "این متن شامل توضیحات کامل محصول است و ممکن است بیش از چهار خط باشد. " +
-                    "کاربر می‌تواند با کلیک روی دکمه بیشتر بخوانید، متن کامل را مشاهده کند.",
-            isExpanded = isExpanded,
-            onExpandToggle = { isExpanded = !isExpanded },
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ExpandableTextShortPreview() {
-    VoxcinaTheme {
-        ExpandableTextStateful(
-            text = "این یک متن کوتاه است که نیاز به گسترش ندارد.",
-            modifier = Modifier.padding(16.dp)
-        )
-    }
 }

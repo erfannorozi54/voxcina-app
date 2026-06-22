@@ -44,7 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -126,7 +125,7 @@ fun FlashSaleSection(
                 ) {
                     items(
                         items = products,
-                        key = { "${it.productId}_${it.colorVariant.color}" }
+                        key = { "${it.productId}_${it.colorVariant.color}_${it.colorVariant.colorName}" }
                     ) { product ->
                         ProductCard(
                             product = product,
@@ -296,100 +295,3 @@ private fun TimeSeparator() {
  */
 
 
-// ============ Preview Functions ============
-
-@Preview(showBackground = true)
-@Composable
-private fun FlashSaleSectionPreview() {
-    VoxcinaTheme {
-        FlashSaleSection(
-            products = sampleFlashSaleProducts,
-            endTimeMillis = System.currentTimeMillis() + 3600000, // 1 hour from now
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun FlashSaleSectionEmptyPreview() {
-    VoxcinaTheme {
-        FlashSaleSection(
-            products = emptyList(),
-            endTimeMillis = System.currentTimeMillis() + 3600000,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFF6B35)
-@Composable
-private fun GlassCountdownTimerPreview() {
-    VoxcinaTheme {
-        GlassCountdownTimer(
-            hours = 2,
-            minutes = 45,
-            seconds = 30,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-
-// Sample data for previews
-private val sampleFlashSaleProducts = listOf(
-    Product(
-        productId = "1",
-        name = "تیشرت مردانه نایکی",
-        price = 450000,
-        originalPrice = 600000,
-        brand = "Nike",
-        inStock = true,
-        totalInventory = 15,
-        colorVariant = ColorVariant(
-            color = "#FF5733",
-            colorName = "قرمز",
-            images = listOf("https://example.com/image1.jpg"),
-            tryOnImage = null,
-            sizes = listOf(SizeVariant("M", "SKU123", 5))
-        ),
-        averageRating = 4.5f,
-        reviewCount = 12
-    ),
-    Product(
-        productId = "2",
-        name = "شلوار جین مردانه لیوایز",
-        price = 850000,
-        originalPrice = 1200000,
-        brand = "Levi's",
-        inStock = true,
-        totalInventory = 8,
-        colorVariant = ColorVariant(
-            color = "#1A3C69",
-            colorName = "آبی",
-            images = listOf("https://example.com/image2.jpg"),
-            tryOnImage = null,
-            sizes = listOf(SizeVariant("32", "SKU456", 3))
-        ),
-        averageRating = 4.2f,
-        reviewCount = 8
-    ),
-    Product(
-        productId = "3",
-        name = "کفش ورزشی آدیداس",
-        price = 1500000,
-        originalPrice = 2000000,
-        brand = "Adidas",
-        inStock = true,
-        totalInventory = 20,
-        colorVariant = ColorVariant(
-            color = "#000000",
-            colorName = "مشکی",
-            images = listOf("https://example.com/image3.jpg"),
-            tryOnImage = null,
-            sizes = listOf(SizeVariant("42", "SKU789", 10))
-        ),
-        averageRating = 4.8f,
-        reviewCount = 25
-    )
-)

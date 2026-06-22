@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,105 +86,6 @@ fun BadgeIcon(
                     color = badgeTextColor
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun BadgeIconPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // Cart with badge
-            BadgeIcon(
-                icon = Icons.Default.ShoppingCart,
-                contentDescription = "سبد خرید",
-                badgeCount = 3
-            )
-            
-            // Cart without badge
-            BadgeIcon(
-                icon = Icons.Default.ShoppingCart,
-                contentDescription = "سبد خرید",
-                badgeCount = null
-            )
-            
-            // Cart with zero items (no badge shown)
-            BadgeIcon(
-                icon = Icons.Default.ShoppingCart,
-                contentDescription = "سبد خرید",
-                badgeCount = 0
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun BadgeIconVariationsPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // Single digit
-            BadgeIcon(
-                icon = Icons.Default.ShoppingCart,
-                contentDescription = "سبد خرید",
-                badgeCount = 5
-            )
-            
-            // Double digit
-            BadgeIcon(
-                icon = Icons.Default.ShoppingCart,
-                contentDescription = "سبد خرید",
-                badgeCount = 12
-            )
-            
-            // Max display (99+)
-            BadgeIcon(
-                icon = Icons.Default.ShoppingCart,
-                contentDescription = "سبد خرید",
-                badgeCount = 150
-            )
-            
-            // Notification icon
-            BadgeIcon(
-                icon = Icons.Default.Notifications,
-                contentDescription = "اعلان‌ها",
-                badgeCount = 7,
-                iconSize = 28.dp
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun BadgeIconCustomColorsPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // Custom badge color
-            BadgeIcon(
-                icon = Icons.Default.ShoppingCart,
-                contentDescription = "سبد خرید",
-                badgeCount = 3,
-                badgeColor = Color(0xFF10B981)
-            )
-            
-            // Custom icon tint
-            BadgeIcon(
-                icon = Icons.Default.ShoppingCart,
-                contentDescription = "سبد خرید",
-                badgeCount = 5,
-                iconTint = Color.Gray
-            )
         }
     }
 }

@@ -25,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -414,55 +413,3 @@ private fun RecommendedProductsSectionContent(
     }
 }
 
-// ============ Preview Functions ============
-
-@Preview(showBackground = true)
-@Composable
-private fun HomeScreenLoadingPreview() {
-    VoxcinaTheme {
-        HomeScreenContent(
-            uiState = HomeUiState.Loading,
-            onRefresh = {},
-            onRetryAll = {},
-            onRetrySection = {},
-            onCategoryClick = {},
-            onProductClick = { _, _ -> },
-            onRecentlyViewedClick = { _, _ -> },
-            onViewAllFlashSale = {},
-            onViewAllCategories = {},
-            onViewAllRecentlyViewed = {},
-            onSearchClick = {},
-            onNotificationClick = {},
-            onCartClick = {},
-            onBottomNavClick = {},
-            onAddToCart = { _, _ -> }
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun HomeScreenErrorPreview() {
-    VoxcinaTheme {
-        HomeScreenContent(
-            uiState = HomeUiState.Error(
-                message = "خطا در بارگذاری صفحه اصلی",
-                canRetry = true
-            ),
-            onRefresh = {},
-            onRetryAll = {},
-            onRetrySection = {},
-            onCategoryClick = {},
-            onProductClick = { _, _ -> },
-            onRecentlyViewedClick = { _, _ -> },
-            onViewAllFlashSale = {},
-            onViewAllCategories = {},
-            onViewAllRecentlyViewed = {},
-            onSearchClick = {},
-            onNotificationClick = {},
-            onCartClick = {},
-            onBottomNavClick = {},
-            onAddToCart = { _, _ -> }
-        )
-    }
-}

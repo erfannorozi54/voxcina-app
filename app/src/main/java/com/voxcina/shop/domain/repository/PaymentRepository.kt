@@ -10,22 +10,34 @@ import com.voxcina.shop.util.Result
 interface PaymentRepository {
 
     /**
-     * Request payment from Zibal gateway.
+     * Request payment from a gateway.
      */
     suspend fun requestPayment(
         orderId: String,
-        amount: Long,
-        description: String? = null,
-        mobile: String? = null
+        gateway: String
     ): Result<PaymentResponse>
 
     /**
      * Verify payment after callback.
      */
-    suspend fun verifyPayment(trackId: Long): Result<VerifyPaymentResponse>
+    suspend fun verifyPayment(
+        trackId: String,
+        gateway: String
+    ): Result<VerifyPaymentResponse>
 
     /**
      * Retry payment for a pending/failed order.
      */
-    suspend fun retryPayment(orderId: String): Result<PaymentResponse>
+    suspend fun retryPayment(
+        orderId: String,
+        gateway: String
+    ): Result<PaymentResponse>
+
+    /**
+     * Inquiry about a payment status.
+     */
+    suspend fun inquiryPayment(
+        trackId: String,
+        gateway: String
+    ): Result<VerifyPaymentResponse>
 }

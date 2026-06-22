@@ -37,7 +37,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -258,43 +257,3 @@ private fun StatusFilterTabs(
     }
 }
 
-// ============== Previews ==============
-
-@Preview(showBackground = true)
-@Composable
-private fun TicketsScreenLoadingPreview() {
-    VoxcinaTheme {
-        TicketsScreenContent(
-            uiState = TicketsUiState.Loading,
-            onBackClick = {},
-            onTicketClick = {},
-            onStatusFilterChanged = {},
-            onShowCreateDialog = {},
-            onHideCreateDialog = {},
-            onCreateTicket = { _, _, _, _ -> },
-            onRetry = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun TicketsScreenSuccessPreview() {
-    VoxcinaTheme {
-        TicketsScreenContent(
-            uiState = TicketsUiState.Success(
-                tickets = listOf(
-                    Ticket("1", "TCK-01001", "مشکل در ثبت سفارش", "order", "high", "open", emptyList(), "", ""),
-                    Ticket("2", "TCK-01002", "سوال درباره ارسال", "general", "medium", "answered", emptyList(), "", "")
-                )
-            ),
-            onBackClick = {},
-            onTicketClick = {},
-            onStatusFilterChanged = {},
-            onShowCreateDialog = {},
-            onHideCreateDialog = {},
-            onCreateTicket = { _, _, _, _ -> },
-            onRetry = {}
-        )
-    }
-}

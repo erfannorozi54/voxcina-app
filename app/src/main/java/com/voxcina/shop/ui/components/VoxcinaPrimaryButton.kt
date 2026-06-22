@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,33 +68,6 @@ fun VoxcinaPrimaryButton(
                     fontWeight = FontWeight.Bold
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun VoxcinaPrimaryButtonPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            VoxcinaPrimaryButton(
-                text = "ادامه",
-                onClick = {},
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            VoxcinaPrimaryButton(
-                text = "ادامه",
-                onClick = {},
-                enabled = false,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            VoxcinaPrimaryButton(
-                text = "ادامه",
-                onClick = {},
-                isLoading = true
-            )
         }
     }
 }

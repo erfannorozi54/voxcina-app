@@ -1,19 +1,17 @@
 package com.voxcina.shop.data.remote
 
-import com.voxcina.shop.data.remote.dto.PaymentRequestDto
-import com.voxcina.shop.data.remote.dto.PaymentResponseDto
-import com.voxcina.shop.data.remote.dto.VerifyPaymentDto
+import com.voxcina.shop.data.remote.dto.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
 /**
- * Retrofit API interface for Zibal payment endpoints.
+ * Retrofit API interface for payment gateway integration.
  */
 interface PaymentApi {
 
     /**
-     * Request payment from Zibal gateway.
+     * Request payment from a gateway (zibal | digipay).
      * POST /api/payment/request
      */
     @POST("payment/request")
@@ -36,26 +34,27 @@ interface PaymentApi {
      */
     @POST("payment/retry")
     suspend fun retryPayment(
-        @Body request: RetryPaymentDto
+        @Body request: RetryPaymentRequestDto
     ): Response<PaymentResponseDto>
-}
 
-data class RetryPaymentDto(
-    val orderId: String
-)
+    /**
+     * Inquiry about a payment status.
+     * POST /api/payment/inquiry
+     */
+    @POST("payment/inquiry")
+    suspend fun inquiryPayment(
+        @Body request: PaymentInquiryDto
+    ): Response<VerifyPaymentResponseDto>
+}
 
 data class VerifyPaymentResponseDto(
     val result: Int,
-    val message: String,
-    val status: Int,
-    val amount: Long,
+    val message: String? = null,
+    val success: Boolean,
     val refNumber: String? = null,
-    val cardNumber: String? = null,
-    val paidAt: String? = null,
-    val description: String? = null,
-    val orderId: String? = null,
-    val paymentStatus: String,
-    val statusText: String,
+    val amount: Long,
     val canRetry: Boolean = false,
-    val orderNumber: String? = null
+    val orderId: String? = null,
+    val paymentStatus: String? = null,
+    val statusText: String? = null
 )

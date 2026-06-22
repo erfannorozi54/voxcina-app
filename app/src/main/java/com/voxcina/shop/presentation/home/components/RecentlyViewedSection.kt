@@ -50,7 +50,7 @@ fun RecentlyViewedSection(
             ) {
                 items(
                     items = products,
-                    key = { "${it.productId}_${it.colorHex}" }
+                    key = { "${it.productId}_${it.colorHex}_${it.viewedAt}" }
                 ) { recentProduct ->
                     ProductCard(
                         product = recentProduct.toProduct(),
@@ -70,19 +70,27 @@ private fun RecentlyViewedProduct.toProduct(): Product {
     return Product(
         productId = productId,
         name = name,
+        description = null,
         price = price,
         originalPrice = null,
         brand = "",
+        brandId = null,
+        categoryIds = null,
+        collection = null,
+        isFlashSale = false,
         inStock = true,
         totalInventory = 1,
         colorVariant = ColorVariant(
             color = colorHex,
             colorName = "",
+            swatchImage = null,
             images = listOf(imageUrl),
             tryOnImage = null,
+            tryOnGarmentType = null,
             sizes = emptyList()
         ),
         averageRating = null,
-        reviewCount = null
+        reviewCount = null,
+        createdAt = null
     )
 }

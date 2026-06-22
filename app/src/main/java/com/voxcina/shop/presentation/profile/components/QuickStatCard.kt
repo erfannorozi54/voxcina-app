@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -89,94 +88,6 @@ fun QuickStatCard(
                 color = Color.Gray,
                 textAlign = TextAlign.Center
             )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun QuickStatCardPreview() {
-    VoxcinaTheme {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            QuickStatCard(
-                icon = Icons.Outlined.Wallet,
-                value = "250000",
-                label = "تومان موجودی",
-                onClick = {},
-                modifier = Modifier.width(100.dp)
-            )
-            
-            QuickStatCard(
-                icon = Icons.Outlined.CardGiftcard,
-                value = "1500",
-                label = "امتیاز باشگاه",
-                onClick = {},
-                modifier = Modifier.width(100.dp)
-            )
-            
-            QuickStatCard(
-                icon = Icons.Outlined.ConfirmationNumber,
-                value = "3",
-                label = "کوپن فعال",
-                onClick = {},
-                modifier = Modifier.width(100.dp)
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun QuickStatCardSinglePreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            QuickStatCard(
-                icon = Icons.Outlined.Wallet,
-                value = "1500000",
-                label = "تومان موجودی",
-                onClick = {},
-                modifier = Modifier.width(120.dp)
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8, name = "RTL Layout")
-@Composable
-private fun QuickStatCardRtlPreview() {
-    VoxcinaTheme {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                QuickStatCard(
-                    icon = Icons.Outlined.Wallet,
-                    value = "250000",
-                    label = "تومان موجودی",
-                    onClick = {},
-                    modifier = Modifier.width(100.dp)
-                )
-                
-                QuickStatCard(
-                    icon = Icons.Outlined.CardGiftcard,
-                    value = "1500",
-                    label = "امتیاز باشگاه",
-                    onClick = {},
-                    modifier = Modifier.width(100.dp)
-                )
-                
-                QuickStatCard(
-                    icon = Icons.Outlined.ConfirmationNumber,
-                    value = "3",
-                    label = "کوپن فعال",
-                    onClick = {},
-                    modifier = Modifier.width(100.dp)
-                )
-            }
         }
     }
 }

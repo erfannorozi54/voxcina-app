@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Destructive
@@ -158,52 +157,5 @@ private fun HeaderIconButton(
                 tint = tint
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ScreenHeaderPreview() {
-    VoxcinaTheme {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Cart header with delete action
-            ScreenHeader(
-                title = "سبد خرید",
-                onBackClick = {},
-                actionIcon = Icons.Default.Delete,
-                actionIconTint = Destructive,
-                onActionClick = {}
-            )
-            
-            // Simple header without action
-            ScreenHeader(
-                title = "جزئیات محصول",
-                onBackClick = {}
-            )
-            
-            // Header with more options
-            ScreenHeader(
-                title = "پروفایل",
-                onBackClick = {},
-                actionIcon = Icons.Default.MoreVert,
-                onActionClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ScreenHeaderNoBackPreview() {
-    VoxcinaTheme {
-        ScreenHeader(
-            title = "خانه",
-            onBackClick = {},
-            showBackButton = false,
-            actionIcon = Icons.Default.MoreVert,
-            onActionClick = {}
-        )
     }
 }

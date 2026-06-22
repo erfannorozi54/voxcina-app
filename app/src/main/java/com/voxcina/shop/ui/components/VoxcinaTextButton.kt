@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,32 +42,6 @@ fun VoxcinaTextButton(
                 color = if (enabled) Primary else Color(0xFF9CA3AF),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun VoxcinaTextButtonPreview() {
-    VoxcinaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            VoxcinaTextButton(
-                text = "ورود با کد تأیید",
-                onClick = {},
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            VoxcinaTextButton(
-                text = "فراموشی رمز عبور",
-                onClick = {},
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            VoxcinaTextButton(
-                text = "غیرفعال",
-                onClick = {},
-                enabled = false
             )
         }
     }

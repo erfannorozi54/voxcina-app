@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Destructive
@@ -209,76 +208,6 @@ private fun DeepBlueButton(
                         )
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun QuantitySelectorPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            QuantitySelector(
-                quantity = 1,
-                onQuantityChange = {}
-            )
-            
-            QuantitySelector(
-                quantity = 5,
-                onQuantityChange = {}
-            )
-            
-            QuantitySelector(
-                quantity = 99,
-                onQuantityChange = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun QuantitySelectorWithDeletePreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Shows delete button when quantity is 1
-            QuantitySelector(
-                quantity = 1,
-                onQuantityChange = {},
-                allowDelete = true,
-                onDelete = {}
-            )
-            
-            // Shows minus button when quantity > 1
-            QuantitySelector(
-                quantity = 2,
-                onQuantityChange = {},
-                allowDelete = true,
-                onDelete = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun QuantitySelectorLoadingPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            QuantitySelector(
-                quantity = 3,
-                onQuantityChange = {},
-                isLoading = true
-            )
         }
     }
 }

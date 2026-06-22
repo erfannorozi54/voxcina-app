@@ -36,7 +36,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.voxcina.shop.R
@@ -190,34 +189,5 @@ private fun GlassOverlayCard(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OnboardingImageCardPreview() {
-    VoxcinaTheme {
-        OnboardingImageCard(
-            imageResId = R.raw.onboarding_1,
-            overlayTitle = "کالکشن جدید",
-            overlaySubtitle = "تخفیف‌های ویژه فصل",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF1A3C69)
-@Composable
-private fun GlassOverlayCardPreview() {
-    VoxcinaTheme {
-        GlassOverlayCard(
-            title = "کالکشن جدید",
-            subtitle = "تخفیف‌های ویژه فصل",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-        )
     }
 }

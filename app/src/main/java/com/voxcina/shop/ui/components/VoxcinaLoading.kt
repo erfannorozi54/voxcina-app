@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -399,50 +398,6 @@ fun VoxcinaLoadingOverlay(
                     loadingText = loadingText
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun VoxcinaLoadingPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Secondary),
-            contentAlignment = Alignment.Center
-        ) {
-            VoxcinaLoading()
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun VoxcinaLoadingCompactPreview() {
-    VoxcinaTheme {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            VoxcinaLoadingCompact()
-            Text("Loading...", color = Primary)
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun VoxcinaLoadingOverlayPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Secondary)
-        ) {
-            VoxcinaLoadingOverlay()
         }
     }
 }

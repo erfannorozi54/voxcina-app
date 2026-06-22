@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.Primary
@@ -107,79 +106,6 @@ fun ProfileMenuItem(
                 thickness = 0.5.dp,
                 color = Color.LightGray.copy(alpha = 0.5f)
             )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-@Composable
-private fun ProfileMenuItemPreview() {
-    VoxcinaTheme {
-        Column {
-            ProfileMenuItem(
-                icon = Icons.Default.LocationOn,
-                label = "آدرس‌های من",
-                onClick = {},
-                showDivider = true
-            )
-            
-            ProfileMenuItem(
-                icon = Icons.Default.Favorite,
-                label = "علاقه‌مندی‌ها",
-                onClick = {},
-                showDivider = true
-            )
-            
-            ProfileMenuItem(
-                icon = Icons.Default.History,
-                label = "بازدیدهای اخیر",
-                onClick = {},
-                showDivider = false
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-@Composable
-private fun ProfileMenuItemSinglePreview() {
-    VoxcinaTheme {
-        ProfileMenuItem(
-            icon = Icons.Default.LocationOn,
-            label = "آدرس‌های من",
-            onClick = {},
-            showDivider = false
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, name = "RTL Layout")
-@Composable
-private fun ProfileMenuItemRtlPreview() {
-    VoxcinaTheme {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            Column {
-                ProfileMenuItem(
-                    icon = Icons.Default.LocationOn,
-                    label = "آدرس‌های من",
-                    onClick = {},
-                    showDivider = true
-                )
-                
-                ProfileMenuItem(
-                    icon = Icons.Default.Favorite,
-                    label = "علاقه‌مندی‌ها",
-                    onClick = {},
-                    showDivider = true
-                )
-                
-                ProfileMenuItem(
-                    icon = Icons.Default.History,
-                    label = "بازدیدهای اخیر",
-                    onClick = {},
-                    showDivider = false
-                )
-            }
         }
     }
 }

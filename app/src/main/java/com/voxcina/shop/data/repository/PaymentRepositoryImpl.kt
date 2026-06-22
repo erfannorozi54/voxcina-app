@@ -1,9 +1,7 @@
 package com.voxcina.shop.data.repository
 
 import com.voxcina.shop.data.remote.PaymentApi
-import com.voxcina.shop.data.remote.RetryPaymentDto
-import com.voxcina.shop.data.remote.dto.PaymentRequestDto
-import com.voxcina.shop.data.remote.dto.VerifyPaymentDto
+import com.voxcina.shop.data.remote.dto.*
 import com.voxcina.shop.domain.model.PaymentResponse
 import com.voxcina.shop.domain.model.VerifyPaymentResponse
 import com.voxcina.shop.domain.repository.PaymentRepository
@@ -15,7 +13,7 @@ import javax.inject.Singleton
 
 /**
  * Implementation of PaymentRepository.
- * Handles API calls to Zibal payment endpoints.
+ * Handles API calls to payment gateway endpoints.
  */
 @Singleton
 class PaymentRepositoryImpl @Inject constructor(
@@ -24,15 +22,11 @@ class PaymentRepositoryImpl @Inject constructor(
 
     override suspend fun requestPayment(
         orderId: String,
-        amount: Long,
-        description: String?,
-        mobile: String?
+        gateway: String
     ): Result<PaymentResponse> = safeApiCall {
         val request = PaymentRequestDto(
             orderId = orderId,
-            amount = amount,
-            description = description,
-            mobile = mobile
+            gateway = gateway
         )
         
         val response = paymentApi.requestPayment(request)
@@ -45,7 +39,8 @@ class PaymentRepositoryImpl @Inject constructor(
                         result = body.result,
                         message = body.message,
                         trackId = body.trackId,
-                        payUrl = body.payUrl
+                        payUrl = body.payUrl,
+                        gateway = body.gateway
                     )
                 )
             } else {
@@ -56,41 +51,42 @@ class PaymentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun verifyPayment(trackId: Long): Result<VerifyPaymentResponse> = safeApiCall {
-        val request = VerifyPaymentDto(trackId = trackId)
+    override suspend fun verifyPayment(
+        trackId: String,
+        gateway: String
+    ): Result<VerifyPaymentResponse> = safeApiCall {
+        val request = VerifyPaymentDto(trackId = trackId, gateway = gateway)
         
         val response = paymentApi.verifyPayment(request)
         
         if (response.isSuccessful) {
             val body = response.body()
-            if (body != null && body.result == 100) {
+            if (body != null) {
                 Result.Success(
                     VerifyPaymentResponse(
-                        result = body.result,
+                        success = body.success,
                         message = body.message,
-                        status = body.status,
                         amount = body.amount,
                         refNumber = body.refNumber,
-                        cardNumber = body.cardNumber,
-                        paidAt = body.paidAt,
-                        description = body.description,
+                        canRetry = body.canRetry,
                         orderId = body.orderId,
                         paymentStatus = body.paymentStatus,
-                        statusText = body.statusText,
-                        canRetry = body.canRetry,
-                        orderNumber = body.orderNumber
+                        statusText = body.statusText
                     )
                 )
             } else {
-                Result.Error(AppError.ServerError(response.code(), body?.message ?: "Verification failed"))
+                Result.Error(AppError.ServerError(response.code(), "Empty response body"))
             }
         } else {
             Result.Error(AppError.ServerError(response.code(), "Payment verification failed"))
         }
     }
 
-    override suspend fun retryPayment(orderId: String): Result<PaymentResponse> = safeApiCall {
-        val request = RetryPaymentDto(orderId = orderId)
+    override suspend fun retryPayment(
+        orderId: String,
+        gateway: String
+    ): Result<PaymentResponse> = safeApiCall {
+        val request = RetryPaymentRequestDto(orderId = orderId, gateway = gateway)
         
         val response = paymentApi.retryPayment(request)
         
@@ -102,7 +98,8 @@ class PaymentRepositoryImpl @Inject constructor(
                         result = body.result,
                         message = body.message,
                         trackId = body.trackId,
-                        payUrl = body.payUrl
+                        payUrl = body.payUrl,
+                        gateway = body.gateway
                     )
                 )
             } else {
@@ -110,6 +107,36 @@ class PaymentRepositoryImpl @Inject constructor(
             }
         } else {
             Result.Error(AppError.ServerError(response.code(), "Retry payment failed"))
+        }
+    }
+
+    override suspend fun inquiryPayment(
+        trackId: String,
+        gateway: String
+    ): Result<VerifyPaymentResponse> = safeApiCall {
+        val request = PaymentInquiryDto(trackId = trackId, gateway = gateway)
+        val response = paymentApi.inquiryPayment(request)
+        
+        if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) {
+                Result.Success(
+                    VerifyPaymentResponse(
+                        success = body.success,
+                        message = body.message,
+                        amount = body.amount,
+                        refNumber = body.refNumber,
+                        canRetry = body.canRetry,
+                        orderId = body.orderId,
+                        paymentStatus = body.paymentStatus,
+                        statusText = body.statusText
+                    )
+                )
+            } else {
+                Result.Error(AppError.ServerError(response.code(), "Empty response body"))
+            }
+        } else {
+            Result.Error(AppError.ServerError(response.code(), "Payment inquiry failed"))
         }
     }
 

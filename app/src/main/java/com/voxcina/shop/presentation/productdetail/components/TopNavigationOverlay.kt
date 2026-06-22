@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.components.GlassCard
@@ -232,78 +231,6 @@ private fun GlassNavigationButton(
                         .then(if (mirrorIcon) Modifier.scale(scaleX = -1f, scaleY = 1f) else Modifier)
                 )
             }
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF1A3C69)
-@Composable
-private fun TopNavigationOverlayPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            TopNavigationOverlay(
-                onBackClick = {},
-                onFavoriteClick = {},
-                onShareClick = {},
-                isFavorite = false,
-                isScrolled = false
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun TopNavigationOverlayScrolledPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            TopNavigationOverlay(
-                onBackClick = {},
-                onFavoriteClick = {},
-                onShareClick = {},
-                isFavorite = false,
-                isScrolled = true
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF1A3C69)
-@Composable
-private fun TopNavigationOverlayFavoritedPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            TopNavigationOverlay(
-                onBackClick = {},
-                onFavoriteClick = {},
-                onShareClick = {},
-                isFavorite = true,
-                isScrolled = false
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun TopNavigationOverlayFavoritedScrolledPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            TopNavigationOverlay(
-                onBackClick = {},
-                onFavoriteClick = {},
-                onShareClick = {},
-                isFavorite = true,
-                isScrolled = true
-            )
         }
     }
 }

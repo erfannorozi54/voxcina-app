@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.components.PriceText
@@ -129,50 +128,6 @@ private fun DiscountBadge(
                 text = "تخفیف",
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.White
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun PriceSectionWithDiscountPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            PriceSection(
-                currentPrice = 450000,
-                originalPrice = 550000
-            )
-            
-            PriceSection(
-                currentPrice = 1200000,
-                originalPrice = 1500000
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun PriceSectionNoDiscountPreview() {
-    VoxcinaTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // No discount
-            PriceSection(
-                currentPrice = 350000,
-                originalPrice = null
-            )
-            
-            // Same price (no discount shown)
-            PriceSection(
-                currentPrice = 500000,
-                originalPrice = 500000
             )
         }
     }

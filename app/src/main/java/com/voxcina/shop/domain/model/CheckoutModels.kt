@@ -26,8 +26,12 @@ enum class PaymentMethod(
     val displayName: String,
     val icon: ImageVector
 ) {
-    BANK_CARD(
-        displayName = "کارت بانکی",
+    ZIBAL(
+        displayName = "درگاه زیبال",
+        icon = Icons.Default.CreditCard
+    ),
+    DIGIPAY(
+        displayName = "درگاه دیجی‌پی",
         icon = Icons.Default.CreditCard
     ),
     WALLET(

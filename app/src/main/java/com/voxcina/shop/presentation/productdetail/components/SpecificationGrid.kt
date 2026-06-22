@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -154,36 +153,5 @@ private fun getLocalizedLabel(attributeName: String): String {
         "season" -> "فصل‌ها"
         "thickness" -> "ضخامت"
         else -> attributeName
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun SpecificationGridPreview() {
-    VoxcinaTheme {
-        SpecificationGrid(
-            attributes = listOf(
-                ProductAttribute(name = "material", value = "نخ‌پنبه"),
-                ProductAttribute(name = "care", value = "دارد"),
-                ProductAttribute(name = "fit", value = "استاندارد (Regular Fit)"),
-                ProductAttribute(name = "season", value = "تابستان، بهار"),
-                ProductAttribute(name = "thickness", value = "نازک")
-            ),
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun SpecificationGridFewItemsPreview() {
-    VoxcinaTheme {
-        SpecificationGrid(
-            attributes = listOf(
-                ProductAttribute(name = "material", value = "پنبه"),
-                ProductAttribute(name = "warranty", value = "۱ ساله")
-            ),
-            modifier = Modifier.padding(16.dp)
-        )
     }
 }

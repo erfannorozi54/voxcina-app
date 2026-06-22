@@ -16,7 +16,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.voxcina.shop.R
@@ -95,24 +94,6 @@ fun OnboardingPageContent(
             color = Color(0xFF64748B), // slate-500
             textAlign = TextAlign.Center,
             lineHeight = 22.sp
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFCFAF8)
-@Composable
-private fun OnboardingPageContentPreview() {
-    VoxcinaTheme {
-        OnboardingPageContent(
-            page = OnboardingPage(
-                imageResId = R.raw.onboarding_1,
-                overlayTitleResId = R.string.onboarding_page1_overlay_title,
-                overlaySubtitleResId = R.string.onboarding_page1_overlay_subtitle,
-                titleLine1ResId = R.string.onboarding_page1_title_line1,
-                titleLine2ResId = R.string.onboarding_page1_title_line2,
-                descriptionResId = R.string.onboarding_page1_description
-            ),
-            modifier = Modifier.padding(vertical = 16.dp)
         )
     }
 }

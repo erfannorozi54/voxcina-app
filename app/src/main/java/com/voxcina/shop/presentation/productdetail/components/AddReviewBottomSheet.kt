@@ -41,7 +41,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.components.VoxcinaPrimaryButton
@@ -241,44 +240,4 @@ private fun getRatingLabel(rating: Int): String = when (rating) {
     4 -> "خوب"
     5 -> "عالی"
     else -> "امتیاز خود را انتخاب کنید"
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun AddReviewBottomSheetPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(SecondaryLight)
-                .padding(24.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "ثبت نظر",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Primary
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                StarRatingSelector(
-                    rating = 4,
-                    onRatingChanged = {}
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "خوب",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            }
-        }
-    }
 }

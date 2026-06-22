@@ -12,7 +12,6 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.voxcina.shop.ui.theme.VoxcinaTheme
@@ -82,55 +81,5 @@ fun GlassCard(
             modifier = Modifier.matchParentSize(),
             content = content
         )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF1A3C69)
-@Composable
-private fun GlassCardPreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .background(Color(0xFF1A3C69))
-                .padding(16.dp)
-        ) {
-            GlassCard(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Box(modifier = Modifier.padding(16.dp)) {
-                    androidx.compose.material3.Text(
-                        text = "Glass Card Content",
-                        color = Color.White
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFF5733)
-@Composable
-private fun GlassCardOnImagePreview() {
-    VoxcinaTheme {
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .background(Color(0xFFFF5733))
-                .padding(16.dp)
-        ) {
-            GlassCard(
-                backgroundAlpha = 0.2f,
-                borderAlpha = 0.35f,
-                blurRadius = 18.dp
-            ) {
-                Box(modifier = Modifier.padding(16.dp)) {
-                    androidx.compose.material3.Text(
-                        text = "Overlay on Image",
-                        color = Color.White
-                    )
-                }
-            }
-        }
     }
 }
