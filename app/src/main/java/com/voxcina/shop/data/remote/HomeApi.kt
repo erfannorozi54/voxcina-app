@@ -20,7 +20,7 @@ interface HomeApi {
      */
     @GET("hero-images")
     suspend fun getHeroImages(
-        @Query("device") device: String = "mobile"
+        @Query("device") device: String = "desktop"
     ): Response<HeroImagesResponse>
 
     /**

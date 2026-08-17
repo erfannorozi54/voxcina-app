@@ -1,12 +1,12 @@
 package com.voxcina.shop.presentation.home.components
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.RawRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +41,8 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.voxcina.shop.R
 import com.voxcina.shop.domain.model.HeroImage
+import com.voxcina.shop.domain.model.defaultHeroContent
+import com.voxcina.shop.domain.model.normalized
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.VoxcinaTheme
 
@@ -69,16 +71,21 @@ val defaultLocalBanners = listOf(
  * Hero carousel component displaying promotional banners in a horizontally swipeable carousel.
  * Implements Requirements 2.2, 2.3, 2.4 from the home screen spec.
  *
+ * Renders the desktop hero variant: a 16:9 slide with the authored content
+ * (badge, headings, paragraphs, buttons) layered on the image.
+ *
  * @param heroImages List of hero images to display
  * @param modifier Modifier for the carousel container
  * @param onImageClick Callback when a hero image is clicked
+ * @param onLinkClick Callback with a button href when a hero CTA is clicked
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HeroCarousel(
     heroImages: List<HeroImage>,
     modifier: Modifier = Modifier,
-    onImageClick: (HeroImage) -> Unit = {}
+    onImageClick: (HeroImage) -> Unit = {},
+    onLinkClick: (String) -> Unit = {}
 ) {
     if (heroImages.isEmpty()) return
     
@@ -92,7 +99,7 @@ fun HeroCarousel(
             modifier = modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Hero image pager with 2:1 aspect ratio
+            // Hero image pager with 16:9 aspect ratio (desktop variant)
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
@@ -101,7 +108,8 @@ fun HeroCarousel(
             ) { page ->
                 HeroImageCard(
                     heroImage = heroImages[page],
-                    onClick = { onImageClick(heroImages[page]) }
+                    onClick = { onImageClick(heroImages[page]) },
+                    onLinkClick = onLinkClick
                 )
             }
             
@@ -117,17 +125,19 @@ fun HeroCarousel(
 }
 
 /**
- * Individual hero image card with gradient overlay for text readability.
- * Implements Requirements 2.3, 2.4 from the home screen spec.
+ * Individual hero image card rendering the desktop hero slide.
+ * Shows the image, authored background/overlay gradients and the text content.
  *
  * @param heroImage The hero image data to display
  * @param onClick Callback when the card is clicked
+ * @param onLinkClick Callback with a button href when a hero CTA is clicked
  * @param modifier Modifier for the card
  */
 @Composable
 private fun HeroImageCard(
     heroImage: HeroImage,
     onClick: () -> Unit,
+    onLinkClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -136,41 +146,99 @@ private fun HeroImageCard(
     } else {
         "https://voxcina.com${heroImage.imageUrl}"
     }
-    
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(2f) // 2:1 aspect ratio as per requirements
-            .clip(RoundedCornerShape(16.dp))
+
+    val hasAuthoredContent = heroImage.content != null
+    val content = heroImage.content?.normalized() ?: defaultHeroContent()
+
+    BoxWithConstraints(
+        modifier = modifier.fillMaxWidth()
     ) {
-        // Hero image using Coil with crossfade
-        AsyncImage(
-            model = ImageRequest.Builder(context)
-                .data(imageUrl)
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-        
-        // Gradient overlay for text readability (unless noGradient is true)
-        if (!heroImage.noGradient) {
+        // Phones get a taller hero so all authored content stays visible;
+        // wide screens keep the 16:9 desktop aspect-video ratio.
+        val aspect = if (maxWidth < 480.dp) 0.8f else 16f / 9f
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(aspect)
+                .clip(RoundedCornerShape(16.dp))
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(Color(0xFF111827), Color(0xFF1E3A8A), Color(0xFF111827))
+                    )
+                )
+                .clickable(onClick = onClick)
+        ) {
+            // Authored section background gradient behind the image
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.3f),
-                                Color.Black.copy(alpha = 0.6f)
-                            ),
-                            startY = 0f,
-                            endY = Float.POSITIVE_INFINITY
+                        brush = heroGradientBrush(
+                            from = content.background.from,
+                            via = content.background.via,
+                            to = content.background.to,
+                            direction = content.background.direction
                         )
                     )
+            ) {
+                // Hero image using Coil with crossfade
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    alpha = if (hasAuthoredContent) content.imageOpacity / 100f else 0.3f
+                )
+
+                // Authored overlay gradient, or the legacy bottom-dark gradient
+                if (hasAuthoredContent) {
+                    if (content.overlay.enabled) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    brush = heroGradientBrush(
+                                        from = content.overlay.from,
+                                        via = content.overlay.via,
+                                        to = content.overlay.to,
+                                        direction = content.overlay.direction
+                                    ),
+                                    alpha = content.overlay.opacity / 100f
+                                )
+                        )
+                    }
+                } else if (!heroImage.noGradient) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.Transparent,
+                                        Color.Transparent,
+                                        Color.Black.copy(alpha = 0.3f),
+                                        Color.Black.copy(alpha = 0.6f)
+                                    ),
+                                    startY = 0f,
+                                    endY = Float.POSITIVE_INFINITY
+                                )
+                            )
+                    )
+                }
+            }
+
+            if (content.showDecorations) {
+                HeroDecorations()
+            }
+
+            // Authored text content (badge, headings, paragraphs, buttons)
+            HeroContentOverlay(
+                content = content,
+                onLinkClick = onLinkClick
             )
         }
     }

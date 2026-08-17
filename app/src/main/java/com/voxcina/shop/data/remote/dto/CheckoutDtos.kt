@@ -12,11 +12,20 @@ import com.voxcina.shop.domain.model.ShippingAddress
 /**
  * Request DTO for creating an order (checkout).
  * POST /api/checkout
+ *
+ * The backend recomputes the discount from the promoCode and validates
+ * totalAmount against `subtotal + shippingCost - discountAmount`
+ * (see handlers/orders.go), so shippingCost must be sent and totalAmount
+ * must be computed with the same formula (no tax — the backend stores 0).
  */
 data class CreateOrderRequestDto(
     @SerializedName("items") val items: List<OrderItemRequestDto>,
     @SerializedName("totalAmount") val totalAmount: Long,
-    @SerializedName("shippingAddress") val shippingAddress: ShippingAddressRequestDto
+    @SerializedName("shippingCost") val shippingCost: Long,
+    @SerializedName("taxAmount") val taxAmount: Long = 0,
+    @SerializedName("discountAmount") val discountAmount: Long = 0,
+    @SerializedName("shippingAddress") val shippingAddress: ShippingAddressRequestDto,
+    @SerializedName("promoCode") val promoCode: String? = null
 )
 
 /**

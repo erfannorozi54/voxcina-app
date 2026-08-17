@@ -100,6 +100,7 @@ dependencies {
     // Image Loading
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
+    implementation(libs.coil.svg)
     
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)

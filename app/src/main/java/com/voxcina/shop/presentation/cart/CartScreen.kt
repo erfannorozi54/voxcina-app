@@ -24,7 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.AlertDialog
@@ -60,6 +60,7 @@ import com.voxcina.shop.domain.model.CartSummary
 import com.voxcina.shop.domain.model.CartVariant
 import com.voxcina.shop.domain.model.Discount
 import com.voxcina.shop.domain.model.DiscountType
+import com.voxcina.shop.domain.model.discountAmountFor
 import com.voxcina.shop.presentation.cart.components.CartItemCard
 import com.voxcina.shop.presentation.cart.components.DiscountCodeInput
 import com.voxcina.shop.presentation.cart.components.OrderSummary
@@ -313,7 +314,7 @@ private fun CartSuccessContent(
     getDiscountPercentage: (Discount) -> Int?
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
-    var showRemoveItemDialog by remember { mutableStateOf<CartItem?>(null) }
+    var removeCandidate by remember { mutableStateOf<RemoveCandidate?>(null) }
     
     // Get applied discount once to avoid smart cast issues
     val appliedDiscount = state.appliedDiscount
@@ -321,13 +322,10 @@ private fun CartSuccessContent(
     // Calculate adjusted summary with applied discount
     val adjustedSummary = remember(state.cart.summary, appliedDiscount) {
         if (appliedDiscount != null) {
-            val discountAmount = calculateDiscountAmount(
-                appliedDiscount,
-                state.cart.summary.subtotal
-            )
+            val discountAmount = state.cart.discountAmountFor(appliedDiscount)
             state.cart.summary.copy(
                 discount = discountAmount,
-                total = state.cart.summary.subtotal + state.cart.summary.shipping + 
+                total = state.cart.summary.subtotal + state.cart.summary.shipping +
                         state.cart.summary.tax - discountAmount
             )
         } else {
@@ -363,7 +361,10 @@ private fun CartSuccessContent(
                         isUpdating = state.isItemUpdating(item.product.id, item.variant.sku),
                         onQuantityChange = { newQuantity ->
                             if (newQuantity <= 0) {
-                                showRemoveItemDialog = item
+                                removeCandidate = RemoveCandidate(
+                                    item = item,
+                                    willInvalidateVoucher = state.willRemovalInvalidateVoucher(item)
+                                )
                             } else {
                                 onEvent(
                                     CartEvent.UpdateQuantity(
@@ -374,7 +375,12 @@ private fun CartSuccessContent(
                                 )
                             }
                         },
-                        onRemove = { showRemoveItemDialog = item },
+                        onRemove = {
+                            removeCandidate = RemoveCandidate(
+                                item = item,
+                                willInvalidateVoucher = state.willRemovalInvalidateVoucher(item)
+                            )
+                        },
                         onSaveForLater = {
                             onEvent(
                                 CartEvent.SaveForLater(
@@ -397,7 +403,8 @@ private fun CartSuccessContent(
                         },
                         onCodeChange = onDiscountCodeChange,
                         onSubmit = { onEvent(CartEvent.ApplyDiscount(discountCode)) },
-                        state = state.discountState.toComponentState()
+                        state = state.discountState.toComponentState(),
+                        onRemove = { onEvent(CartEvent.RemoveDiscount) }
                     )
                 }
                 
@@ -415,23 +422,36 @@ private fun CartSuccessContent(
         }
     }
     
-    // Remove item confirmation dialog (outside Box for proper overlay)
-    showRemoveItemDialog?.let { item ->
+    // Remove item confirmation dialog (outside Box for proper overlay).
+    // Shows the voucher-deactivation warning when removing the item would
+    // invalidate the applied discount (mirrors the web ConfirmRemoveModal).
+    removeCandidate?.let { candidate ->
         RemoveItemDialog(
-            productName = item.product.name,
+            productName = candidate.item.product.name,
+            willInvalidateVoucher = candidate.willInvalidateVoucher,
+            voucherCode = state.appliedDiscount?.code,
             onConfirm = {
                 onEvent(
                     CartEvent.RemoveItem(
-                        productId = item.product.id,
-                        variantSku = item.variant.sku
+                        productId = candidate.item.product.id,
+                        variantSku = candidate.item.variant.sku
                     )
                 )
-                showRemoveItemDialog = null
+                removeCandidate = null
             },
-            onDismiss = { showRemoveItemDialog = null }
+            onDismiss = { removeCandidate = null }
         )
     }
 }
+
+/**
+ * Holder for the item pending removal and whether removing it would
+ * invalidate the applied voucher.
+ */
+private data class RemoveCandidate(
+    val item: CartItem,
+    val willInvalidateVoucher: Boolean
+)
 
 /**
  * Animated cart item with fade-in and slide-up effect on load.
@@ -527,7 +547,7 @@ private fun CheckoutButtonContainer(
         GradientButton(
             text = "ادامه فرآیند خرید",
             onClick = onCheckout,
-            icon = Icons.AutoMirrored.Filled.ArrowBack,
+            icon = Icons.Filled.ArrowBack,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
@@ -585,34 +605,50 @@ private fun ClearCartDialog(
 
 /**
  * Remove item confirmation dialog.
+ * When [willInvalidateVoucher] is true, warns the user that the applied
+ * voucher will be deactivated alongside the removal — mirroring the web
+ * front-end's ConfirmRemoveModal (amber warning variant).
+ *
  * Requirements: 3.4
  */
 @Composable
 private fun RemoveItemDialog(
     productName: String,
+    willInvalidateVoucher: Boolean,
+    voucherCode: String?,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val amber = Color(0xFFD97706)
+    val amberContainer = Color(0xFFFEF3C7)
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "حذف محصول",
+                text = if (willInvalidateVoucher) "حذف محصول و غیرفعال‌سازی تخفیف" else "حذف محصول",
                 fontWeight = FontWeight.Bold,
-                color = Primary
+                color = if (willInvalidateVoucher) amber else Primary
             )
         },
         text = {
-            Text(
-                text = "آیا می‌خواهید «$productName» را از سبد خرید حذف کنید؟",
-                color = Primary
-            )
+            if (willInvalidateVoucher && voucherCode != null) {
+                Text(
+                    text = "با حذف «$productName»، کد تخفیف $voucherCode غیرفعال خواهد شد. آیا مطمئن هستید؟",
+                    color = Primary
+                )
+            } else {
+                Text(
+                    text = "آیا می‌خواهید «$productName» را از سبد خرید حذف کنید؟",
+                    color = Primary
+                )
+            }
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
                 Text(
                     text = "بله، حذف شود",
-                    color = Destructive,
+                    color = if (willInvalidateVoucher) amber else Destructive,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -625,7 +661,7 @@ private fun RemoveItemDialog(
                 )
             }
         },
-        containerColor = Color.White,
+        containerColor = if (willInvalidateVoucher) amberContainer else Color.White,
         shape = RoundedCornerShape(16.dp)
     )
 }

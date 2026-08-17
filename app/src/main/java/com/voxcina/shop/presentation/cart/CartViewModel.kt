@@ -7,6 +7,10 @@ import com.voxcina.shop.domain.model.CartItem
 import com.voxcina.shop.domain.model.CartVariant
 import com.voxcina.shop.domain.model.Discount
 import com.voxcina.shop.domain.model.DiscountType
+import com.voxcina.shop.domain.model.VoucherSource
+import com.voxcina.shop.domain.model.colorsOverlap
+import com.voxcina.shop.domain.model.discountAmountFor
+import com.voxcina.shop.domain.model.willVoucherSurviveRemovalOf
 import com.voxcina.shop.domain.repository.CartRepository
 import com.voxcina.shop.util.AppError
 import com.voxcina.shop.util.CartError
@@ -74,6 +78,10 @@ class CartViewModel @Inject constructor(
      */
     fun loadCart() {
         viewModelScope.launch {
+            // Preserve the applied voucher across reloads (e.g. pull-to-refresh)
+            // so it is not silently dropped from the UI while the backend still
+            // counts it as active.
+            val previousDiscount = (uiState.value as? CartUiState.Success)?.appliedDiscount
             _uiState.value = CartUiState.Loading
 
             when (val result = cartRepository.getCart()) {
@@ -82,7 +90,14 @@ class CartViewModel @Inject constructor(
                     if (cart.items.isEmpty()) {
                         _uiState.value = CartUiState.Empty()
                     } else {
-                        _uiState.value = CartUiState.Success(cart = cart)
+                        _uiState.value = CartUiState.Success(
+                            cart = cart,
+                            discountState = if (previousDiscount != null) {
+                                DiscountState.Applied(previousDiscount)
+                            } else {
+                                DiscountState.Idle
+                            }
+                        )
                     }
                 }
                 is Result.Error -> {
@@ -146,6 +161,10 @@ class CartViewModel @Inject constructor(
                                 )
                             } else CartUiState.Success(cart = cart)
                         }
+                        // Re-validate an applied admin voucher's minimum order
+                        // after a quantity change; drop + deactivate it if the
+                        // subtotal no longer qualifies.
+                        revalidateAppliedVoucher(cart)
                     }
                 }
                 is Result.Error -> {
@@ -161,7 +180,59 @@ class CartViewModel @Inject constructor(
     }
 
     /**
+     * Re-validates the applied voucher against the (possibly changed) cart.
+     * Admin codes are dropped and deactivated when the subtotal falls below
+     * minOrderAmount. Negotiated / cart-recovery coupons are re-checked
+     * against their required products.
+     */
+    private fun revalidateAppliedVoucher(cart: Cart) {
+        val currentState = _uiState.value as? CartUiState.Success ?: return
+        val discount = currentState.appliedDiscount ?: return
+
+        val stillValid = when (discount.source) {
+            VoucherSource.ADMIN ->
+                cart.summary.subtotal >= discount.minOrderAmount
+            else -> {
+                // Every required product must still be present in the cart.
+                if (discount.requiredColors.isNotEmpty()) {
+                    discount.requiredColors.all { required ->
+                        cart.items.any { item ->
+                            item.product.id == required.productId &&
+                                (required.color.isNullOrBlank() && required.colorName.isNullOrBlank() ||
+                                    colorsOverlap(
+                                        required.color, required.colorName,
+                                        item.variant.color, item.variant.colorName
+                                    ))
+                        }
+                    }
+                } else if (discount.productIds.isNotEmpty()) {
+                    discount.productIds.all { pid -> cart.items.any { it.product.id == pid } }
+                } else {
+                    true
+                }
+            }
+        }
+
+        if (!stillValid) {
+            viewModelScope.launch {
+                cartRepository.deactivateVoucher(discount.code)
+            }
+            _uiState.update { state ->
+                if (state is CartUiState.Success) {
+                    state.copy(discountState = DiscountState.Idle)
+                } else state
+            }
+            AppliedVoucherTransfer.clear()
+        }
+    }
+
+    /**
      * Removes an item from the cart.
+     * If the applied voucher would no longer be valid after this removal
+     * (e.g. the item was required by a negotiated coupon, or the remaining
+     * subtotal drops below the code's minimum), the voucher is deactivated
+     * on the backend first — mirroring the web front-end's
+     * ConfirmRemoveModal flow.
      *
      * Requirements: 3.4
      */
@@ -171,6 +242,11 @@ class CartViewModel @Inject constructor(
 
         // Find the item to remove
         val item = findCartItem(currentState.cart, productId, variantSku) ?: return
+        val appliedDiscount = currentState.appliedDiscount
+
+        // Removing this item invalidates the applied voucher
+        val willInvalidateVoucher = appliedDiscount != null &&
+            !currentState.cart.willVoucherSurviveRemovalOf(appliedDiscount, item)
 
         // Set updating state
         _uiState.update { state ->
@@ -183,6 +259,12 @@ class CartViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            if (willInvalidateVoucher) {
+                // Deactivate the voucher first (fire-and-forget semantics
+                // matching the web front-end removePromoCode call).
+                cartRepository.deactivateVoucher(appliedDiscount.code)
+            }
+
             val result = cartRepository.removeItem(
                 productId = productId,
                 variant = item.variant
@@ -199,7 +281,12 @@ class CartViewModel @Inject constructor(
                                 state.copy(
                                     cart = cart,
                                     isUpdating = false,
-                                    updatingItemId = null
+                                    updatingItemId = null,
+                                    discountState = if (willInvalidateVoucher) {
+                                        DiscountState.Idle
+                                    } else {
+                                        state.discountState
+                                    }
                                 )
                             } else CartUiState.Success(cart = cart)
                         }
@@ -208,8 +295,22 @@ class CartViewModel @Inject constructor(
                 is Result.Error -> {
                     _uiState.update { state ->
                         if (state is CartUiState.Success) {
-                            state.copy(isUpdating = false, updatingItemId = null)
+                            state.copy(
+                                isUpdating = false,
+                                updatingItemId = null,
+                                // The voucher was already deactivated above;
+                                // keep the UI consistent even if the removal
+                                // itself failed.
+                                discountState = if (willInvalidateVoucher) {
+                                    DiscountState.Idle
+                                } else {
+                                    state.discountState
+                                }
+                            )
                         } else state
+                    }
+                    if (willInvalidateVoucher) {
+                        AppliedVoucherTransfer.clear()
                     }
                     _snackbarMessage.emit(mapErrorToMessage(result.error))
                 }
@@ -219,12 +320,16 @@ class CartViewModel @Inject constructor(
 
     /**
      * Clears all items from the cart.
+     * Deactivates the applied voucher first so its usage counter is not left
+     * hanging (a negotiated coupon would otherwise stay marked as used and
+     * could never be re-applied).
      *
      * Requirements: 1.5
      */
     fun clearCart() {
         val currentState = _uiState.value
         if (currentState !is CartUiState.Success) return
+        val appliedDiscount = currentState.appliedDiscount
 
         _uiState.update { state ->
             if (state is CartUiState.Success) {
@@ -233,8 +338,13 @@ class CartViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            if (appliedDiscount != null) {
+                cartRepository.deactivateVoucher(appliedDiscount.code)
+            }
+
             when (val result = cartRepository.clearCart()) {
                 is Result.Success -> {
+                    AppliedVoucherTransfer.clear()
                     _uiState.value = CartUiState.Empty()
                 }
                 is Result.Error -> {
@@ -250,8 +360,10 @@ class CartViewModel @Inject constructor(
     }
 
     /**
-     * Applies a discount code to the cart.
-     * Validates the code and checks minimum order requirements.
+     * Applies a discount code / voucher to the cart.
+     * Validates the code against the backend (admin code or negotiated /
+     * cart-recovery coupon) and checks minimum order requirements.
+     * After a successful apply, the voucher is marked as used on the backend.
      *
      * Requirements: 5.2, 5.3, 5.6
      */
@@ -271,13 +383,16 @@ class CartViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            when (val result = cartRepository.validateDiscountCode(trimmedCode)) {
+            val cart = (uiState.value as? CartUiState.Success)?.cart ?: return@launch
+
+            when (val result = cartRepository.applyVoucher(trimmedCode, cart)) {
                 is Result.Success -> {
                     val discount = result.data
-                    val cart = (uiState.value as? CartUiState.Success)?.cart ?: return@launch
+                    val updatedCart = (uiState.value as? CartUiState.Success)?.cart ?: cart
 
-                    // Check minimum order amount
-                    if (cart.summary.subtotal < discount.minOrderAmount) {
+                    // Check minimum order amount (admin codes only; negotiated
+                    // and cart-recovery coupons are validated server-side)
+                    if (updatedCart.summary.subtotal < discount.minOrderAmount) {
                         _uiState.update { state ->
                             if (state is CartUiState.Success) {
                                 state.copy(
@@ -296,6 +411,16 @@ class CartViewModel @Inject constructor(
                             state.copy(discountState = DiscountState.Applied(discount))
                         } else state
                     }
+                    // Hand the voucher to the checkout screen so the user
+                    // doesn't have to re-apply it there.
+                    AppliedVoucherTransfer.set(discount)
+
+                    // Mark the voucher as used on the backend (fire-and-forget,
+                    // mirroring the web front-end /discounts/activate call).
+                    // The backend guards the increment against the usage cap
+                    // and treats `used` as "applied to cart", so activation is
+                    // safe for every voucher type.
+                    cartRepository.activateVoucher(discount.code)
                 }
                 is Result.Error -> {
                     _uiState.update { state ->
@@ -311,13 +436,22 @@ class CartViewModel @Inject constructor(
     }
 
     /**
-     * Removes the applied discount.
+     * Removes the applied discount and deactivates the voucher on the backend.
      */
     fun removeDiscount() {
+        val appliedDiscount = (uiState.value as? CartUiState.Success)?.appliedDiscount
+
         _uiState.update { state ->
             if (state is CartUiState.Success) {
                 state.copy(discountState = DiscountState.Idle)
             } else state
+        }
+        AppliedVoucherTransfer.clear()
+
+        if (appliedDiscount != null) {
+            viewModelScope.launch {
+                cartRepository.deactivateVoucher(appliedDiscount.code)
+            }
         }
     }
 
@@ -338,12 +472,16 @@ class CartViewModel @Inject constructor(
 
     /**
      * Calculates the discount amount based on discount type.
+     * Negotiated/cart-recovery vouchers discount only their required-products
+     * base (Cart.discountAmountFor), matching the backend's calculation.
      */
     fun calculateDiscountAmount(discount: Discount, subtotal: Long): Long {
-        return when (discount.type) {
-            DiscountType.PERCENTAGE -> (subtotal * discount.value) / 100
-            DiscountType.FIXED -> discount.value.toLong()
-        }
+        val cart = (uiState.value as? CartUiState.Success)?.cart
+            ?: return when (discount.type) {
+                DiscountType.PERCENTAGE -> (subtotal * discount.value) / 100
+                DiscountType.FIXED -> discount.value.toLong()
+            }
+        return cart.discountAmountFor(discount)
     }
 
     /**

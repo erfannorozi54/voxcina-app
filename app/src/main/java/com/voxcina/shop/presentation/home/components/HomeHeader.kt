@@ -57,7 +57,7 @@ fun HomeHeader(
             modifier = modifier
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -65,7 +65,7 @@ fun HomeHeader(
                 // Avatar
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(40.dp)
                         .clip(CircleShape)
                         .background(
                             Brush.linearGradient(
@@ -75,38 +75,38 @@ fun HomeHeader(
                                 )
                             )
                         )
-                        .border(1.5.dp, Primary.copy(alpha = 0.2f), CircleShape),
+                        .border(1.dp, Primary.copy(alpha = 0.2f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = userName?.firstOrNull()?.toString() ?: "ک",
                         color = Primary,
-                        fontSize = 18.sp,
+                        fontSize = 15.sp,
                         fontFamily = VazirMatnFamily,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(10.dp))
                 
                 Column {
                     Text(
                         text = stringResource(R.string.home_welcome),
                         color = Color.Gray,
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         fontFamily = VazirMatnFamily
                     )
                     Text(
                         text = userName ?: stringResource(R.string.home_user_greeting),
                         color = PrimaryDark,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontFamily = VazirMatnFamily,
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
             
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 GlassActionButton(
                     icon = Icons.Outlined.Notifications,
                     contentDescription = stringResource(R.string.home_notifications),
@@ -134,24 +134,24 @@ private fun GlassActionButton(
 ) {
     Box(
         modifier = Modifier
-            .size(42.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .size(36.dp)
+            .clip(RoundedCornerShape(10.dp))
             .background(Color.White.copy(alpha = 0.8f))
-            .border(1.dp, Color.Gray.copy(alpha = 0.12f), RoundedCornerShape(12.dp)),
+            .border(1.dp, Color.Gray.copy(alpha = 0.12f), RoundedCornerShape(10.dp)),
         contentAlignment = Alignment.Center
     ) {
-        IconButton(onClick = onClick, modifier = Modifier.size(42.dp)) {
+        IconButton(onClick = onClick, modifier = Modifier.size(36.dp)) {
             BadgedBox(
                 badge = {
                     when {
                         badgeCount > 0 -> Badge(containerColor = Destructive, contentColor = Color.White) {
-                            Text(if (badgeCount > 99) "۹۹+" else badgeCount.toString(), fontSize = 9.sp, fontFamily = VazirMatnFamily)
+                            Text(if (badgeCount > 99) "۹۹+" else badgeCount.toString(), fontSize = 8.sp, fontFamily = VazirMatnFamily)
                         }
-                        showDot -> Badge(containerColor = Destructive, modifier = Modifier.size(8.dp))
+                        showDot -> Badge(containerColor = Destructive, modifier = Modifier.size(7.dp))
                     }
                 }
             ) {
-                Icon(icon, contentDescription, tint = PrimaryDark, modifier = Modifier.size(22.dp))
+                Icon(icon, contentDescription, tint = PrimaryDark, modifier = Modifier.size(20.dp))
             }
         }
     }

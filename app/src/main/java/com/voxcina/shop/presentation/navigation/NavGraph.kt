@@ -259,6 +259,17 @@ fun NavGraph(
                 onViewAllRecentlyViewed = {
                     navController.navigate(Screen.RecentlyViewed.route)
                 },
+                onHeroLinkClick = { href ->
+                    // Hero CTA buttons link to web routes; map them to the
+                    // closest in-app destination.
+                    when {
+                        href.startsWith("/products") -> navController.navigate(Screen.Products.route)
+                        href.startsWith("/categories/") ||
+                            href.startsWith("/category/") ||
+                            href.startsWith("/collection/") -> navController.navigate(Screen.Products.route)
+                        else -> { /* unknown href — ignore */ }
+                    }
+                },
                 onSearchClick = {
                     navController.navigate(Screen.Search.route)
                 },

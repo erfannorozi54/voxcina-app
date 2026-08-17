@@ -161,12 +161,12 @@ private fun BottomNavItem(
                 indication = ripple(bounded = true, radius = 40.dp),
                 onClick = onClick
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp, vertical = 4.dp)
             .semantics {
                 contentDescription = destination.contentDescription
             },
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         // Icon with optional badge - use BadgeIcon for cart
         when {
@@ -176,7 +176,7 @@ private fun BottomNavItem(
                     icon = icon,
                     contentDescription = null,
                     badgeCount = if (badgeCount > 0) badgeCount else null,
-                    iconSize = 24.dp,
+                    iconSize = 20.dp,
                     iconTint = animatedColor,
                     badgeColor = Destructive,
                     badgeTextColor = Color.White,
@@ -197,7 +197,7 @@ private fun BottomNavItem(
                     imageVector = icon,
                     contentDescription = null,
                     tint = animatedColor,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -206,7 +206,7 @@ private fun BottomNavItem(
         Text(
             text = destination.label,
             color = animatedColor,
-            fontSize = 11.sp,
+            fontSize = 10.sp,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
         )
         
@@ -214,7 +214,7 @@ private fun BottomNavItem(
         if (isSelected) {
             Box(
                 modifier = Modifier
-                    .size(4.dp)
+                    .size(3.dp)
                     .background(Primary, CircleShape)
             )
         }
@@ -237,18 +237,18 @@ private fun ProductsIcon(
 ) {
     // Using a simple grid layout to represent products
     Box(
-        modifier = Modifier.size(24.dp),
+        modifier = Modifier.size(20.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(3.dp)
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             androidx.compose.foundation.layout.Row(
-                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Box(
                     modifier = Modifier
-                        .size(9.dp)
+                        .size(8.dp)
                         .background(
                             color = tint,
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(2.dp)
@@ -256,7 +256,7 @@ private fun ProductsIcon(
                 )
                 Box(
                     modifier = Modifier
-                        .size(9.dp)
+                        .size(8.dp)
                         .background(
                             color = tint,
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(2.dp)
@@ -264,11 +264,11 @@ private fun ProductsIcon(
                 )
             }
             androidx.compose.foundation.layout.Row(
-                horizontalArrangement = Arrangement.spacedBy(3.dp)
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Box(
                     modifier = Modifier
-                        .size(9.dp)
+                        .size(8.dp)
                         .background(
                             color = tint,
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(2.dp)
@@ -276,7 +276,7 @@ private fun ProductsIcon(
                 )
                 Box(
                     modifier = Modifier
-                        .size(9.dp)
+                        .size(8.dp)
                         .background(
                             color = tint,
                             shape = androidx.compose.foundation.shape.RoundedCornerShape(2.dp)

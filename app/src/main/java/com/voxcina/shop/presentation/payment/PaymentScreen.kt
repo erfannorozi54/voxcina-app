@@ -1,7 +1,7 @@
 package com.voxcina.shop.presentation.payment
 
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.voxcina.shop.presentation.checkout.CheckoutNavigationEvent
 import com.voxcina.shop.ui.components.SoftShadowCard
 import com.voxcina.shop.ui.theme.Primary
 import com.voxcina.shop.ui.theme.Success
@@ -65,7 +64,7 @@ fun PaymentScreen(
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 is PaymentNavigationEvent.RedirectToPayment -> {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.payUrl))
+                    val intent = Intent(Intent.ACTION_VIEW, event.payUrl.toUri())
                     context.startActivity(intent)
                 }
                 is PaymentNavigationEvent.PaymentSuccess -> onPaymentSuccess()
@@ -79,10 +78,10 @@ fun PaymentScreen(
     LaunchedEffect(Unit) {
         val uri = (context as? android.app.Activity)?.intent?.data
         if (uri != null) {
-            val trackId = uri.getQueryParameter("trackId")?.toLongOrNull()
+            val orderId = uri.getQueryParameter("orderId")
             val success = uri.getQueryParameter("success")
-            if (trackId != null) {
-                viewModel.verifyPayment(trackId)
+            if (!orderId.isNullOrEmpty() && success != null) {
+                viewModel.verifyPaymentByOrderId(orderId, success == "1")
             }
         }
     }
@@ -99,7 +98,7 @@ fun PaymentScreen(
                     IdleState(
                         amount = amount,
                         onInitiatePayment = {
-                            viewModel.requestPayment(orderId, amount, mobile)
+                            viewModel.requestPayment(orderId)
                         }
                     )
                 }
@@ -121,7 +120,7 @@ fun PaymentScreen(
                 is PaymentUiState.Error -> {
                     ErrorState(
                         message = (uiState as PaymentUiState.Error).message,
-                        onRetry = { viewModel.requestPayment(orderId, amount, mobile) },
+                        onRetry = { viewModel.requestPayment(orderId) },
                         onBack = onNavigateBack
                     )
                 }

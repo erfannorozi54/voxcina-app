@@ -288,7 +288,7 @@ fun CheckoutScreenContent(
                             shippingCost = uiState.shippingCost,
                             tax = uiState.cart.summary.tax,
                             discount = uiState.appliedDiscount?.let { 
-                                calculateDiscountAmount(it, uiState.cart.summary.subtotal) 
+                                uiState.calculateDiscountAmount(it) 
                             } ?: 0L,
                             totalAmount = uiState.totalAmount,
                             onCollapseClick = { isOrderDetailsExpanded = false },
@@ -329,24 +329,6 @@ fun CheckoutScreenContent(
         }
     }
 }
-
-/**
- * Helper function to calculate discount amount.
- */
-private fun calculateDiscountAmount(
-    discount: com.voxcina.shop.domain.model.Discount,
-    subtotal: Long
-): Long {
-    return when (discount.type) {
-        com.voxcina.shop.domain.model.DiscountType.PERCENTAGE -> {
-            (subtotal * discount.value / 100).coerceAtMost(subtotal)
-        }
-        com.voxcina.shop.domain.model.DiscountType.FIXED -> {
-            discount.value.toLong().coerceAtMost(subtotal)
-        }
-    }
-}
-
 
 /**
  * Success content with checkout sections: address, delivery, payment, discount.
@@ -493,7 +475,8 @@ private fun CheckoutSuccessContent(
                     onEvent(CheckoutEvent.UpdateDiscountCode(code))
                 },
                 onSubmit = { onEvent(CheckoutEvent.ApplyDiscount(discountCode)) },
-                state = state.discountState.toComponentState()
+                state = state.discountState.toComponentState(),
+                onRemove = { onEvent(CheckoutEvent.RemoveDiscount) }
             )
         }
 

@@ -1,7 +1,9 @@
 package com.voxcina.shop.presentation.cart
 
 import com.voxcina.shop.domain.model.Cart
+import com.voxcina.shop.domain.model.CartItem
 import com.voxcina.shop.domain.model.Discount
+import com.voxcina.shop.domain.model.willVoucherSurviveRemovalOf
 
 /**
  * Sealed class representing all possible UI states for the cart screen.
@@ -48,6 +50,16 @@ sealed class CartUiState {
          */
         val appliedDiscount: Discount?
             get() = (discountState as? DiscountState.Applied)?.discount
+
+        /**
+         * Returns true if removing [item] would invalidate the applied voucher.
+         * Used by the UI to show the voucher-deactivation warning dialog,
+         * mirroring the web front-end's ConfirmRemoveModal.
+         */
+        fun willRemovalInvalidateVoucher(item: com.voxcina.shop.domain.model.CartItem): Boolean {
+            val discount = appliedDiscount ?: return false
+            return !cart.willVoucherSurviveRemovalOf(discount, item)
+        }
     }
 
     /**

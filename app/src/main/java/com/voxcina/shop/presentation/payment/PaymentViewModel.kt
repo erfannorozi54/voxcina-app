@@ -26,15 +26,13 @@ class PaymentViewModel @Inject constructor(
     private val _navigationEvent = MutableSharedFlow<PaymentNavigationEvent>()
     val navigationEvent: SharedFlow<PaymentNavigationEvent> = _navigationEvent.asSharedFlow()
 
-    fun requestPayment(orderId: String, amount: Long, mobile: String? = null) {
+    fun requestPayment(orderId: String) {
         viewModelScope.launch {
             _uiState.update { PaymentUiState.Loading }
 
             val result = paymentRepository.requestPayment(
                 orderId = orderId,
-                amount = amount,
-                description = "خرید از فروشگاه وکسینا",
-                mobile = mobile
+                gateway = "zibal"
             )
 
             when (result) {
@@ -53,22 +51,27 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
-    fun verifyPayment(trackId: Long) {
+    fun verifyPayment(trackId: String) {
         viewModelScope.launch {
             _uiState.update { PaymentUiState.Verifying }
 
-            val result = paymentRepository.verifyPayment(trackId)
+            val result = paymentRepository.verifyPayment(trackId, "zibal")
 
             when (result) {
                 is Result.Success -> {
-                    if (result.data.paymentStatus == "paid") {
+                    if (result.data.isSuccess) {
                         _uiState.update { 
                             PaymentUiState.Success(result.data.refNumber)
                         }
                         _navigationEvent.emit(PaymentNavigationEvent.PaymentSuccess)
+                    } else if (result.data.isAbandoned) {
+                        _uiState.update { 
+                            PaymentUiState.Error(result.data.statusText ?: "پرداخت ناتمام ماند")
+                        }
+                        _navigationEvent.emit(PaymentNavigationEvent.PaymentFailed)
                     } else {
                         _uiState.update { 
-                            PaymentUiState.Error(result.data.statusText)
+                            PaymentUiState.Error(result.data.statusText ?: "پرداخت تایید نشد")
                         }
                         _navigationEvent.emit(PaymentNavigationEvent.PaymentFailed)
                     }
@@ -79,6 +82,20 @@ class PaymentViewModel @Inject constructor(
                     }
                     _navigationEvent.emit(PaymentNavigationEvent.PaymentFailed)
                 }
+            }
+        }
+    }
+
+    fun verifyPaymentByOrderId(orderId: String, isSuccess: Boolean) {
+        viewModelScope.launch {
+            if (isSuccess) {
+                _uiState.update { PaymentUiState.Success(null) }
+                _navigationEvent.emit(PaymentNavigationEvent.PaymentSuccess)
+            } else {
+                _uiState.update { 
+                    PaymentUiState.Error("پرداخت ناموفق بود")
+                }
+                _navigationEvent.emit(PaymentNavigationEvent.PaymentFailed)
             }
         }
     }

@@ -6,6 +6,7 @@ import com.voxcina.shop.domain.model.Discount
 import com.voxcina.shop.domain.model.PaymentMethod
 import com.voxcina.shop.domain.model.ShippingMethod
 import com.voxcina.shop.domain.model.UserAddress
+import com.voxcina.shop.domain.model.discountAmountFor
 import com.voxcina.shop.presentation.home.components.BottomNavDestination
 
 /**
@@ -82,27 +83,24 @@ sealed class CheckoutUiState {
 
         /**
          * Calculates the total amount including shipping and discount.
+         * Must match the backend's `subtotal + shippingCost - discountAmount`
+         * formula (the backend recomputes the discount and validates the total
+         * within a 1-toman tolerance). Tax is not included — the backend
+         * stores tax as 0 and the web front-end sends taxAmount: 0 as well.
          */
         val totalAmount: Long
             get() {
                 val subtotal = cart.summary.subtotal
-                val tax = cart.summary.tax
-                val discount = appliedDiscount?.let { calculateDiscountAmount(it, subtotal) } ?: 0L
-                return subtotal + tax + shippingCost - discount
+                val discount = appliedDiscount?.let { cart.discountAmountFor(it) } ?: 0L
+                return subtotal + shippingCost - discount
             }
 
         /**
-         * Calculates the discount amount based on discount type.
+         * Calculates the discount amount based on discount type, restricted to
+         * the required-products base for negotiated/cart-recovery coupons.
          */
-        private fun calculateDiscountAmount(discount: Discount, subtotal: Long): Long {
-            return when (discount.type) {
-                com.voxcina.shop.domain.model.DiscountType.PERCENTAGE -> {
-                    (subtotal * discount.value / 100).coerceAtMost(subtotal)
-                }
-                com.voxcina.shop.domain.model.DiscountType.FIXED -> {
-                    discount.value.toLong().coerceAtMost(subtotal)
-                }
-            }
+        fun calculateDiscountAmount(discount: Discount): Long {
+            return cart.discountAmountFor(discount)
         }
 
         /**

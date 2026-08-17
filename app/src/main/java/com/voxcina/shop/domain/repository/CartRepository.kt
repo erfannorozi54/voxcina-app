@@ -61,9 +61,31 @@ interface CartRepository {
     suspend fun clearCart(): Result<Cart>
 
     /**
-     * Validate and get discount details by code.
-     * @param code Discount code to validate
+     * Validate and apply a discount code / voucher to the cart.
+     * Tries the admin discount endpoint first (GET /discounts/code/{code});
+     * if the code is not found there, falls back to negotiated/cart-recovery
+     * coupon validation against the actual cart contents
+     * (POST /coupons/apply), mirroring the web front-end flow.
+     *
+     * @param code Voucher code to validate
+     * @param cart Current cart used for negotiated coupon validation
      * @return Result<Discount> containing discount details if valid
      */
-    suspend fun validateDiscountCode(code: String): Result<Discount>
+    suspend fun applyVoucher(code: String, cart: Cart): Result<Discount>
+
+    /**
+     * Mark a voucher as applied to the cart on the backend.
+     * POST /api/discounts/activate
+     *
+     * @param code Voucher code to activate
+     */
+    suspend fun activateVoucher(code: String): Result<Unit>
+
+    /**
+     * Mark a voucher as removed from the cart on the backend.
+     * POST /api/discounts/deactivate
+     *
+     * @param code Voucher code to deactivate
+     */
+    suspend fun deactivateVoucher(code: String): Result<Unit>
 }

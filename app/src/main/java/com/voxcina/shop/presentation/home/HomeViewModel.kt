@@ -63,6 +63,7 @@ class HomeViewModel @Inject constructor(
     private fun addToCart(product: Product, size: String) {
         viewModelScope.launch {
             val variant = CartVariant(
+                variantId = product.colorVariant.variantId ?: "",
                 size = size,
                 color = product.colorVariant.color,
                 colorName = product.colorVariant.colorName,

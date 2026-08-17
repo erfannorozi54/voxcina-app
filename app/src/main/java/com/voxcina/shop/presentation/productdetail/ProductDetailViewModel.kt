@@ -312,6 +312,7 @@ class ProductDetailViewModel @Inject constructor(
 
         viewModelScope.launch {
             val variant = CartVariant(
+                variantId = currentState.selectedColorVariant.variantId ?: "",
                 size = selectedSize.size,
                 color = currentState.selectedColorVariant.color,
                 colorName = currentState.selectedColorVariant.colorName,

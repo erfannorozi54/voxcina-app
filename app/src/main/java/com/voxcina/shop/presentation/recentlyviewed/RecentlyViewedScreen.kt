@@ -114,6 +114,7 @@ private fun RecentlyViewedProduct.toProduct(): Product {
         inStock = true,
         totalInventory = 1,
         colorVariant = ColorVariant(
+            variantId = null,
             color = colorHex,
             colorName = "",
             swatchImage = null,

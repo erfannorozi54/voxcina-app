@@ -1,7 +1,7 @@
 package com.voxcina.shop.presentation.payment
 
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -30,7 +30,7 @@ fun PaymentResultScreen(
     isSuccess: Boolean,
     onNavigateToOrders: () -> Unit,
     onRetryPayment: () -> Unit,
-    viewModel: PaymentResultViewModel = hiltViewModel()
+    viewModel: PaymentResultViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isRetrying by viewModel.isRetrying.collectAsState()
@@ -51,7 +51,7 @@ fun PaymentResultScreen(
         viewModel.event.collect { event ->
             when (event) {
                 is PaymentResultEvent.RetryPayment -> {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.payUrl))
+                    val intent = Intent(Intent.ACTION_VIEW, event.payUrl.toUri())
                     context.startActivity(intent)
                 }
             }

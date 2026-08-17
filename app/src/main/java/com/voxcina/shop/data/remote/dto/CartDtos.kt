@@ -50,6 +50,7 @@ data class CartColorVariantDto(
  * DTO for variant info within a cart item.
  */
 data class CartVariantDto(
+    @SerializedName("variantId") val variantId: String?,
     @SerializedName("size") val size: String,
     @SerializedName("color") val color: String,
     @SerializedName("colorName") val colorName: String,
@@ -91,8 +92,11 @@ data class UpdateCartItemRequest(
 
 /**
  * Request DTO for variant selection in cart operations.
+ * The backend validates the variant by its stable variantId (see
+ * validateVariantStock), so it is mandatory for add/update requests.
  */
 data class CartVariantRequest(
+    @SerializedName("variantId") val variantId: String,
     @SerializedName("size") val size: String,
     @SerializedName("color") val color: String
 )

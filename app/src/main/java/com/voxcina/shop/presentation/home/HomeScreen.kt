@@ -65,6 +65,7 @@ import com.voxcina.shop.ui.theme.VoxcinaTheme
  * @param onViewAllFlashSale Callback when "View All" in flash sale is clicked
  * @param onViewAllCategories Callback when "View All" in categories is clicked
  * @param onViewAllRecentlyViewed Callback when "View All" in recently viewed is clicked
+ * @param onHeroLinkClick Callback with the href when a hero CTA button is clicked
  * @param onSearchClick Callback when search bar is clicked
  * @param onNotificationClick Callback when notification icon is clicked
  * @param onCartClick Callback when cart icon is clicked
@@ -80,6 +81,7 @@ fun HomeScreen(
     onViewAllFlashSale: () -> Unit = {},
     onViewAllCategories: () -> Unit = {},
     onViewAllRecentlyViewed: () -> Unit = {},
+    onHeroLinkClick: (String) -> Unit = {},
     onSearchClick: () -> Unit = {},
     onNotificationClick: () -> Unit = {},
     onCartClick: () -> Unit = {},
@@ -101,6 +103,7 @@ fun HomeScreen(
             onViewAllFlashSale = onViewAllFlashSale,
             onViewAllCategories = onViewAllCategories,
             onViewAllRecentlyViewed = onViewAllRecentlyViewed,
+            onHeroLinkClick = onHeroLinkClick,
             onSearchClick = onSearchClick,
             onNotificationClick = onNotificationClick,
             onCartClick = onCartClick,
@@ -139,6 +142,7 @@ fun HomeScreenContent(
     onViewAllFlashSale: () -> Unit,
     onViewAllCategories: () -> Unit,
     onViewAllRecentlyViewed: () -> Unit,
+    onHeroLinkClick: (String) -> Unit,
     onSearchClick: () -> Unit,
     onNotificationClick: () -> Unit,
     onCartClick: () -> Unit,
@@ -176,6 +180,7 @@ fun HomeScreenContent(
                         onViewAllFlashSale = onViewAllFlashSale,
                         onViewAllCategories = onViewAllCategories,
                         onViewAllRecentlyViewed = onViewAllRecentlyViewed,
+                        onHeroLinkClick = onHeroLinkClick,
                         onSearchClick = onSearchClick,
                         onNotificationClick = onNotificationClick,
                         onCartClick = onCartClick,
@@ -215,6 +220,7 @@ private fun HomeSuccessContent(
     onViewAllFlashSale: () -> Unit,
     onViewAllCategories: () -> Unit,
     onViewAllRecentlyViewed: () -> Unit,
+    onHeroLinkClick: (String) -> Unit,
     onSearchClick: () -> Unit,
     onNotificationClick: () -> Unit,
     onCartClick: () -> Unit,
@@ -255,7 +261,8 @@ private fun HomeSuccessContent(
             
             HeroCarouselSection(
                 sectionState = state.heroImages,
-                onRetry = { onRetrySection(HomeSection.HERO_IMAGES) }
+                onRetry = { onRetrySection(HomeSection.HERO_IMAGES) },
+                onLinkClick = onHeroLinkClick
             )
             
             CategorySectionContent(
@@ -300,7 +307,8 @@ private fun HomeSuccessContent(
 @Composable
 private fun HeroCarouselSection(
     sectionState: HomeSectionState<List<HeroImage>>,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onLinkClick: (String) -> Unit
 ) {
     when (sectionState) {
         is HomeSectionState.Loading -> {
@@ -315,7 +323,10 @@ private fun HeroCarouselSection(
         }
         is HomeSectionState.Success -> {
             if (sectionState.data.isNotEmpty()) {
-                HeroCarousel(heroImages = sectionState.data)
+                HeroCarousel(
+                    heroImages = sectionState.data,
+                    onLinkClick = onLinkClick
+                )
             }
         }
     }

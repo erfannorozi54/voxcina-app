@@ -27,14 +27,14 @@ import com.voxcina.shop.domain.model.Product
  * @param products List of recommended products to display
  * @param modifier Modifier for the section container
  * @param onProductClick Callback when a product is clicked with productId and colorHex
- * @param onAddToCartClick Callback when add-to-cart button is clicked
+ * @param onAddToCart Callback when add-to-cart button is clicked
  */
 @Composable
 fun RecommendedProductsSection(
     products: List<Product>,
     modifier: Modifier = Modifier,
     onProductClick: (productId: String, colorHex: String) -> Unit = { _, _ -> },
-    onAddToCart: (product: Product, size: String) -> Unit = { _, _ -> }
+    onAddToCart: (product: Product, size: String) -> Unit = { _, _ -> },
 ) {
     if (products.isEmpty()) return
     

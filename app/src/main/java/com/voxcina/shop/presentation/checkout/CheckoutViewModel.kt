@@ -13,6 +13,7 @@ import com.voxcina.shop.domain.repository.CartRepository
 import com.voxcina.shop.domain.repository.CheckoutRepository
 import com.voxcina.shop.domain.repository.PaymentRepository
 import com.voxcina.shop.domain.repository.ShippingRepository
+import com.voxcina.shop.presentation.cart.AppliedVoucherTransfer
 import com.voxcina.shop.util.AppError
 import com.voxcina.shop.util.CartError
 import com.voxcina.shop.util.CheckoutError
@@ -137,13 +138,21 @@ class CheckoutViewModel @Inject constructor(
             // Get default address or first address
             val defaultAddress = addresses.find { it.isDefault } ?: addresses.firstOrNull()
 
-            // Set initial success state
+            // Set initial success state. If the user applied a voucher on the
+            // cart screen, carry it over so it is not lost (and not re-activated)
+            // at checkout.
+            val transferredVoucher = AppliedVoucherTransfer.discount
             _uiState.value = CheckoutUiState.Success(
                 cart = cart,
                 selectedAddress = defaultAddress,
                 shippingMethods = emptyList(),
                 selectedShippingMethod = null,
-                isShippingLoading = defaultAddress != null
+                isShippingLoading = defaultAddress != null,
+                discountState = if (transferredVoucher != null) {
+                    CheckoutDiscountState.Applied(transferredVoucher)
+                } else {
+                    CheckoutDiscountState.Idle
+                }
             )
 
             // Load shipping quotes if we have an address
@@ -378,7 +387,10 @@ class CheckoutViewModel @Inject constructor(
     }
 
     /**
-     * Applies a discount code.
+     * Applies a discount code / voucher.
+     * Validates against the backend (admin code or negotiated / cart-recovery
+     * coupon) and checks minimum order requirements. After a successful apply,
+     * the voucher is marked as used on the backend.
      *
      * Requirements: 7.3
      */
@@ -397,13 +409,16 @@ class CheckoutViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            when (val result = cartRepository.validateDiscountCode(trimmedCode)) {
+            val cart = (uiState.value as? CheckoutUiState.Success)?.cart ?: return@launch
+
+            when (val result = cartRepository.applyVoucher(trimmedCode, cart)) {
                 is Result.Success -> {
                     val discount = result.data
-                    val cart = (uiState.value as? CheckoutUiState.Success)?.cart ?: return@launch
+                    val updatedCart = (uiState.value as? CheckoutUiState.Success)?.cart ?: cart
 
-                    // Check minimum order amount
-                    if (cart.summary.subtotal < discount.minOrderAmount) {
+                    // Check minimum order amount (admin codes only; negotiated
+                    // and cart-recovery coupons are validated server-side)
+                    if (updatedCart.summary.subtotal < discount.minOrderAmount) {
                         _uiState.update { state ->
                             if (state is CheckoutUiState.Success) {
                                 state.copy(
@@ -422,6 +437,14 @@ class CheckoutViewModel @Inject constructor(
                             state.copy(discountState = CheckoutDiscountState.Applied(discount))
                         } else state
                     }
+                    AppliedVoucherTransfer.set(discount)
+
+                    // Mark the voucher as used on the backend (fire-and-forget,
+                    // mirroring the web front-end /discounts/activate call).
+                    // The backend guards the increment against the usage cap
+                    // and treats `used` as "applied to cart", so activation is
+                    // safe for every voucher type.
+                    cartRepository.activateVoucher(discount.code)
                 }
                 is Result.Error -> {
                     _uiState.update { state ->
@@ -437,15 +460,24 @@ class CheckoutViewModel @Inject constructor(
     }
 
     /**
-     * Removes the applied discount.
+     * Removes the applied discount and deactivates the voucher on the backend.
      */
     private fun removeDiscount() {
+        val appliedDiscount = (uiState.value as? CheckoutUiState.Success)?.appliedDiscount
+
         _uiState.update { state ->
             if (state is CheckoutUiState.Success) {
                 state.copy(discountState = CheckoutDiscountState.Idle)
             } else state
         }
         currentDiscountCode = ""
+        AppliedVoucherTransfer.clear()
+
+        if (appliedDiscount != null) {
+            viewModelScope.launch {
+                cartRepository.deactivateVoucher(appliedDiscount.code)
+            }
+        }
     }
 
 
@@ -485,7 +517,10 @@ class CheckoutViewModel @Inject constructor(
             val result = checkoutRepository.createOrder(
                 items = currentState.cart.items,
                 totalAmount = currentState.totalAmount,
-                shippingAddress = currentState.selectedAddress!!
+                shippingAddress = currentState.selectedAddress!!,
+                shippingCost = currentState.shippingCost,
+                discountAmount = currentState.appliedDiscount?.let { currentState.calculateDiscountAmount(it) } ?: 0L,
+                promoCode = currentState.appliedDiscount?.code
             )
 
             when (result) {
@@ -576,7 +611,10 @@ class CheckoutViewModel @Inject constructor(
             val orderResult = checkoutRepository.createOrder(
                 items = state.cart.items,
                 totalAmount = state.totalAmount,
-                shippingAddress = selectedAddress
+                shippingAddress = selectedAddress,
+                shippingCost = state.shippingCost,
+                discountAmount = state.appliedDiscount?.let { state.calculateDiscountAmount(it) } ?: 0L,
+                promoCode = state.appliedDiscount?.code
             )
 
             when (orderResult) {

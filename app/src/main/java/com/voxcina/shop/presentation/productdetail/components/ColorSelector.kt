@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -44,7 +43,7 @@ fun ColorSelector(
     selectedColorVariant: ColorVariant,
     onColorSelected: (ColorVariant) -> Unit,
     isColorAvailable: (ColorVariant) -> Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
@@ -89,5 +88,3 @@ fun ColorSelector(
         }
     }
 }
-
-@OptIn(ExperimentalLayoutApi::class)

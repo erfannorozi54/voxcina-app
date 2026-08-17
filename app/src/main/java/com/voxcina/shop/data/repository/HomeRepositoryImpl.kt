@@ -24,29 +24,30 @@ class HomeRepositoryImpl @Inject constructor(
 
     override suspend fun getHeroImages(): Result<List<HeroImage>> {
         return safeApiCall(HomeError.HeroImagesLoadFailed) {
-            // First try mobile device type
-            var response = homeApi.getHeroImages(device = "mobile")
+            // The app renders the desktop hero variant, matching the storefront's
+            // wide hero. Fall back to mobile only when no desktop records exist.
+            var response = homeApi.getHeroImages(device = "desktop")
             if (response.isSuccessful) {
-                val mobileImages = response.body()?.heroImages
+                val desktopImages = response.body()?.heroImages
                     ?.filter { it.isActive }
                     ?.sortedBy { it.displayOrder }
                     ?.toHeroImages()
                     ?: emptyList()
-                
-                // If mobile images are empty, fallback to desktop images
-                if (mobileImages.isEmpty()) {
-                    response = homeApi.getHeroImages(device = "desktop")
+
+                // If desktop images are empty, fallback to mobile images
+                if (desktopImages.isEmpty()) {
+                    response = homeApi.getHeroImages(device = "mobile")
                     if (response.isSuccessful) {
-                        val desktopImages = response.body()?.heroImages
+                        val mobileImages = response.body()?.heroImages
                             ?.filter { it.isActive }
                             ?.sortedBy { it.displayOrder }
                             ?.toHeroImages()
                             ?: emptyList()
-                        return@safeApiCall Result.Success(desktopImages)
+                        return@safeApiCall Result.Success(mobileImages)
                     }
                 }
-                
-                Result.Success(mobileImages)
+
+                Result.Success(desktopImages)
             } else {
                 Result.Error(mapHttpError(response, HomeError.HeroImagesLoadFailed))
             }

@@ -6,6 +6,9 @@ import com.voxcina.shop.data.remote.DiscountApi
 import com.voxcina.shop.data.remote.dto.ApiErrorResponse
 import com.voxcina.shop.data.remote.dto.AddCartItemRequest
 import com.voxcina.shop.data.remote.dto.CartVariantRequest
+import com.voxcina.shop.data.remote.dto.CouponCartItemRequest
+import com.voxcina.shop.data.remote.dto.DiscountCodeRequest
+import com.voxcina.shop.data.remote.dto.NegotiatedCouponRequest
 import com.voxcina.shop.data.remote.dto.UpdateCartItemRequest
 import com.voxcina.shop.domain.model.Cart
 import com.voxcina.shop.domain.model.CartVariant
@@ -57,6 +60,7 @@ class CartRepositoryImpl @Inject constructor(
                 productId = productId,
                 quantity = quantity,
                 variant = CartVariantRequest(
+                    variantId = variant.variantId,
                     size = variant.size,
                     color = variant.color
                 )
@@ -86,6 +90,7 @@ class CartRepositoryImpl @Inject constructor(
                 productId = productId,
                 quantity = quantity,
                 variant = CartVariantRequest(
+                    variantId = variant.variantId,
                     size = variant.size,
                     color = variant.color
                 )
@@ -143,7 +148,7 @@ class CartRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun validateDiscountCode(code: String): Result<Discount> {
+    override suspend fun applyVoucher(code: String, cart: Cart): Result<Discount> {
         return safeApiCall(CartError.DiscountInvalid("Unknown error")) {
             val response = discountApi.validateDiscount(code)
             if (response.isSuccessful) {
@@ -153,6 +158,64 @@ class CartRepositoryImpl @Inject constructor(
                 } else {
                     Result.Error(CartError.DiscountInvalid("Invalid response"))
                 }
+            } else if (response.code() == 404) {
+                // Not an admin discount code — it may be a negotiated or
+                // cart-recovery coupon, validated against the actual cart
+                // contents (mirrors the web front-end fallback).
+                applyNegotiatedCoupon(code, cart)
+            } else {
+                Result.Error(mapDiscountHttpError(response, code))
+            }
+        }
+    }
+
+    /**
+     * Validates a negotiated / cart-recovery coupon against the current cart.
+     * POST /api/coupons/apply
+     */
+    private suspend fun applyNegotiatedCoupon(code: String, cart: Cart): Result<Discount> {
+        val request = NegotiatedCouponRequest(
+            code = code,
+            cartItems = cart.items.map { item ->
+                CouponCartItemRequest(
+                    productId = item.product.id,
+                    color = item.variant.color,
+                    colorName = item.variant.colorName
+                )
+            }
+        )
+        return safeApiCall(CartError.DiscountInvalid("Unknown error")) {
+            val response = discountApi.applyNegotiatedCoupon(request)
+            if (response.isSuccessful) {
+                val body = response.body()
+                val discount = body?.discount?.toDomain()
+                if (body?.valid == true && discount != null) {
+                    Result.Success(discount)
+                } else {
+                    Result.Error(CartError.DiscountInvalid("Invalid response"))
+                }
+            } else {
+                Result.Error(mapDiscountHttpError(response, code))
+            }
+        }
+    }
+
+    override suspend fun activateVoucher(code: String): Result<Unit> {
+        return safeApiCall(CartError.DiscountInvalid("Unknown error")) {
+            val response = discountApi.activateDiscount(DiscountCodeRequest(code))
+            if (response.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                Result.Error(mapDiscountHttpError(response, code))
+            }
+        }
+    }
+
+    override suspend fun deactivateVoucher(code: String): Result<Unit> {
+        return safeApiCall(CartError.DiscountInvalid("Unknown error")) {
+            val response = discountApi.deactivateDiscount(DiscountCodeRequest(code))
+            if (response.isSuccessful) {
+                Result.Success(Unit)
             } else {
                 Result.Error(mapDiscountHttpError(response, code))
             }

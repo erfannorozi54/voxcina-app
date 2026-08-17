@@ -33,12 +33,19 @@ class CheckoutRepositoryImpl @Inject constructor(
     override suspend fun createOrder(
         items: List<CartItem>,
         totalAmount: Long,
-        shippingAddress: UserAddress
+        shippingAddress: UserAddress,
+        shippingCost: Long,
+        discountAmount: Long,
+        promoCode: String?
     ): Result<Order> = safeApiCall {
         val request = CreateOrderRequestDto(
             items = items.map { it.toRequestDto() },
             totalAmount = totalAmount,
-            shippingAddress = shippingAddress.toRequestDto()
+            shippingCost = shippingCost,
+            taxAmount = 0,
+            discountAmount = discountAmount,
+            shippingAddress = shippingAddress.toRequestDto(),
+            promoCode = promoCode
         )
         
         val response = checkoutApi.createOrder(request)

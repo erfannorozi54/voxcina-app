@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -55,6 +57,7 @@ sealed class DiscountState {
  * @param onCodeChange Callback when code text changes
  * @param onSubmit Callback when submit button is clicked
  * @param state Current discount validation state
+ * @param onRemove Callback to remove the applied discount (null hides the remove action)
  * @param modifier Modifier for the component
  */
 @Composable
@@ -63,6 +66,7 @@ fun DiscountCodeInput(
     onCodeChange: (String) -> Unit,
     onSubmit: () -> Unit,
     state: DiscountState,
+    onRemove: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -106,7 +110,7 @@ fun DiscountCodeInput(
                     // Submit button or success indicator
                     when (state) {
                         is DiscountState.Applied -> {
-                            // Show success indicator
+                            // Show success indicator with applied code and remove action
                             Box(
                                 modifier = Modifier
                                     .padding(4.dp)
@@ -115,7 +119,7 @@ fun DiscountCodeInput(
                                         color = Success.copy(alpha = 0.1f),
                                         shape = RoundedCornerShape(6.dp)
                                     )
-                                    .padding(horizontal = 12.dp),
+                                    .padding(start = 12.dp, end = 4.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Row(
@@ -129,11 +133,24 @@ fun DiscountCodeInput(
                                         tint = Success
                                     )
                                     Text(
-                                        text = "اعمال شد",
+                                        text = "کد ${state.discount.code} اعمال شد",
                                         style = MaterialTheme.typography.bodySmall,
                                         fontWeight = FontWeight.Bold,
                                         color = Success
                                     )
+                                    if (onRemove != null) {
+                                        TextButton(
+                                            onClick = onRemove,
+                                            contentPadding = PaddingValues(horizontal = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = "حذف",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Destructive
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }

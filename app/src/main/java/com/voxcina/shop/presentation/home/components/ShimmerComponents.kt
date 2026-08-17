@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -106,14 +107,20 @@ fun ShimmerHeroCarousel(
             modifier = modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Shimmer hero image with 2:1 aspect ratio
-            ShimmerBox(
+            // Shimmer hero with the same responsive aspect ratio as the real carousel
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .aspectRatio(2f)
-                    .clip(RoundedCornerShape(16.dp))
-            )
+            ) {
+                val aspect = if (maxWidth < 480.dp) 0.8f else 16f / 9f
+                ShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(aspect)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+            }
             
             Spacer(modifier = Modifier.height(12.dp))
             

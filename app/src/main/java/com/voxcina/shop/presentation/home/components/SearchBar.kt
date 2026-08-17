@@ -76,11 +76,11 @@ fun SearchBar(
                 .padding(horizontal = 16.dp)
                 .shadow(
                     elevation = 8.dp,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                     ambientColor = Primary.copy(alpha = 0.08f),
                     spotColor = Primary.copy(alpha = 0.05f)
                 )
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(12.dp))
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
@@ -92,9 +92,9 @@ fun SearchBar(
                 .border(
                     width = if (isFocused) 1.5.dp else 1.dp,
                     color = if (isFocused) borderColor else Color.Gray.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(12.dp)
                 )
-                .height(52.dp)
+                .height(40.dp)
                 .then(
                     if (onClick != null && readOnly) Modifier.clickable(onClick = onClick) else Modifier
                 ),
@@ -103,13 +103,13 @@ fun SearchBar(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(RoundedCornerShape(10.dp))
+                        .size(28.dp)
+                        .clip(RoundedCornerShape(8.dp))
                         .background(Primary.copy(alpha = 0.1f)),
                     contentAlignment = Alignment.Center
                 ) {
@@ -117,18 +117,18 @@ fun SearchBar(
                         imageVector = Icons.Rounded.Search,
                         contentDescription = stringResource(R.string.home_search),
                         tint = Primary,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
                 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(10.dp))
                 
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
                     if (readOnly) {
                         Text(
                             text = stringResource(R.string.home_search_placeholder),
                             color = Color.Gray.copy(alpha = 0.6f),
-                            fontSize = 14.sp,
+                            fontSize = 13.sp,
                             fontFamily = VazirMatnFamily
                         )
                     } else {
@@ -139,7 +139,7 @@ fun SearchBar(
                             enabled = enabled,
                             textStyle = TextStyle(
                                 color = PrimaryDark,
-                                fontSize = 14.sp,
+                                fontSize = 13.sp,
                                 fontFamily = VazirMatnFamily,
                                 fontWeight = FontWeight.Normal,
                                 textDirection = TextDirection.Rtl
@@ -155,7 +155,7 @@ fun SearchBar(
                                         Text(
                                             text = stringResource(R.string.home_search_placeholder),
                                             color = Color.Gray.copy(alpha = 0.6f),
-                                            fontSize = 14.sp,
+                                            fontSize = 13.sp,
                                             fontFamily = VazirMatnFamily
                                         )
                                     }
